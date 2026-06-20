@@ -31,3 +31,34 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Eclipse SpringTools specific
+.metadata
+*.launch
+.recommenders/
+.buildpath
+RemoteSystemsTempFiles/
+
+# Spring Boot devtools
+.spring-boot-devtools.properties
+
+# Variables de entorno y credenciales
+.env
+.env.local
+secrets.properties
+
+# Configuraciones por ambiente (nunca subir)
+src/main/resources/application-dev.properties
+src/main/resources/application-qa.properties
+src/main/resources/application-prod.properties
+src/main/resources/application-dev.yml
+src/main/resources/application-qa.yml
+src/main/resources/application-prod.yml
+
+# Logs
+*.log
+logs/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
