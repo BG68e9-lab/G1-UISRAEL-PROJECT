@@ -1,16 +1,16 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
-public class EstadosOc {
+public class EstadoOc {
 	
 	private Integer estadoOcId;
 	private String codigo;
 	private String etiqueta;
 	
-	public EstadosOc() {
+	public EstadoOc() {
 
 	}
 
-	public EstadosOc(Integer estadoOcId, String codigo, String etiqueta) {
+	public EstadoOc(Integer estadoOcId, String codigo, String etiqueta) {
 
 		this.estadoOcId = estadoOcId;
 		this.codigo = codigo;
