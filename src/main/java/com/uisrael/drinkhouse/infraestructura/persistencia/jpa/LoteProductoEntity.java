@@ -1,8 +1,7 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.jpa;
 
 import java.math.BigDecimal;
-
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -10,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name="lotes_producto")
 public class LoteProductoEntity {
 	
 	@Id
@@ -47,15 +49,22 @@ public class LoteProductoEntity {
 	@Column(name = "precio_costo", precision = 10, scale = 2)
 	private BigDecimal precioCosto;
 	
-	@Column(name = "fecha_ingreso")
-	private Date fechaIngreso; 
+	@Column(name = "fecha_ingreso",nullable = false ,updatable = false)
+	private OffsetDateTime fechaIngreso; 
 	
 	@Column(name = "fecha_vencimiento")
-	private Date fechaVencimiento; 
+	private OffsetDateTime fechaVencimiento; 
 	
 	@Column(name = "estado_respaldo_id", nullable = false)
 	private Integer estadoRespaldoId; 
 	
 	@Column(name = "registrado_por", nullable = false)
-	private UUID registradoPor; 
+	private UUID registradoPor;
+
+
+	
+	@PrePersist
+	protected void onCreate() {
+		this.fechaIngreso = OffsetDateTime.now();
+	}
 }

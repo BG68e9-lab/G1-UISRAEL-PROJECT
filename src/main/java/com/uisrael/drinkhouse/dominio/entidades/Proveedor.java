@@ -12,7 +12,6 @@ public class Proveedor {
 
 	public Proveedor(Integer proveedorId, Integer negocioId, String ruc, String razonSocial, String direccion,
 			String telefono, String email) {
-		super();
 		this.proveedorId = proveedorId;
 		this.negocioId = negocioId;
 		this.ruc = ruc;
@@ -23,8 +22,7 @@ public class Proveedor {
 	}
 
 	public Proveedor() {
-		super();
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public Integer getProveedorId() {

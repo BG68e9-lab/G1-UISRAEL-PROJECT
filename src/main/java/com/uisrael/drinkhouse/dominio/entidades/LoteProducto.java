@@ -1,8 +1,8 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.Date;
-
 
 public class LoteProducto {
 
@@ -13,15 +13,14 @@ public class LoteProducto {
 	private Integer cantidadInicial;
 	private Integer cantidadDisponible;
 	private BigDecimal precioCosto;
-	private Date fechaIngreso;
-	private Date fechaVencimiento;
+	private OffsetDateTime fechaIngreso;
+	private OffsetDateTime fechaVencimiento;
 	private Integer estadoRespaldoId;
 	private String registradoPor;
 
 	public LoteProducto(Integer loteId, Integer negocioId, Integer ordenCompraId, String codigoEntrada,
-			Integer cantidadInicial, Integer cantidadDisponible, BigDecimal precioCosto, Date fechaIngreso,
-			Date fechaVencimiento, Integer estadoRespaldoId, String registradoPor) {
-		super();
+			Integer cantidadInicial, Integer cantidadDisponible, BigDecimal precioCosto, OffsetDateTime fechaIngreso,
+			OffsetDateTime fechaVencimiento, Integer estadoRespaldoId, String registradoPor) {
 		this.loteId = loteId;
 		this.negocioId = negocioId;
 		this.ordenCompraId = ordenCompraId;
@@ -36,8 +35,6 @@ public class LoteProducto {
 	}
 
 	public LoteProducto() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Integer getLoteId() {
@@ -96,19 +93,19 @@ public class LoteProducto {
 		this.precioCosto = precioCosto;
 	}
 
-	public Date getFechaIngreso() {
+	public OffsetDateTime getFechaIngreso() {
 		return fechaIngreso;
 	}
 
-	public void setFechaIngreso(Date fechaIngreso) {
+	public void setFechaIngreso(OffsetDateTime fechaIngreso) {
 		this.fechaIngreso = fechaIngreso;
 	}
 
-	public Date getFechaVencimiento() {
+	public OffsetDateTime getFechaVencimiento() {
 		return fechaVencimiento;
 	}
 
-	public void setFechaVencimiento(Date fechaVencimiento) {
+	public void setFechaVencimiento(OffsetDateTime fechaVencimiento) {
 		this.fechaVencimiento = fechaVencimiento;
 	}
 

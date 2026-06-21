@@ -25,10 +25,9 @@ public class Producto {
 	private String origenIdentificacion;
 
 	public Producto(Integer productoId, Integer negocioId, Integer categoriaId, String nombre, String marca,
-			String tipo, String descripcion, BigDecimal costoPromedio, BigDecimal margenGanancia, BigDecimal precioVenta,
-			BigDecimal precioPersonalizado, Integer stockActual, Integer stockMinimo, Boolean visibleSinStock,
-			String origenIdentificacion) {
-		super();
+			String tipo, String descripcion, BigDecimal costoPromedio, BigDecimal margenGanancia,
+			BigDecimal precioVenta, BigDecimal precioPersonalizado, Integer stockActual, Integer stockMinimo,
+			Boolean visibleSinStock, String origenIdentificacion) {
 		this.productoId = productoId;
 		this.negocioId = negocioId;
 		this.categoriaId = categoriaId;
@@ -47,8 +46,6 @@ public class Producto {
 	}
 
 	public Producto() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Integer getProductoId() {
