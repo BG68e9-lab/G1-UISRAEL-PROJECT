@@ -1,7 +1,7 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.jpa;
 
 import java.time.OffsetDateTime;
-
+import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
