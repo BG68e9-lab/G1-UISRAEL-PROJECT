@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 
-public class LotesProductos {
+public class LoteProducto {
 
 	private Integer loteId;
 	private Integer negocioId;
@@ -18,7 +18,7 @@ public class LotesProductos {
 	private Integer estadoRespaldoId;
 	private String registradoPor;
 
-	public LotesProductos(Integer loteId, Integer negocioId, Integer ordenCompraId, String codigoEntrada,
+	public LoteProducto(Integer loteId, Integer negocioId, Integer ordenCompraId, String codigoEntrada,
 			Integer cantidadInicial, Integer cantidadDisponible, BigDecimal precioCosto, Date fechaIngreso,
 			Date fechaVencimiento, Integer estadoRespaldoId, String registradoPor) {
 		super();
@@ -35,7 +35,7 @@ public class LotesProductos {
 		this.registradoPor = registradoPor;
 	}
 
-	public LotesProductos() {
+	public LoteProducto() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

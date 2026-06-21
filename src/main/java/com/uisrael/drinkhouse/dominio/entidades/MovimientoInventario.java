@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 
-public class MovimientosInventario {
+public class MovimientoInventario {
 
 	private Long movimientoId;
 	private Integer negocioId;
@@ -15,7 +15,7 @@ public class MovimientosInventario {
 	private BigDecimal cantidad;
 	private BigDecimal precioUnitario;
 	private UUID usuarioId;
-	public MovimientosInventario(Long movimientoId, Integer negocioId, Integer tipoMovimientoId, Long productoId,
+	public MovimientoInventario(Long movimientoId, Integer negocioId, Integer tipoMovimientoId, Long productoId,
 			Long loteId, String codigoMovimiento, BigDecimal cantidad, BigDecimal precioUnitario, UUID usuarioId) {
 		super();
 		this.movimientoId = movimientoId;
@@ -28,7 +28,7 @@ public class MovimientosInventario {
 		this.precioUnitario = precioUnitario;
 		this.usuarioId = usuarioId;
 	}
-	public MovimientosInventario() {
+	public MovimientoInventario() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

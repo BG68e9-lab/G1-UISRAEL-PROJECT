@@ -1,6 +1,6 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
-public class Proveedores {
+public class Proveedor {
 
 	private Integer proveedorId;
 	private Integer negocioId;
@@ -10,7 +10,7 @@ public class Proveedores {
 	private String telefono;
 	private String email;
 
-	public Proveedores(Integer proveedorId, Integer negocioId, String ruc, String razonSocial, String direccion,
+	public Proveedor(Integer proveedorId, Integer negocioId, String ruc, String razonSocial, String direccion,
 			String telefono, String email) {
 		super();
 		this.proveedorId = proveedorId;
@@ -22,7 +22,7 @@ public class Proveedores {
 		this.email = email;
 	}
 
-	public Proveedores() {
+	public Proveedor() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

@@ -1,20 +1,20 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
 
-public class TiposMovimiento {
+public class TipoMovimiento {
 
 	private Integer tipoMovimientoId; 
 	private String codigo; 
 	private String prefijoCodigo; 
 	private String descripcion;
-	public TiposMovimiento(Integer tipoMovimientoId, String codigo, String prefijoCodigo, String descripcion) {
+	public TipoMovimiento(Integer tipoMovimientoId, String codigo, String prefijoCodigo, String descripcion) {
 		super();
 		this.tipoMovimientoId = tipoMovimientoId;
 		this.codigo = codigo;
 		this.prefijoCodigo = prefijoCodigo;
 		this.descripcion = descripcion;
 	}
-	public TiposMovimiento() {
+	public TipoMovimiento() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

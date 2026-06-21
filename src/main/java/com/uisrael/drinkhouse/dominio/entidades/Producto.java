@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-public class Productos {
+public class Producto {
 
 	private Integer productoId;
 	private Integer negocioId;
@@ -24,7 +24,7 @@ public class Productos {
 	private Boolean visibleSinStock;
 	private String origenIdentificacion;
 
-	public Productos(Integer productoId, Integer negocioId, Integer categoriaId, String nombre, String marca,
+	public Producto(Integer productoId, Integer negocioId, Integer categoriaId, String nombre, String marca,
 			String tipo, String descripcion, BigDecimal costoPromedio, BigDecimal margenGanancia, BigDecimal precioVenta,
 			BigDecimal precioPersonalizado, Integer stockActual, Integer stockMinimo, Boolean visibleSinStock,
 			String origenIdentificacion) {
@@ -46,7 +46,7 @@ public class Productos {
 		this.origenIdentificacion = origenIdentificacion;
 	}
 
-	public Productos() {
+	public Producto() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

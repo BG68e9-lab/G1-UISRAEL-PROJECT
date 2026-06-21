@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name="tipos_movimiento")
 
-public class TiposMovimientoEntity {
+public class TipoMovimientoEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

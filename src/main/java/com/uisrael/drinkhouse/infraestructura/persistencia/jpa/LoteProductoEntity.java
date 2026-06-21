@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class LotesProductosEntity {
+public class LoteProductoEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

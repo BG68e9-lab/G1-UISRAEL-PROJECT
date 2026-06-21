@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "movimientos_inventario")
 @AllArgsConstructor
 @NoArgsConstructor
-public class MovimientosInventarioEntity {
+public class MovimientoInventarioEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class MovimientosInventarioEntity {
 	private Integer tipoMovimientoId; 
 
 	@Column(name = "producto_id", nullable = false)
-	private Long productoId; // 
+	private Long productoId;
 
 	@Column(name = "lote_id", nullable = false)
 	private Long loteId; 
