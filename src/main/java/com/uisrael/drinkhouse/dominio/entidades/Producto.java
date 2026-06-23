@@ -1,11 +1,6 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.math.BigDecimal;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 public class Producto {
 
 	private Integer productoId;
