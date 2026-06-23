@@ -2,34 +2,32 @@ package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.time.OffsetDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-
-@Entity
-@Table(name = "tokens_ia_negocio")
-@Getter
-@Setter
 public class TokensIaNegocio {
+	
+	private Long tokenIaNegocioId;
+	private Integer negocioId;
+	private String claveConfiguracion;
+	private String valorToken;
+	private OffsetDateTime registradoEn;
+	
+	public TokensIaNegocio() {}
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	public TokensIaNegocio(Long tokenIaNegocioId, Integer negocioId, String claveConfiguracion, String valorToken, OffsetDateTime registradoEn) {
+		this.tokenIaNegocioId = tokenIaNegocioId;
+		this.negocioId = negocioId;
+		this.claveConfiguracion = claveConfiguracion;
+		this.valorToken = valorToken;
+		this.registradoEn = registradoEn;
+	}
 
-    @Column(name = "clave_configuracion", nullable = false, unique = true)
-    private String claveConfiguracion;
-
-    @Column(name = "valor_token", nullable = false)
-    private String valorToken;
-
-    @Column(name = "fecha_registro", nullable = false, updatable = false)
-    private OffsetDateTime fechaRegistro;
-
-    public TokensIaNegocio() {
-    }
+	public Long getTokenIaNegocioId() { return tokenIaNegocioId; }
+	public void setTokenIaNegocioId(Long tokenIaNegocioId) { this.tokenIaNegocioId = tokenIaNegocioId; }
+	public Integer getNegocioId() { return negocioId; }
+	public void setNegocioId(Integer negocioId) { this.negocioId = negocioId; }
+	public String getClaveConfiguracion() { return claveConfiguracion; }
+	public void setClaveConfiguracion(String claveConfiguracion) { this.claveConfiguracion = claveConfiguracion; }
+	public String getValorToken() { return valorToken; }
+	public void setValorToken(String valorToken) { this.valorToken = valorToken; }
+	public OffsetDateTime getRegistradoEn() { return registradoEn; }
+	public void setRegistradoEn(OffsetDateTime registradoEn) { this.registradoEn = registradoEn; }
 }

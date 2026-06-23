@@ -2,37 +2,32 @@ package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.time.OffsetDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-
-@Entity
-@Table(name = "ordenes_compra")
-@Getter
-@Setter
 public class OrdenCompra {
+	
+	private Long ordenCompraId;
+	private String codigoReferencia;
+	private String estado;
+	private Double total;
+	private OffsetDateTime creadoEn;
+	
+	public OrdenCompra() {}
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	public OrdenCompra(Long ordenCompraId, String codigoReferencia, String estado, Double total, OffsetDateTime creadoEn) {
+		this.ordenCompraId = ordenCompraId;
+		this.codigoReferencia = codigoReferencia;
+		this.estado = estado;
+		this.total = total;
+		this.creadoEn = creadoEn;
+	}
 
-    @Column(name = "codigo_referencia", nullable = false, unique = true)
-    private String codigoReferencia;
-
-    @Column(name = "estado", nullable = false)
-    private String estado;
-
-    @Column(name = "total", nullable = false)
-    private Double total;
-
-    @Column(name = "fecha_creacion", nullable = false, updatable = false)
-    private OffsetDateTime fechaCreacion;
-
-    public OrdenCompra() {
-    }
+	public Long getOrdenCompraId() { return ordenCompraId; }
+	public void setOrdenCompraId(Long ordenCompraId) { this.ordenCompraId = ordenCompraId; }
+	public String getCodigoReferencia() { return codigoReferencia; }
+	public void setCodigoReferencia(String codigoReferencia) { this.codigoReferencia = codigoReferencia; }
+	public String getEstado() { return estado; }
+	public void setEstado(String estado) { this.estado = estado; }
+	public Double getTotal() { return total; }
+	public void setTotal(Double total) { this.total = total; }
+	public OffsetDateTime getCreadoEn() { return creadoEn; }
+	public void setCreadoEn(OffsetDateTime creadoEn) { this.creadoEn = creadoEn; }
 }

@@ -1,33 +1,33 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import java.time.OffsetDateTime;
 
-@Entity
-@Table(name = "identificaciones_ia")
-@Getter
-@Setter
 public class IdentificacionIa {
+	
+	private Long identificacionIaId;
+	private String nombreModelo;
+	private Double probabilidad;
+	private String resultado;
+	private OffsetDateTime creadoEn;
+	
+	public IdentificacionIa() {}
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	public IdentificacionIa(Long identificacionIaId, String nombreModelo, Double probabilidad, String resultado, OffsetDateTime creadoEn) {
+		this.identificacionIaId = identificacionIaId;
+		this.nombreModelo = nombreModelo;
+		this.probabilidad = probabilidad;
+		this.resultado = resultado;
+		this.creadoEn = creadoEn;
+	}
 
-    @Column(name = "nombre_modelo", nullable = false)
-    private String nombreModelo;
-
-    @Column(name = "probabilidad", nullable = false)
-    private Double probabilidad;
-
-    @Column(name = "resultado", nullable = false)
-    private String resultado;
-
-    public IdentificacionIa() {
-    }
+	public Long getIdentificacionIaId() { return identificacionIaId; }
+	public void setIdentificacionIaId(Long identificacionIaId) { this.identificacionIaId = identificacionIaId; }
+	public String getNombreModelo() { return nombreModelo; }
+	public void setNombreModelo(String nombreModelo) { this.nombreModelo = nombreModelo; }
+	public Double getProbabilidad() { return probabilidad; }
+	public void setProbabilidad(Double probabilidad) { this.probabilidad = probabilidad; }
+	public String getResultado() { return resultado; }
+	public void setResultado(String resultado) { this.resultado = resultado; }
+	public OffsetDateTime getCreadoEn() { return creadoEn; }
+	public void setCreadoEn(OffsetDateTime creadoEn) { this.creadoEn = creadoEn; }
 }

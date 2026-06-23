@@ -2,37 +2,32 @@ package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.time.OffsetDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-
-@Entity
-@Table(name = "alertas")
-@Getter
-@Setter
 public class Alerta {
+	
+	private Long alertaId;
+	private String tipo;
+	private String mensaje;
+	private Boolean leido;
+	private OffsetDateTime creadoEn;
+	
+	public Alerta() {}
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	public Alerta(Long alertaId, String tipo, String mensaje, Boolean leido, OffsetDateTime creadoEn) {
+		this.alertaId = alertaId;
+		this.tipo = tipo;
+		this.mensaje = mensaje;
+		this.leido = leido;
+		this.creadoEn = creadoEn;
+	}
 
-    @Column(name = "tipo", nullable = false)
-    private String tipo;
-
-    @Column(name = "mensaje", nullable = false)
-    private String mensaje;
-
-    @Column(name = "leido", nullable = false)
-    private boolean leido;
-
-    @Column(name = "fecha_alerta", nullable = false, updatable = false)
-    private OffsetDateTime fechaAlerta;
-
-    public Alerta() {
-    }
+	public Long getAlertaId() { return alertaId; }
+	public void setAlertaId(Long alertaId) { this.alertaId = alertaId; }
+	public String getTipo() { return tipo; }
+	public void setTipo(String tipo) { this.tipo = tipo; }
+	public String getMensaje() { return mensaje; }
+	public void setMensaje(String mensaje) { this.mensaje = mensaje; }
+	public Boolean getLeido() { return leido; }
+	public void setLeido(Boolean leido) { this.leido = leido; }
+	public OffsetDateTime getCreadoEn() { return creadoEn; }
+	public void setCreadoEn(OffsetDateTime creadoEn) { this.creadoEn = creadoEn; }
 }
