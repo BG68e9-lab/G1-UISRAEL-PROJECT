@@ -2,7 +2,6 @@ package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.Date;
 
 public class LoteProducto {
 
