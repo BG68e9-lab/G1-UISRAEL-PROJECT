@@ -7,43 +7,32 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "CONSUMO_IA_MENSUAL")
+@Table(name = "consumos_ia_mensual")
 @Getter
 @Setter
 public class ConsumoIaMensual {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_consumo_ia")
-    private Long idConsumoIa;
+    private Long id;
 
-    @Column(name = "anio", nullable = false)
-    private Integer anio;
+    @Column(name = "mes_anio", nullable = false)
+    private String mesAnio;
 
-    @Column(name = "mes", nullable = false)
-    private Integer mes;
+    @Column(name = "tokens_consumidos", nullable = false)
+    private Long tokensConsumidos;
 
-    @Column(name = "cantidad_consultas", nullable = false)
-    private Integer cantidadConsultas = 0;
-
-    @Column(name = "limite_maximo", nullable = false)
-    private Integer limiteMaximo;
+    @Column(name = "costo_estimado", nullable = false)
+    private Double costoEstimado;
 
     @Column(name = "fecha_actualizacion", nullable = false)
     private OffsetDateTime fechaActualizacion;
 
-    // Constructor vacío obligatorio
     public ConsumoIaMensual() {
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.fechaActualizacion = OffsetDateTime.now();
     }
 }
