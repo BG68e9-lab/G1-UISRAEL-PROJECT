@@ -1,6 +1,5 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.jpa;
 
-import java.rmi.server.UID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +23,7 @@ public class ProveedorEntity {
 	@Column(name = "proveedor_id")
 	private Integer proveedorId;
 	@Column(name = "negocio_id", nullable = false)
-	private UID negocioId;
+	private Integer negocioId;
 	@Column(name = "ruc", nullable = false, length = 20)
 	private String ruc;
 	@Column(name = "razon_social", nullable = false, length = 20)
