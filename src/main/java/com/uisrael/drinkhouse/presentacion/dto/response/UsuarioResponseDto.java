@@ -6,8 +6,8 @@ import java.util.UUID;
 public class UsuarioResponseDto {
 
 	private UUID usuarioId;
-	private UUID negocioId;
-	private UUID rolId;
+	private Integer negocioId;
+	private Integer rolId;
 	private String nombres;
 	private String apellidos;
 	private String email;
@@ -25,19 +25,19 @@ public class UsuarioResponseDto {
 		this.usuarioId = usuarioId;
 	}
 
-	public UUID getNegocioId() {
+	public Integer getNegocioId() {
 		return negocioId;
 	}
 
-	public void setNegocioId(UUID negocioId) {
+	public void setNegocioId(Integer negocioId) {
 		this.negocioId = negocioId;
 	}
 
-	public UUID getRolId() {
+	public Integer getRolId() {
 		return rolId;
 	}
 
-	public void setRolId(UUID rolId) {
+	public void setRolId(Integer rolId) {
 		this.rolId = rolId;
 	}
 

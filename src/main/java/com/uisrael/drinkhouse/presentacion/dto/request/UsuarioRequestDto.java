@@ -1,18 +1,18 @@
 package com.uisrael.drinkhouse.presentacion.dto.request;
 
-import java.util.UUID;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
 
 @Data
 public class UsuarioRequestDto {
 
-    @NotBlank
-    private UUID negocioId;
+    @NotNull
+    private Integer negocioId;
 
-    @NotBlank
-    private UUID rolId;
+    @NotNull
+    private Integer rolId;
 
     @NotBlank
     private String nombres;

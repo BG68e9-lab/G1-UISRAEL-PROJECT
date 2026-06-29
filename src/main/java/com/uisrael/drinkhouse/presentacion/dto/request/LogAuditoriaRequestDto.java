@@ -9,7 +9,7 @@ import lombok.Data;
 public class LogAuditoriaRequestDto {
 
     @NotNull
-    private UUID negocioId;
+    private Integer negocioId;
 
     @NotNull
     private UUID usuarioId;

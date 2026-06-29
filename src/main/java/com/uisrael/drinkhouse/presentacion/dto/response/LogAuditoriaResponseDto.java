@@ -6,7 +6,7 @@ import java.util.UUID;
 public class LogAuditoriaResponseDto {
 
 	private Long logId;
-	private UUID negocioId;
+	private Integer negocioId;
 	private UUID usuarioId;
 	private String entidad;
 	private String entidadId;
@@ -22,11 +22,11 @@ public class LogAuditoriaResponseDto {
 		this.logId = logId;
 	}
 
-	public UUID getNegocioId() {
+	public Integer getNegocioId() {
 		return negocioId;
 	}
 
-	public void setNegocioId(UUID negocioId) {
+	public void setNegocioId(Integer negocioId) {
 		this.negocioId = negocioId;
 	}
 
