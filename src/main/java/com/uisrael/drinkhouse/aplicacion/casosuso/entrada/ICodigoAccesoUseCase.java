@@ -1,16 +1,15 @@
-package com.uisrael.drinkhouse.dominio.repositorios;
+package com.uisrael.drinkhouse.aplicacion.casosuso.entrada;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.uisrael.drinkhouse.dominio.entidades.CodigoAcceso;
 
-public interface ICodigoAcceso {
+public interface ICodigoAccesoUseCase {
 	
 	CodigoAcceso guardar(CodigoAcceso nuevoCodigoAcceso);
 	
-	Optional<CodigoAcceso> buscarPorId(UUID idCodigoAcceso);
+	CodigoAcceso buscarPorId(UUID idCodigoAcceso);
 	
 	List<CodigoAcceso> listarTodos();
 	

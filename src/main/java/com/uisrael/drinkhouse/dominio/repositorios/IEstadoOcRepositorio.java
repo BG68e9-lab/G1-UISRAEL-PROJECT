@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.uisrael.drinkhouse.dominio.entidades.EstadoOc;
 
-public interface IEstadoOc {
+public interface IEstadoOcRepositorio {
 	
 	EstadoOc guardar(EstadoOc nuevoEstadoOc);
 	
