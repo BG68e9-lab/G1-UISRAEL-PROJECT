@@ -15,7 +15,6 @@ public class RolRepositorioImpl implements IRolRepositorio{
 	private final IRolJpaMapper rolMapper;
 
 	public RolRepositorioImpl(IRolJpaRepositorio jpaRepositorio, IRolJpaMapper rolMapper) {
-		super();
 		this.jpaRepositorio = jpaRepositorio;
 		this.rolMapper = rolMapper;
 	}
