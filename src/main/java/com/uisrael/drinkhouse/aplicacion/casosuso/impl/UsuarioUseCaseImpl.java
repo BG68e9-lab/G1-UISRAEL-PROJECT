@@ -1,6 +1,7 @@
 package com.uisrael.drinkhouse.aplicacion.casosuso.impl;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IUsuarioUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.Usuario;
@@ -20,7 +21,7 @@ public class UsuarioUseCaseImpl implements IUsuarioUseCase{
 	}
 
 	@Override
-	public Usuario buscarPorId(Integer idUsuario) {
+	public Usuario buscarPorId(UUID idUsuario) {
 		return repositorio.buscarPorId(idUsuario)
 				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 	}
@@ -31,7 +32,7 @@ public class UsuarioUseCaseImpl implements IUsuarioUseCase{
 	}
 
 	@Override
-	public void eliminar(Integer idUsuario) {
+	public void eliminar(UUID idUsuario) {
 		repositorio.eliminar(idUsuario);
 	}
 	
