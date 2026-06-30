@@ -7,7 +7,7 @@ import com.uisrael.drinkhouse.presentacion.dto.request.CategoriaRequestDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.CategoriaResponseDto;
 
 @Mapper(componentModel = "spring")
-public interface CategoriaDtoMapper {
+public interface ICategoriaDtoMapper {
 	
 	Categoria toDomain(CategoriaRequestDto dto);
 

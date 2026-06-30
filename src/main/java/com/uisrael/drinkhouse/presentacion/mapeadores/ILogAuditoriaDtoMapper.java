@@ -7,7 +7,7 @@ import com.uisrael.drinkhouse.presentacion.dto.request.LogAuditoriaRequestDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.LogAuditoriaResponseDto;
 
 @Mapper(componentModel = "spring")
-public interface LogAuditoriaDtoMapper {
+public interface ILogAuditoriaDtoMapper {
 	
 	LogAuditoria toDomain(LogAuditoriaRequestDto dto);
 	

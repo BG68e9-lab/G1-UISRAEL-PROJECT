@@ -21,7 +21,7 @@ import com.uisrael.drinkhouse.presentacion.mapeadores.IMovimientoInventarioDtoMa
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/movimientos") // Puedes cambiarlo a "/api/movimientos-inventario" si prefieres
+@RequestMapping("/api/movimientos")
 public class MovimientoInventarioController {
 
 	private final IMovimientoInventarioUseCase movimientoUseCase;

@@ -7,9 +7,9 @@ import com.uisrael.drinkhouse.presentacion.dto.request.EstadoOcRequestDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.EstadoOcResponseDto;
 
 @Mapper(componentModel = "spring")
-public interface EstadoOcDtoMapper {
+public interface IEstadoOcDtoMapper {
 
-	EstadoOc toDOmain(EstadoOcRequestDto dto);
+	EstadoOc toDomain(EstadoOcRequestDto dto);
 
 	EstadoOcResponseDto toResponseDto(EstadoOc estadoOc);
 
