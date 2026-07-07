@@ -14,20 +14,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="tipos_movimiento")
-
+@Table(name = "tipos_movimiento")
 public class TipoMovimientoEntity {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "tipo_movimiento_id")
-	private Integer tipoMovimientoId; 
+	private Integer tipoMovimientoId;
 
 	@Column(name = "codigo", nullable = false, length = 50)
-	private String codigo; 
+	private String codigo;
 
 	@Column(name = "prefijo_codigo", nullable = false, length = 10)
-	private String prefijoCodigo; 
+	private String prefijoCodigo;
 
 	@Column(name = "descripcion", length = 255)
 	private String descripcion;

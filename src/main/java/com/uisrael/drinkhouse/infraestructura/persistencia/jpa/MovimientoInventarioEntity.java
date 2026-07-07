@@ -1,13 +1,14 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.jpa;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,29 +24,34 @@ public class MovimientoInventarioEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "movimiento_id")
-	private Long movimientoId; 
+	private Long movimientoId;
 
-	@Column(name = "negocio_id", nullable = false)
-	private Integer negocioId; 
+	@ManyToOne
+	@JoinColumn(name = "negocio_id", nullable = false)
+	private NegocioEntity negocioId;
 
-	@Column(name = "tipo_movimiento_id", nullable = false)
-	private Integer tipoMovimientoId; 
+	@ManyToOne
+	@JoinColumn(name = "tipo_movimiento_id", nullable = false)
+	private TipoMovimientoEntity tipoMovimientoId;
+	@ManyToOne
+	@JoinColumn(name = "producto_id", nullable = false)
+	private ProductoEntity productoId;
 
-	@Column(name = "producto_id", nullable = false)
-	private Long productoId;
+	@ManyToOne
+	@JoinColumn(name = "lote_id", nullable = false)
+	private LoteProductoEntity loteId;
 
-	@Column(name = "lote_id", nullable = false)
-	private Long loteId; 
+	@ManyToOne
+	@JoinColumn(name = "usuario_id", nullable = false)
+	private UsuarioEntity usuarioId;
 
 	@Column(name = "codigo_movimiento", nullable = false, length = 50)
-	private String codigoMovimiento; 
+	private String codigoMovimiento;
 
 	@Column(name = "cantidad", nullable = false, precision = 10, scale = 2)
-	private BigDecimal cantidad; 
+	private BigDecimal cantidad;
 
 	@Column(name = "precio_unitario", nullable = false, precision = 10, scale = 2)
 	private BigDecimal precioUnitario;
 
-	@Column(name = "usuario_id", nullable = false)
-	private UUID usuarioId; 
 }
