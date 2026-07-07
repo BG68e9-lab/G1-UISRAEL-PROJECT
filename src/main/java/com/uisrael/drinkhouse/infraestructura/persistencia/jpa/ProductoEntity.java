@@ -26,7 +26,6 @@ public class ProductoEntity {
 	@Column(name = "producto_id")
 	private Integer productoId;
 
-	
 	@ManyToOne
 	@JoinColumn(name = "negocio_id", nullable = false)
 	private NegocioEntity negocioId; 
