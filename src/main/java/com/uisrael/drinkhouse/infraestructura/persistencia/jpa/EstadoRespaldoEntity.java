@@ -14,19 +14,21 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table (name= "estados_respaldo")
+@Table(name = "estados_respaldo")
 public class EstadoRespaldoEntity {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "estado_respaldo_id")
 	private Integer estadoRespaldoId;
-	@Column(name = "codigo", nullable = false)
-	private String codigo;
-	@Column(name = "etiqueta", nullable = false)
-	private String etiqueta;
-	@Column(name = "icono", nullable = false)
-	private String icono;
 
+	@Column(name = "codigo", nullable = false, length = 50)
+	private String codigo;
+
+	@Column(name = "etiqueta", nullable = false, length = 100)
+	private String etiqueta;
+
+	@Column(name = "icono", nullable = false, length = 100)
+	private String icono;
 
 }

@@ -1,11 +1,12 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.jpa;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,17 +23,24 @@ public class ProveedorEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "proveedor_id")
 	private Integer proveedorId;
-	@Column(name = "negocio_id", nullable = false)
-	private Integer negocioId;
+
+	@ManyToOne
+	@JoinColumn(name = "negocio_id", nullable = false)
+	private NegocioEntity negocioId;
+
 	@Column(name = "ruc", nullable = false, length = 20)
 	private String ruc;
-	@Column(name = "razon_social", nullable = false, length = 20)
+
+	@Column(name = "razon_social", nullable = false, length = 100)
 	private String razonSocial;
-	@Column(name = "direccion", nullable = false, length = 50)
+
+	@Column(name = "direccion", nullable = false, length = 150)
 	private String direccion;
+
 	@Column(name = "telefono", nullable = false, length = 15)
 	private String telefono;
-	@Column(name = "email", nullable = false, length = 20)
+
+	@Column(name = "email", nullable = false, length = 150)
 	private String email;
 
 }
