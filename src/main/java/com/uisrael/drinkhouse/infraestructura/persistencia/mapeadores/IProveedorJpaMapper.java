@@ -11,5 +11,4 @@ public interface IProveedorJpaMapper {
 	Proveedor toDomain(ProveedorEntity proveedorEntity);
 
 	ProveedorEntity toEntity(Proveedor proveedorDomain);
-
 }

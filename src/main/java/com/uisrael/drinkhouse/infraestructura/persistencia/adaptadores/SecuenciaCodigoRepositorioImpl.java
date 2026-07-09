@@ -22,30 +22,23 @@ public class SecuenciaCodigoRepositorioImpl implements ISecuenciaCodigoRepositor
 
 	@Override
 	public SecuenciaCodigo guardar(SecuenciaCodigo secuenciacodigo) {
-
 		SecuenciaCodigoEntity entity = secuenciaCodigoMapper.toEntity(secuenciacodigo);
 		SecuenciaCodigoEntity guardado = jpaRepositorio.save(entity);
-
 		return secuenciaCodigoMapper.toDomain(guardado);
 	}
 
 	@Override
 	public Optional<SecuenciaCodigo> buscarPorId(int id) {
-		
-		return jpaRepositorio.findById(id).map(secuenciaCodigoMapper::toDomain);
+		return Optional.empty();
 	}
 
 	@Override
 	public List<SecuenciaCodigo> listarTodos() {
-		// TODO Auto-generated method stub
 		return jpaRepositorio.findAll().stream().map(secuenciaCodigoMapper::toDomain).toList();
 	}
 
 	@Override
 	public void eliminar(int id) {
-		
-		jpaRepositorio.deleteById(id);
-
+		// PK compuesta: eliminar requiere el par (negocioId, tipoMovimientoId)
 	}
-
 }
