@@ -7,9 +7,8 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.LogAuditoriaEntit
 
 @Mapper(componentModel = "spring")
 public interface ILogAuditoriaJpaMapper {
-	
-	LogAuditoria toDomain(LogAuditoriaEntity logAuditoriaEntity);
-	
-	LogAuditoriaEntity toEntity(LogAuditoria logAuditoriaDomain);
 
+	LogAuditoria toDomain(LogAuditoriaEntity logAuditoriaEntity);
+
+	LogAuditoriaEntity toEntity(LogAuditoria logAuditoriaDomain);
 }

@@ -8,13 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "proveedores")
 public class ProveedorEntity {
@@ -25,8 +21,8 @@ public class ProveedorEntity {
 	private Integer proveedorId;
 
 	@ManyToOne
-	@JoinColumn(name = "negocio_id", nullable = false)
-	private NegocioEntity negocioId;
+	@JoinColumn(name = "negocio_id")
+	private NegocioEntity fkNegocioEntity;
 
 	@Column(name = "ruc", nullable = false, length = 20)
 	private String ruc;
@@ -42,5 +38,4 @@ public class ProveedorEntity {
 
 	@Column(name = "email", nullable = false, length = 150)
 	private String email;
-
 }

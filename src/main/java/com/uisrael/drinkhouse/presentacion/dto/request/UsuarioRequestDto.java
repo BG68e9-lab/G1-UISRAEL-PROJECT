@@ -1,33 +1,26 @@
 package com.uisrael.drinkhouse.presentacion.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class UsuarioRequestDto {
 
-    @NotNull
-    private Integer negocioId;
+	@NotBlank
+	private String nombres;
 
-    @NotNull
-    private Integer rolId;
+	@NotBlank
+	private String apellidos;
 
-    @NotBlank
-    private String nombres;
+	@NotBlank
+	@Email
+	private String email;
 
-    @NotBlank
-    private String apellidos;
+	@NotBlank
+	private String passwordHash;
 
-    @NotBlank
-    @Email
-    private String email;
+	private String proveedorSso;
 
-    @NotBlank
-    private String password;
-
-    private String proveedorSso;
-
-    private String ssoSubjectId;
+	private String ssoSubjectId;
 }

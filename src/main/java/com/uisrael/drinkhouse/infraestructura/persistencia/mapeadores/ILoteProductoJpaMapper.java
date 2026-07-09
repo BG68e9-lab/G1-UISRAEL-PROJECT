@@ -11,5 +11,4 @@ public interface ILoteProductoJpaMapper {
 	LoteProducto toDomain(LoteProductoEntity loteProductoEntity);
 
 	LoteProductoEntity toEntity(LoteProducto loteProductoDomain);
-
 }

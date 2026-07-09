@@ -11,5 +11,4 @@ public interface IProductoJpaMapper {
 	Producto toDomain(ProductoEntity productoEntity);
 
 	ProductoEntity toEntity(Producto productoDomain);
-
 }

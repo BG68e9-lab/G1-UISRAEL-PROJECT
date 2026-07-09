@@ -28,21 +28,16 @@ public class ProductoRepositorioImpl implements IProductoRepositorio {
 
 	@Override
 	public Optional<Producto> buscarPorId(int id) {
-
-		return jpaRepositorio.findById(id).map(productoMapper::toDomain);
+		return jpaRepositorio.findById((long) id).map(productoMapper::toDomain);
 	}
 
 	@Override
 	public List<Producto> listarTodos() {
-
 		return jpaRepositorio.findAll().stream().map(productoMapper::toDomain).toList();
 	}
 
 	@Override
 	public void eliminar(int id) {
-
-		jpaRepositorio.deleteById(id);
-
+		jpaRepositorio.deleteById((long) id);
 	}
-
 }

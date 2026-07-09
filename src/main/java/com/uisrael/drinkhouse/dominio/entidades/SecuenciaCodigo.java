@@ -2,43 +2,20 @@ package com.uisrael.drinkhouse.dominio.entidades;
 
 public class SecuenciaCodigo {
 
-	private Integer negocioId;
-	private Integer tipoMovimientoId;
-	private Integer ultimoNumero;
+	private Long ultimoNumero;
 
-	public SecuenciaCodigo(Integer negocioId, Integer tipoMovimientoId, Integer ultimoNumero) {
+	public SecuenciaCodigo() {
+	}
 
-		this.negocioId = negocioId;
-		this.tipoMovimientoId = tipoMovimientoId;
+	public SecuenciaCodigo(Long ultimoNumero) {
 		this.ultimoNumero = ultimoNumero;
 	}
 
-	public SecuenciaCodigo() {
-
-	}
-
-	public Integer getNegocioId() {
-		return negocioId;
-	}
-
-	public void setNegocioId(Integer negocioId) {
-		this.negocioId = negocioId;
-	}
-
-	public Integer getTipoMovimientoId() {
-		return tipoMovimientoId;
-	}
-
-	public void setTipoMovimientoId(Integer tipoMovimientoId) {
-		this.tipoMovimientoId = tipoMovimientoId;
-	}
-
-	public Integer getUltimoNumero() {
+	public Long getUltimoNumero() {
 		return ultimoNumero;
 	}
 
-	public void setUltimoNumero(Integer ultimoNumero) {
+	public void setUltimoNumero(Long ultimoNumero) {
 		this.ultimoNumero = ultimoNumero;
 	}
-
 }

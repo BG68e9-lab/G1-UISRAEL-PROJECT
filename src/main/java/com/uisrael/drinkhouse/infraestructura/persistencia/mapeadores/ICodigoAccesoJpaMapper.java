@@ -7,7 +7,7 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.CodigoAccesoEntit
 
 @Mapper(componentModel = "spring")
 public interface ICodigoAccesoJpaMapper {
-	
+
 	CodigoAcceso toDomain(CodigoAccesoEntity codigoAccesoEntity);
 
 	CodigoAccesoEntity toEntity(CodigoAcceso codigoAccesoDomain);

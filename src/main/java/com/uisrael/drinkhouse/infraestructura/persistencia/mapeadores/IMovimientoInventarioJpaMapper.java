@@ -11,5 +11,4 @@ public interface IMovimientoInventarioJpaMapper {
 	MovimientoInventario toDomain(MovimientoInventarioEntity movimientoInventarioEntity);
 
 	MovimientoInventarioEntity toEntity(MovimientoInventario movimientoInventarioDomain);
-
 }
