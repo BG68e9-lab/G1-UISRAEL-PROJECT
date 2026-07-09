@@ -4,10 +4,8 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public class Usuario {
-	
+
 	private UUID usuarioId;
-	private Integer negocioId;
-	private Integer rolId;
 	private String nombres;
 	private String apellidos;
 	private String email;
@@ -18,18 +16,14 @@ public class Usuario {
 	private OffsetDateTime activadoEn;
 	private OffsetDateTime creadoEn;
 	private OffsetDateTime actualizadoEn;
-	
-	public Usuario() {
 
+	public Usuario() {
 	}
 
-	public Usuario(UUID usuarioId, Integer negocioId, Integer rolId, String nombres, String apellidos, String email,
+	public Usuario(UUID usuarioId, String nombres, String apellidos, String email,
 			String passwordHash, String proveedorSso, String ssoSubjectId, String estadoCuenta,
 			OffsetDateTime activadoEn, OffsetDateTime creadoEn, OffsetDateTime actualizadoEn) {
-		super();
 		this.usuarioId = usuarioId;
-		this.negocioId = negocioId;
-		this.rolId = rolId;
 		this.nombres = nombres;
 		this.apellidos = apellidos;
 		this.email = email;
@@ -42,108 +36,36 @@ public class Usuario {
 		this.actualizadoEn = actualizadoEn;
 	}
 
-	public UUID getUsuarioId() {
-		return usuarioId;
-	}
+	public UUID getUsuarioId() { return usuarioId; }
+	public void setUsuarioId(UUID usuarioId) { this.usuarioId = usuarioId; }
 
-	public void setUsuarioId(UUID usuarioId) {
-		this.usuarioId = usuarioId;
-	}
+	public String getNombres() { return nombres; }
+	public void setNombres(String nombres) { this.nombres = nombres; }
 
-	public Integer getNegocioId() {
-		return negocioId;
-	}
+	public String getApellidos() { return apellidos; }
+	public void setApellidos(String apellidos) { this.apellidos = apellidos; }
 
-	public void setNegocioId(Integer negocioId) {
-		this.negocioId = negocioId;
-	}
+	public String getEmail() { return email; }
+	public void setEmail(String email) { this.email = email; }
 
-	public Integer getRolId() {
-		return rolId;
-	}
+	public String getPasswordHash() { return passwordHash; }
+	public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
-	public void setRolId(Integer rolId) {
-		this.rolId = rolId;
-	}
+	public String getProveedorSso() { return proveedorSso; }
+	public void setProveedorSso(String proveedorSso) { this.proveedorSso = proveedorSso; }
 
-	public String getNombres() {
-		return nombres;
-	}
+	public String getSsoSubjectId() { return ssoSubjectId; }
+	public void setSsoSubjectId(String ssoSubjectId) { this.ssoSubjectId = ssoSubjectId; }
 
-	public void setNombres(String nombres) {
-		this.nombres = nombres;
-	}
+	public String getEstadoCuenta() { return estadoCuenta; }
+	public void setEstadoCuenta(String estadoCuenta) { this.estadoCuenta = estadoCuenta; }
 
-	public String getApellidos() {
-		return apellidos;
-	}
+	public OffsetDateTime getActivadoEn() { return activadoEn; }
+	public void setActivadoEn(OffsetDateTime activadoEn) { this.activadoEn = activadoEn; }
 
-	public void setApellidos(String apellidos) {
-		this.apellidos = apellidos;
-	}
+	public OffsetDateTime getCreadoEn() { return creadoEn; }
+	public void setCreadoEn(OffsetDateTime creadoEn) { this.creadoEn = creadoEn; }
 
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPasswordHash() {
-		return passwordHash;
-	}
-
-	public void setPasswordHash(String passwordHash) {
-		this.passwordHash = passwordHash;
-	}
-
-	public String getProveedorSso() {
-		return proveedorSso;
-	}
-
-	public void setProveedorSso(String proveedorSso) {
-		this.proveedorSso = proveedorSso;
-	}
-
-	public String getSsoSubjectId() {
-		return ssoSubjectId;
-	}
-
-	public void setSsoSubjectId(String ssoSubjectId) {
-		this.ssoSubjectId = ssoSubjectId;
-	}
-
-	public String getEstadoCuenta() {
-		return estadoCuenta;
-	}
-
-	public void setEstadoCuenta(String estadoCuenta) {
-		this.estadoCuenta = estadoCuenta;
-	}
-
-	public OffsetDateTime getActivadoEn() {
-		return activadoEn;
-	}
-
-	public void setActivadoEn(OffsetDateTime activadoEn) {
-		this.activadoEn = activadoEn;
-	}
-
-	public OffsetDateTime getCreadoEn() {
-		return creadoEn;
-	}
-
-	public void setCreadoEn(OffsetDateTime creadoEn) {
-		this.creadoEn = creadoEn;
-	}
-
-	public OffsetDateTime getActualizadoEn() {
-		return actualizadoEn;
-	}
-
-	public void setActualizadoEn(OffsetDateTime actualizadoEn) {
-		this.actualizadoEn = actualizadoEn;
-	}
-
+	public OffsetDateTime getActualizadoEn() { return actualizadoEn; }
+	public void setActualizadoEn(OffsetDateTime actualizadoEn) { this.actualizadoEn = actualizadoEn; }
 }

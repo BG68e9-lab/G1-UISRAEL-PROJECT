@@ -7,9 +7,8 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.UsuarioEntity;
 
 @Mapper(componentModel = "spring")
 public interface IUsuarioJpaMapper {
-	
-	Usuario toDomain(UsuarioEntity usuarioEntity);
-	
-	UsuarioEntity toEntity(Usuario usuarioDomain);
 
+	Usuario toDomain(UsuarioEntity usuarioEntity);
+
+	UsuarioEntity toEntity(Usuario usuarioDomain);
 }

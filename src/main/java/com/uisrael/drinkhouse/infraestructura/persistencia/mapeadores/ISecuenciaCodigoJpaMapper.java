@@ -11,5 +11,4 @@ public interface ISecuenciaCodigoJpaMapper {
 	SecuenciaCodigo toDomain(SecuenciaCodigoEntity secuenciaCodigoEntity);
 
 	SecuenciaCodigoEntity toEntity(SecuenciaCodigo secuenciaCodigoDomain);
-
 }

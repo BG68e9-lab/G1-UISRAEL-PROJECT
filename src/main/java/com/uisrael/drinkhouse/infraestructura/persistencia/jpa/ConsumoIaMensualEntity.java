@@ -1,5 +1,7 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.jpa;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 import jakarta.persistence.Column;
@@ -7,44 +9,37 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "consumos_ia_mensual")
+@Table(name = "consumo_ia_mensual")
 public class ConsumoIaMensualEntity {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "consumo_ia_mensual_id")
-	private Long consumoIaMensualId;
-	
-	@Column(name = "mes_anio", nullable = false, length = 7)
-	private String mesAnio;
-	
-	@Column(name = "tokens_consumidos", nullable = false)
-	private Long tokensConsumidos;
-	
-	@Column(name = "costo_estimado", nullable = false)
-	private Double costoEstimado;
-	
-	@Column(name = "actualizado_en", nullable = false)
-	private OffsetDateTime actualizadoEn;
-	
-	@PrePersist
-	protected void onCreate() {
-		this.actualizadoEn = OffsetDateTime.now();
-	}
+	@Column(name = "consumo_ia_id")
+	private Long consumoIaId;
 
-	@PreUpdate
-	protected void onUpdate() {
-		this.actualizadoEn = OffsetDateTime.now();
-	}
+	@ManyToOne
+	@JoinColumn(name = "negocio_id")
+	private NegocioEntity fkNegocioEntity;
+
+	@Column(name = "periodo", nullable = false)
+	private LocalDate periodo;
+
+	@Column(name = "total_tokens_input", nullable = false)
+	private Long totalTokensInput;
+
+	@Column(name = "total_tokens_output", nullable = false)
+	private Long totalTokensOutput;
+
+	@Column(name = "costo_estimado_usd", nullable = false, precision = 12, scale = 4)
+	private BigDecimal costoEstimadoUsd;
+
+	@Column(name = "cerrado_en")
+	private OffsetDateTime cerradoEn;
 }
