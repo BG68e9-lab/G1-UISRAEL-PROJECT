@@ -2,7 +2,6 @@ package com.uisrael.drinkhouse.infraestructura.persistencia.jpa;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

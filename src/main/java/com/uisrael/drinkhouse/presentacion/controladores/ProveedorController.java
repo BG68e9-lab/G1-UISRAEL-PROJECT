@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IProveedorUseCase;
 import com.uisrael.drinkhouse.presentacion.dto.request.ProveedorRequestDto;
-import com.uisrael.drinkhouse.presentacion.dto.response.ProductoResponseDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ProveedorResponseDto;
 import com.uisrael.drinkhouse.presentacion.mapeadores.IProveedorDtoMapper;
 
