@@ -1,11 +1,11 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
 public class Rol {
-	
+
 	private Integer rolId;
 	private String nombre;
 	private String descripcion;
-	
+
 	public Rol() {
 
 	}
