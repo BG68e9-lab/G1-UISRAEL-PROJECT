@@ -10,8 +10,8 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.UsuarioEntity;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IUsuarioJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IUsuarioJpaRepositorio;
 
-public class UsuarioRepositorioImpl implements IUsuarioRepositorio{
-	
+public class UsuarioRepositorioImpl implements IUsuarioRepositorio {
+
 	private final IUsuarioJpaRepositorio jpaRepositorio;
 	private final IUsuarioJpaMapper usuarioMapper;
 
