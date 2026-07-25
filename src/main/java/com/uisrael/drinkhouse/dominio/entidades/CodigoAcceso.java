@@ -16,8 +16,8 @@ public class CodigoAcceso {
 	public CodigoAcceso() {
 	}
 
-	public CodigoAcceso(UUID codigoAccesoId, String tipoCodigo, String codigoHash,
-			OffsetDateTime expiraEn, Boolean usado, OffsetDateTime usadoEn, OffsetDateTime creadoEn) {
+	public CodigoAcceso(UUID codigoAccesoId, String tipoCodigo, String codigoHash, OffsetDateTime expiraEn,
+			Boolean usado, OffsetDateTime usadoEn, OffsetDateTime creadoEn) {
 		this.codigoAccesoId = codigoAccesoId;
 		this.tipoCodigo = tipoCodigo;
 		this.codigoHash = codigoHash;
@@ -27,24 +27,59 @@ public class CodigoAcceso {
 		this.creadoEn = creadoEn;
 	}
 
-	public UUID getCodigoAccesoId() { return codigoAccesoId; }
-	public void setCodigoAccesoId(UUID codigoAccesoId) { this.codigoAccesoId = codigoAccesoId; }
+	public UUID getCodigoAccesoId() {
+		return codigoAccesoId;
+	}
 
-	public String getTipoCodigo() { return tipoCodigo; }
-	public void setTipoCodigo(String tipoCodigo) { this.tipoCodigo = tipoCodigo; }
+	public void setCodigoAccesoId(UUID codigoAccesoId) {
+		this.codigoAccesoId = codigoAccesoId;
+	}
 
-	public String getCodigoHash() { return codigoHash; }
-	public void setCodigoHash(String codigoHash) { this.codigoHash = codigoHash; }
+	public String getTipoCodigo() {
+		return tipoCodigo;
+	}
 
-	public OffsetDateTime getExpiraEn() { return expiraEn; }
-	public void setExpiraEn(OffsetDateTime expiraEn) { this.expiraEn = expiraEn; }
+	public void setTipoCodigo(String tipoCodigo) {
+		this.tipoCodigo = tipoCodigo;
+	}
 
-	public Boolean getUsado() { return usado; }
-	public void setUsado(Boolean usado) { this.usado = usado; }
+	public String getCodigoHash() {
+		return codigoHash;
+	}
 
-	public OffsetDateTime getUsadoEn() { return usadoEn; }
-	public void setUsadoEn(OffsetDateTime usadoEn) { this.usadoEn = usadoEn; }
+	public void setCodigoHash(String codigoHash) {
+		this.codigoHash = codigoHash;
+	}
 
-	public OffsetDateTime getCreadoEn() { return creadoEn; }
-	public void setCreadoEn(OffsetDateTime creadoEn) { this.creadoEn = creadoEn; }
+	public OffsetDateTime getExpiraEn() {
+		return expiraEn;
+	}
+
+	public void setExpiraEn(OffsetDateTime expiraEn) {
+		this.expiraEn = expiraEn;
+	}
+
+	public Boolean getUsado() {
+		return usado;
+	}
+
+	public void setUsado(Boolean usado) {
+		this.usado = usado;
+	}
+
+	public OffsetDateTime getUsadoEn() {
+		return usadoEn;
+	}
+
+	public void setUsadoEn(OffsetDateTime usadoEn) {
+		this.usadoEn = usadoEn;
+	}
+
+	public OffsetDateTime getCreadoEn() {
+		return creadoEn;
+	}
+
+	public void setCreadoEn(OffsetDateTime creadoEn) {
+		this.creadoEn = creadoEn;
+	}
 }

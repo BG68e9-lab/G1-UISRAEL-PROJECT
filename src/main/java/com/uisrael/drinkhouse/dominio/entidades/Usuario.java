@@ -20,9 +20,9 @@ public class Usuario {
 	public Usuario() {
 	}
 
-	public Usuario(UUID usuarioId, String nombres, String apellidos, String email,
-			String passwordHash, String proveedorSso, String ssoSubjectId, String estadoCuenta,
-			OffsetDateTime activadoEn, OffsetDateTime creadoEn, OffsetDateTime actualizadoEn) {
+	public Usuario(UUID usuarioId, String nombres, String apellidos, String email, String passwordHash,
+			String proveedorSso, String ssoSubjectId, String estadoCuenta, OffsetDateTime activadoEn,
+			OffsetDateTime creadoEn, OffsetDateTime actualizadoEn) {
 		this.usuarioId = usuarioId;
 		this.nombres = nombres;
 		this.apellidos = apellidos;
@@ -36,36 +36,91 @@ public class Usuario {
 		this.actualizadoEn = actualizadoEn;
 	}
 
-	public UUID getUsuarioId() { return usuarioId; }
-	public void setUsuarioId(UUID usuarioId) { this.usuarioId = usuarioId; }
+	public UUID getUsuarioId() {
+		return usuarioId;
+	}
 
-	public String getNombres() { return nombres; }
-	public void setNombres(String nombres) { this.nombres = nombres; }
+	public void setUsuarioId(UUID usuarioId) {
+		this.usuarioId = usuarioId;
+	}
 
-	public String getApellidos() { return apellidos; }
-	public void setApellidos(String apellidos) { this.apellidos = apellidos; }
+	public String getNombres() {
+		return nombres;
+	}
 
-	public String getEmail() { return email; }
-	public void setEmail(String email) { this.email = email; }
+	public void setNombres(String nombres) {
+		this.nombres = nombres;
+	}
 
-	public String getPasswordHash() { return passwordHash; }
-	public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+	public String getApellidos() {
+		return apellidos;
+	}
 
-	public String getProveedorSso() { return proveedorSso; }
-	public void setProveedorSso(String proveedorSso) { this.proveedorSso = proveedorSso; }
+	public void setApellidos(String apellidos) {
+		this.apellidos = apellidos;
+	}
 
-	public String getSsoSubjectId() { return ssoSubjectId; }
-	public void setSsoSubjectId(String ssoSubjectId) { this.ssoSubjectId = ssoSubjectId; }
+	public String getEmail() {
+		return email;
+	}
 
-	public String getEstadoCuenta() { return estadoCuenta; }
-	public void setEstadoCuenta(String estadoCuenta) { this.estadoCuenta = estadoCuenta; }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-	public OffsetDateTime getActivadoEn() { return activadoEn; }
-	public void setActivadoEn(OffsetDateTime activadoEn) { this.activadoEn = activadoEn; }
+	public String getPasswordHash() {
+		return passwordHash;
+	}
 
-	public OffsetDateTime getCreadoEn() { return creadoEn; }
-	public void setCreadoEn(OffsetDateTime creadoEn) { this.creadoEn = creadoEn; }
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
+	}
 
-	public OffsetDateTime getActualizadoEn() { return actualizadoEn; }
-	public void setActualizadoEn(OffsetDateTime actualizadoEn) { this.actualizadoEn = actualizadoEn; }
+	public String getProveedorSso() {
+		return proveedorSso;
+	}
+
+	public void setProveedorSso(String proveedorSso) {
+		this.proveedorSso = proveedorSso;
+	}
+
+	public String getSsoSubjectId() {
+		return ssoSubjectId;
+	}
+
+	public void setSsoSubjectId(String ssoSubjectId) {
+		this.ssoSubjectId = ssoSubjectId;
+	}
+
+	public String getEstadoCuenta() {
+		return estadoCuenta;
+	}
+
+	public void setEstadoCuenta(String estadoCuenta) {
+		this.estadoCuenta = estadoCuenta;
+	}
+
+	public OffsetDateTime getActivadoEn() {
+		return activadoEn;
+	}
+
+	public void setActivadoEn(OffsetDateTime activadoEn) {
+		this.activadoEn = activadoEn;
+	}
+
+	public OffsetDateTime getCreadoEn() {
+		return creadoEn;
+	}
+
+	public void setCreadoEn(OffsetDateTime creadoEn) {
+		this.creadoEn = creadoEn;
+	}
+
+	public OffsetDateTime getActualizadoEn() {
+		return actualizadoEn;
+	}
+
+	public void setActualizadoEn(OffsetDateTime actualizadoEn) {
+		this.actualizadoEn = actualizadoEn;
+	}
 }

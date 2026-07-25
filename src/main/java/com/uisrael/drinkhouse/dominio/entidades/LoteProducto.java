@@ -18,9 +18,8 @@ public class LoteProducto {
 	public LoteProducto() {
 	}
 
-	public LoteProducto(Long loteId, String codigoEntrada, BigDecimal cantidadInicial,
-			BigDecimal cantidadDisponible, BigDecimal precioCosto,
-			OffsetDateTime fechaIngreso, LocalDate fechaVencimiento) {
+	public LoteProducto(Long loteId, String codigoEntrada, BigDecimal cantidadInicial, BigDecimal cantidadDisponible,
+			BigDecimal precioCosto, OffsetDateTime fechaIngreso, LocalDate fechaVencimiento) {
 		this.loteId = loteId;
 		this.codigoEntrada = codigoEntrada;
 		this.cantidadInicial = cantidadInicial;
@@ -30,24 +29,59 @@ public class LoteProducto {
 		this.fechaVencimiento = fechaVencimiento;
 	}
 
-	public Long getLoteId() { return loteId; }
-	public void setLoteId(Long loteId) { this.loteId = loteId; }
+	public Long getLoteId() {
+		return loteId;
+	}
 
-	public String getCodigoEntrada() { return codigoEntrada; }
-	public void setCodigoEntrada(String codigoEntrada) { this.codigoEntrada = codigoEntrada; }
+	public void setLoteId(Long loteId) {
+		this.loteId = loteId;
+	}
 
-	public BigDecimal getCantidadInicial() { return cantidadInicial; }
-	public void setCantidadInicial(BigDecimal cantidadInicial) { this.cantidadInicial = cantidadInicial; }
+	public String getCodigoEntrada() {
+		return codigoEntrada;
+	}
 
-	public BigDecimal getCantidadDisponible() { return cantidadDisponible; }
-	public void setCantidadDisponible(BigDecimal cantidadDisponible) { this.cantidadDisponible = cantidadDisponible; }
+	public void setCodigoEntrada(String codigoEntrada) {
+		this.codigoEntrada = codigoEntrada;
+	}
 
-	public BigDecimal getPrecioCosto() { return precioCosto; }
-	public void setPrecioCosto(BigDecimal precioCosto) { this.precioCosto = precioCosto; }
+	public BigDecimal getCantidadInicial() {
+		return cantidadInicial;
+	}
 
-	public OffsetDateTime getFechaIngreso() { return fechaIngreso; }
-	public void setFechaIngreso(OffsetDateTime fechaIngreso) { this.fechaIngreso = fechaIngreso; }
+	public void setCantidadInicial(BigDecimal cantidadInicial) {
+		this.cantidadInicial = cantidadInicial;
+	}
 
-	public LocalDate getFechaVencimiento() { return fechaVencimiento; }
-	public void setFechaVencimiento(LocalDate fechaVencimiento) { this.fechaVencimiento = fechaVencimiento; }
+	public BigDecimal getCantidadDisponible() {
+		return cantidadDisponible;
+	}
+
+	public void setCantidadDisponible(BigDecimal cantidadDisponible) {
+		this.cantidadDisponible = cantidadDisponible;
+	}
+
+	public BigDecimal getPrecioCosto() {
+		return precioCosto;
+	}
+
+	public void setPrecioCosto(BigDecimal precioCosto) {
+		this.precioCosto = precioCosto;
+	}
+
+	public OffsetDateTime getFechaIngreso() {
+		return fechaIngreso;
+	}
+
+	public void setFechaIngreso(OffsetDateTime fechaIngreso) {
+		this.fechaIngreso = fechaIngreso;
+	}
+
+	public LocalDate getFechaVencimiento() {
+		return fechaVencimiento;
+	}
+
+	public void setFechaVencimiento(LocalDate fechaVencimiento) {
+		this.fechaVencimiento = fechaVencimiento;
+	}
 }
