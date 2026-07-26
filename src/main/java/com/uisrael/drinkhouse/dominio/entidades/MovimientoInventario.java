@@ -12,23 +12,43 @@ public class MovimientoInventario {
 	public MovimientoInventario() {
 	}
 
-	public MovimientoInventario(Long movimientoId, String codigoMovimiento,
-			BigDecimal cantidad, BigDecimal precioUnitario) {
+	public MovimientoInventario(Long movimientoId, String codigoMovimiento, BigDecimal cantidad,
+			BigDecimal precioUnitario) {
 		this.movimientoId = movimientoId;
 		this.codigoMovimiento = codigoMovimiento;
 		this.cantidad = cantidad;
 		this.precioUnitario = precioUnitario;
 	}
 
-	public Long getMovimientoId() { return movimientoId; }
-	public void setMovimientoId(Long movimientoId) { this.movimientoId = movimientoId; }
+	public Long getMovimientoId() {
+		return movimientoId;
+	}
 
-	public String getCodigoMovimiento() { return codigoMovimiento; }
-	public void setCodigoMovimiento(String codigoMovimiento) { this.codigoMovimiento = codigoMovimiento; }
+	public void setMovimientoId(Long movimientoId) {
+		this.movimientoId = movimientoId;
+	}
 
-	public BigDecimal getCantidad() { return cantidad; }
-	public void setCantidad(BigDecimal cantidad) { this.cantidad = cantidad; }
+	public String getCodigoMovimiento() {
+		return codigoMovimiento;
+	}
 
-	public BigDecimal getPrecioUnitario() { return precioUnitario; }
-	public void setPrecioUnitario(BigDecimal precioUnitario) { this.precioUnitario = precioUnitario; }
+	public void setCodigoMovimiento(String codigoMovimiento) {
+		this.codigoMovimiento = codigoMovimiento;
+	}
+
+	public BigDecimal getCantidad() {
+		return cantidad;
+	}
+
+	public void setCantidad(BigDecimal cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	public BigDecimal getPrecioUnitario() {
+		return precioUnitario;
+	}
+
+	public void setPrecioUnitario(BigDecimal precioUnitario) {
+		this.precioUnitario = precioUnitario;
+	}
 }
