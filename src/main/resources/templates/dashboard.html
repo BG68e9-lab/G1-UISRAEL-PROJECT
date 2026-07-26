@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DrinkHouse</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-house-door"></i> DrinkHouse
+                </a>
+                <div class="navbar-nav ms-auto">
+                    <span class="navbar-text text-white me-3">
+                        Bienvenido: <span th:text="${username}">Usuario</span>
+                    </span>
+                    <form method="post" action="/logout" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h1><i class="bi bi-speedometer2"></i> Dashboard Principal</h1>
+                <p class="text-muted">Sistema de gestión DrinkHouse - Interfaz Web</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 th:text="${totalProducts}">0</h4>
+                                <p>Productos</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-box fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 th:text="${totalCategories}">5</h4>
+                                <p>Categorías</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-tags fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 th:text="${totalProviders}">1</h4>
+                                <p>Proveedores</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-people fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 th:text="${pendingOrders}">0</h4>
+                                <p>Órdenes Pendientes</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-clock fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="alert alert-success" role="alert">
+                    <i class="bi bi-check-circle"></i>
+                    <strong>¡Autenticación exitosa!</strong>
+                    Has iniciado sesión correctamente en DrinkHouse Web UI.
+                    <br>
+                    <small>Rol: <span th:text="${authorities}">ADMIN</span></small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h3>Acciones Rápidas</h3>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="bi bi-tags fs-1 text-primary"></i>
+                                <h5 class="card-title mt-2">Gestión de Categorías</h5>
+                                <p class="card-text">Administrar categorías de productos</p>
+                                <a href="/categorias" class="btn btn-primary">
+                                    <i class="bi bi-arrow-right"></i> Ir a Categorías
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="bi bi-box fs-1 text-success"></i>
+                                <h5 class="card-title mt-2">Gestión de Productos</h5>
+                                <p class="card-text">Administrar productos del inventario</p>
+                                <a href="/productos" class="btn btn-success">
+                                    <i class="bi bi-arrow-right"></i> Ir a Productos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="bi bi-people fs-1 text-info"></i>
+                                <h5 class="card-title mt-2">Gestión de Proveedores</h5>
+                                <p class="card-text">Administrar proveedores</p>
+                                <a href="/proveedores" class="btn btn-info">
+                                    <i class="bi bi-arrow-right"></i> Ir a Proveedores
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

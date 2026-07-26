@@ -1,0 +1,475 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
+<head>
+    <title>Gestión de Usuarios - Drinkhouse</title>
+</head>
+<body>
+<div th:fragment="content">
+    <!-- Page Title -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="bi bi-people me-2"></i>Gestión de Usuarios
+        </h1>
+        
+        <!-- Create User Button (ADMIN only) -->
+        <div th:if="${#lists.contains(session.userRoles, 'ADMIN')}">
+            <a th:href="@{/usuarios/new}" class="btn btn-primary">
+                <i class="bi bi-person-plus me-1"></i>
+                <span class="d-none d-sm-inline">Crear Usuario</span>
+                <span class="d-sm-none">Crear</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Filter Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h6 class="card-title mb-0">
+                <i class="bi bi-search me-2"></i>Filtros de Búsqueda
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="get" th:action="@{/usuarios}" class="row g-3">
+                <div class="col-md-3">
+                    <label for="nombres" class="form-label">Nombres</label>
+                    <input type="text" 
+                           id="nombres" 
+                           name="nombres" 
+                           class="form-control" 
+                           th:value="${filterNombres}"
+                           placeholder="Buscar por nombres">
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           class="form-control" 
+                           th:value="${filterEmail}"
+                           placeholder="Buscar por email">
+                </div>
+                
+                <div class="col-md-2">
+                    <label for="estadoCuenta" class="form-label">Estado</label>
+                    <select id="estadoCuenta" name="estadoCuenta" class="form-select">
+                        <option value="">Todos</option>
+                        <option th:value="ACTIVO" th:selected="${filterEstadoCuenta == 'ACTIVO'}">ACTIVO</option>
+                        <option th:value="INACTIVO" th:selected="${filterEstadoCuenta == 'INACTIVO'}">INACTIVO</option>
+                        <option th:value="PENDIENTE" th:selected="${filterEstadoCuenta == 'PENDIENTE'}">PENDIENTE</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2">
+                    <label for="role" class="form-label">Rol</label>
+                    <select id="role" name="role" class="form-select">
+                        <option value="">Todos los roles</option>
+                        <option th:each="role : ${roles}" 
+                                th:value="${role.nombre}"
+                                th:text="${role.nombre}"
+                                th:selected="${role.nombre == filterRole}">
+                            ADMIN
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end">
+                    <div class="btn-group w-100" role="group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i>Buscar
+                        </button>
+                        <a th:href="@{/usuarios}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Users List Card -->
+    <div class="card">
+        <div class="card-header bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-list-ul me-2"></i>Lista de Usuarios
+                        <span th:if="${filterEstadoCuenta}" class="badge bg-info ms-2" th:text="${filterEstadoCuenta}">ACTIVO</span>
+                    </h5>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge bg-secondary" th:text="${totalElements + ' total'}">0 total</span>
+                    <span th:if="${activeCount > 0}" class="badge bg-success ms-1" th:text="${activeCount + ' activos'}">15 activos</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <!-- Users Table -->
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="px-3">ID</th>
+                            <th scope="col">Nombres</th>
+                            <th scope="col">Email</th>
+                            <th scope="col" class="text-center">Estado</th>
+                            <th scope="col" class="d-none d-md-table-cell">Roles</th>
+                            <th scope="col" class="d-none d-lg-table-cell">Autenticación</th>
+                            <th scope="col" class="d-none d-xl-table-cell">Último Acceso</th>
+                            <th scope="col" class="text-center" style="width: 120px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- User Rows -->
+                        <tr th:each="user : ${users}" th:object="${user}">
+                            <td class="px-3">
+                                <span class="badge bg-light text-dark" th:text="*{usuarioId}">1</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="bi bi-person-circle text-muted" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                    <div>
+                                        <strong th:text="*{nombres + ' ' + apellidos}">Juan Pérez</strong>
+                                        <br>
+                                        <small class="text-muted" th:text="'ID: ' + *{usuarioId}">ID: 1</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <a th:href="'mailto:' + *{email}" 
+                                   class="text-decoration-none" 
+                                   th:text="*{email}">
+                                    usuario@email.com
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <span th:switch="*{estadoCuenta}"
+                                      th:class="'badge ' + 
+                                              (*{estadoCuenta} == 'ACTIVO' ? 'bg-success' :
+                                               *{estadoCuenta} == 'INACTIVO' ? 'bg-danger' :
+                                               'bg-warning text-dark')">
+                                    <span th:case="'ACTIVO'">
+                                        <i class="bi bi-check-circle me-1"></i>ACTIVO
+                                    </span>
+                                    <span th:case="'INACTIVO'">
+                                        <i class="bi bi-x-circle me-1"></i>INACTIVO
+                                    </span>
+                                    <span th:case="'PENDIENTE'">
+                                        <i class="bi bi-clock me-1"></i>PENDIENTE
+                                    </span>
+                                </span>
+                            </td>
+                            <td class="d-none d-md-table-cell">
+                                <div th:if="*{roles}" class="d-flex flex-wrap gap-1">
+                                    <span th:each="role : *{roles}" 
+                                          th:class="'badge ' + 
+                                                   (${role} == 'ADMIN' ? 'bg-primary' :
+                                                    ${role} == 'EMPLEADO' ? 'bg-secondary' :
+                                                    'bg-info')"
+                                          th:text="${role}">
+                                        ADMIN
+                                    </span>
+                                </div>
+                                <span th:unless="*{roles}" class="text-muted">Sin roles</span>
+                            </td>
+                            <td class="d-none d-lg-table-cell">
+                                <div>
+                                    <span th:switch="*{metodoAutenticacion}"
+                                          th:class="'badge ' + 
+                                                   (*{metodoAutenticacion} == 'LOCAL' ? 'bg-success' : 'bg-info')">
+                                        <span th:case="'LOCAL'">
+                                            <i class="bi bi-shield-lock me-1"></i>LOCAL
+                                        </span>
+                                        <span th:case="'SSO'">
+                                            <i class="bi bi-cloud me-1"></i>SSO
+                                        </span>
+                                    </span>
+                                    <div th:if="*{metodoAutenticacion == 'SSO' and ssoProvider}">
+                                        <small class="text-muted" th:text="*{ssoProvider}">Google</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="d-none d-xl-table-cell text-muted">
+                                <small th:text="*{ultimoAcceso != null ? #temporals.format(ultimoAcceso, 'dd/MM/yyyy HH:mm') : 'Nunca'}">
+                                    01/01/2024 10:00
+                                </small>
+                            </td>
+                            <td class="text-center">
+                                <!-- Action Buttons (ADMIN only) -->
+                                <div th:if="${#lists.contains(session.userRoles, 'ADMIN')}" 
+                                     class="btn-group" role="group" aria-label="Acciones">
+                                    
+                                    <!-- Edit Button -->
+                                    <a th:href="@{/usuarios/{id}/edit(id=*{usuarioId})}" 
+                                       class="btn btn-outline-primary btn-sm" 
+                                       title="Editar usuario"
+                                       data-bs-toggle="tooltip">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    
+                                    <!-- Roles Button -->
+                                    <a th:href="@{/usuarios/{id}/roles(id=*{usuarioId})}" 
+                                       class="btn btn-outline-info btn-sm" 
+                                       title="Gestionar roles"
+                                       data-bs-toggle="tooltip">
+                                        <i class="bi bi-person-gear"></i>
+                                    </a>
+                                    
+                                    <!-- Status Toggle Button -->
+                                    <button type="button" 
+                                            class="btn btn-outline-warning btn-sm" 
+                                            data-bs-toggle="modal"
+                                            th:data-bs-target="'#statusModal-' + *{usuarioId}"
+                                            aria-label="Cambiar estado">
+                                        <i th:class="*{estadoCuenta == 'ACTIVO'} ? 'bi bi-pause' : 'bi bi-play'"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- View Only for non-ADMIN -->
+                                <div th:unless="${#lists.contains(session.userRoles, 'ADMIN')}">
+                                    <span class="badge bg-secondary">Solo lectura</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Empty State -->
+                        <tr th:if="${#lists.isEmpty(users)}">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <div>
+                                    <i class="bi bi-people" style="font-size: 3rem; opacity: 0.3;"></i>
+                                    <p class="mt-2 mb-1">
+                                        <span th:if="${filterEstadoCuenta or filterRole or filterNombres or filterEmail}">
+                                            No se encontraron usuarios con los filtros aplicados
+                                        </span>
+                                        <span th:unless="${filterEstadoCuenta or filterRole or filterNombres or filterEmail}">
+                                            No hay usuarios registrados
+                                        </span>
+                                    </p>
+                                    <small>
+                                        <span th:if="${#lists.contains(session.userRoles, 'ADMIN')}">
+                                            <span th:if="${filterEstadoCuenta or filterRole or filterNombres or filterEmail}">
+                                                Intente con criterios diferentes o 
+                                                <a th:href="@{/usuarios}" class="text-decoration-none">ver todos los usuarios</a>
+                                            </span>
+                                            <span th:unless="${filterEstadoCuenta or filterRole or filterNombres or filterEmail}">
+                                                Haga clic en "Crear Usuario" para agregar el primer usuario
+                                            </span>
+                                        </span>
+                                        <span th:unless="${#lists.contains(session.userRoles, 'ADMIN')}">
+                                            Contacte al administrador para gestionar usuarios
+                                        </span>
+                                    </small>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination Footer -->
+        <div th:if="${totalPages > 1}" class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Page Size Selector -->
+                <div class="d-none d-md-block">
+                    <label for="pageSizeSelect" class="form-label mb-0 me-2">Elementos por página:</label>
+                    <select id="pageSizeSelect" class="form-select form-select-sm d-inline-block w-auto"
+                            onchange="changePageSize(this.value)">
+                        <option th:each="size : ${pageSizes}" 
+                                th:value="${size}" 
+                                th:text="${size}"
+                                th:selected="${size == pageSize}">25</option>
+                    </select>
+                </div>
+                <!-- Pagination Controls -->
+                <nav aria-label="Navegación de páginas">
+                    <ul class="pagination pagination-sm mb-0">
+                        <!-- Previous Page -->
+                        <li class="page-item" th:classappend="${!hasPrevious} ? 'disabled' : ''">
+                            <a th:if="${hasPrevious}" 
+                               class="page-link" 
+                               th:href="@{/usuarios(page=${currentPage - 1}, size=${pageSize}, nombres=${filterNombres}, email=${filterEmail}, estadoCuenta=${filterEstadoCuenta}, role=${filterRole})}">
+                                <i class="bi bi-chevron-left"></i>
+                                <span class="d-none d-sm-inline ms-1">Anterior</span>
+                            </a>
+                            <span th:unless="${hasPrevious}" class="page-link text-muted">
+                                <i class="bi bi-chevron-left"></i>
+                                <span class="d-none d-sm-inline ms-1">Anterior</span>
+                            </span>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <li th:each="page : ${#numbers.sequence(0, totalPages - 1)}" 
+                            class="page-item" 
+                            th:classappend="${page == currentPage} ? 'active' : ''"
+                            th:if="${page >= currentPage - 2 and page <= currentPage + 2}">
+                            <a th:if="${page != currentPage}" 
+                               class="page-link" 
+                               th:href="@{/usuarios(page=${page}, size=${pageSize}, nombres=${filterNombres}, email=${filterEmail}, estadoCuenta=${filterEstadoCuenta}, role=${filterRole})}"
+                               th:text="${page + 1}">1</a>
+                            <span th:if="${page == currentPage}" 
+                                  class="page-link" 
+                                  th:text="${page + 1}">1</span>
+                        </li>
+
+                        <!-- Next Page -->
+                        <li class="page-item" th:classappend="${!hasNext} ? 'disabled' : ''">
+                            <a th:if="${hasNext}" 
+                               class="page-link" 
+                               th:href="@{/usuarios(page=${currentPage + 1}, size=${pageSize}, nombres=${filterNombres}, email=${filterEmail}, estadoCuenta=${filterEstadoCuenta}, role=${filterRole})}">
+                                <span class="d-none d-sm-inline me-1">Siguiente</span>
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                            <span th:unless="${hasNext}" class="page-link text-muted">
+                                <span class="d-none d-sm-inline me-1">Siguiente</span>
+                                <i class="bi bi-chevron-right"></i>
+                            </span>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Page Info -->
+                <small class="text-muted d-none d-md-block">
+                    Página <span th:text="${currentPage + 1}">1</span> de <span th:text="${totalPages}">1</span>
+                    (<span th:text="${totalElements}">0</span> elementos)
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Change Modals -->
+    <div th:each="user : ${users}" th:object="${user}">
+        <div class="modal fade" th:id="'statusModal-' + *{usuarioId}" tabindex="-1" 
+             th:attr="aria-labelledby='statusModalLabel-' + *{usuarioId}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title" th:id="'statusModalLabel-' + *{usuarioId}">
+                            <i class="bi bi-person-gear me-2"></i>Cambiar Estado de Usuario
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0 me-3">
+                                <i class="bi bi-person-circle text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <p class="mb-2">
+                                    <strong>¿Está seguro que desea cambiar el estado de este usuario?</strong>
+                                </p>
+                                <div class="bg-light p-3 rounded mb-3">
+                                    <div><strong th:text="*{nombres + ' ' + apellidos}">Juan Pérez</strong></div>
+                                    <div><small class="text-muted" th:text="*{email}">usuario@email.com</small></div>
+                                    <div><small class="text-muted">Estado actual: <span th:text="*{estadoCuenta}">ACTIVO</span></small></div>
+                                </div>
+                                
+                                <!-- Status Options -->
+                                <form method="post" th:action="@{/usuarios/{id}/status(id=*{usuarioId})}" id="statusForm">
+                                    <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}"/>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Nuevo Estado:</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="nuevoEstado" id="activoRadio" value="ACTIVO"
+                                                   th:checked="*{estadoCuenta != 'ACTIVO'}">
+                                            <label class="form-check-label" for="activoRadio">
+                                                <i class="bi bi-check-circle text-success me-1"></i>
+                                                <strong>ACTIVO</strong> - El usuario puede iniciar sesión
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="nuevoEstado" id="inactivoRadio" value="INACTIVO"
+                                                   th:checked="*{estadoCuenta == 'ACTIVO'}">
+                                            <label class="form-check-label" for="inactivoRadio">
+                                                <i class="bi bi-x-circle text-danger me-1"></i>
+                                                <strong>INACTIVO</strong> - El usuario no puede iniciar sesión
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="nuevoEstado" id="pendienteRadio" value="PENDIENTE">
+                                            <label class="form-check-label" for="pendienteRadio">
+                                                <i class="bi bi-clock text-warning me-1"></i>
+                                                <strong>PENDIENTE</strong> - Esperando activación
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-info mb-0" role="alert">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        <strong>Nota:</strong> Los cambios de estado se aplican inmediatamente.
+                                        Los usuarios inactivos serán desconectados automáticamente.
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" form="statusForm" class="btn btn-warning">
+                            <i class="bi bi-check-circle me-1"></i>Cambiar Estado
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Page Scripts -->
+    <script>
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+        
+        // Change page size function
+        function changePageSize(newSize) {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('size', newSize);
+            currentUrl.searchParams.set('page', '0');
+            window.location.href = currentUrl.toString();
+        }
+        
+        // Prevent double submission on status forms
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusForms = document.querySelectorAll('form[id="statusForm"]');
+            statusForms.forEach(function(form) {
+                form.addEventListener('submit', function() {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Cambiando Estado...';
+                });
+            });
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            const activeElement = document.activeElement;
+            if (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'SELECT') {
+                switch(e.key) {
+                    case 'n':
+                    case 'N':
+                        // New user
+                        const newBtn = document.querySelector('a[href*="/usuarios/new"]');
+                        if (newBtn) {
+                            e.preventDefault();
+                            window.location.href = newBtn.href;
+                        }
+                        break;
+                }
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

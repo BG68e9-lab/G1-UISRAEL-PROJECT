@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Loading Spinner Component -->
+    <div th:fragment="spinner" 
+         th:with="size=${size ?: ''},
+                  color=${color ?: 'primary'},
+                  text=${text ?: 'Cargando...'},
+                  showText=${showText ?: true},
+                  className=${className ?: 'py-5'}">
+        <div th:class="'d-flex justify-content-center align-items-center ' + ${className}">
+            <div th:class="'spinner-border text-' + ${color} + (${size} ? ' spinner-border-' + ${size} : '')" role="status">
+                <span class="visually-hidden" th:text="${text}">Cargando...</span>
+            </div>
+            <span th:if="${showText}" class="ms-2" th:text="${text}">Cargando...</span>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div th:fragment="overlay" 
+         th:with="text=${text ?: 'Cargando...'},
+                  backdrop=${backdrop ?: 'rgba(0,0,0,0.5)'}">
+        <div class="position-fixed top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center" 
+             th:style="'background-color: ' + ${backdrop} + '; z-index: 9999;'">
+            <div class="spinner-border text-light mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden" th:text="${text}">Cargando...</span>
+            </div>
+            <p class="text-light mb-0" th:text="${text}">Cargando...</p>
+        </div>
+    </div>
+    
+    <!-- Button Loading State -->
+    <div th:fragment="button-spinner" 
+         th:with="text=${text ?: 'Cargando...'},
+                  size=${size ?: 'sm'}">
+        <span th:class="'spinner-border spinner-border-' + ${size} + ' me-2'" role="status" aria-hidden="true"></span>
+        <span th:text="${text}">Cargando...</span>
+    </div>
+    
+    <!-- Skeleton Loading for Cards -->
+    <div th:fragment="skeleton-card" th:with="count=${count ?: 3}">
+        <div th:each="i : ${#numbers.sequence(1, count)}" class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="placeholder-glow flex-grow-1">
+                        <span class="placeholder col-6 placeholder-lg bg-secondary"></span>
+                    </div>
+                    <div class="placeholder-glow">
+                        <span class="placeholder col-2 bg-secondary rounded-pill" style="width: 60px; height: 20px;"></span>
+                    </div>
+                </div>
+                <div class="placeholder-glow">
+                    <span class="placeholder col-7 bg-secondary"></span>
+                    <span class="placeholder col-4 bg-secondary"></span>
+                    <span class="placeholder col-4 bg-secondary"></span>
+                    <span class="placeholder col-6 bg-secondary"></span>
+                    <span class="placeholder col-8 bg-secondary"></span>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                    <div class="placeholder-glow">
+                        <span class="placeholder col-3 bg-secondary rounded" style="height: 32px; width: 80px;"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Skeleton Loading for Table Rows -->
+    <div th:fragment="skeleton-table" th:with="rows=${rows ?: 5}, cols=${cols ?: 4}">
+        <tr th:each="i : ${#numbers.sequence(1, rows)}">
+            <td th:each="j : ${#numbers.sequence(1, cols)}">
+                <div class="placeholder-glow">
+                    <span class="placeholder col-8 bg-secondary"></span>
+                </div>
+            </td>
+        </tr>
+    </div>
+    
+    <!-- Progress Loading -->
+    <div th:fragment="progress" 
+         th:with="progress=${progress ?: 0},
+                  text=${text ?: 'Procesando...'},
+                  showPercentage=${showPercentage ?: true},
+                  animated=${animated ?: true}">
+        <div class="text-center py-4">
+            <p class="mb-3" th:text="${text}">Procesando...</p>
+            <div class="progress" style="height: 20px;">
+                <div th:class="'progress-bar' + (${animated} ? ' progress-bar-striped progress-bar-animated' : '')"
+                     role="progressbar"
+                     th:style="'width: ' + ${progress} + '%;'"
+                     th:aria-valuenow="${progress}"
+                     aria-valuemin="0"
+                     aria-valuemax="100">
+                    <span th:if="${showPercentage}" th:text="${progress} + '%'">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading States JavaScript -->
+    <script th:fragment="loading-scripts">
+        // Show global loading overlay
+        function showLoadingOverlay(text = 'Cargando...') {
+            let overlay = document.getElementById('global-loading-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'global-loading-overlay';
+                overlay.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center';
+                overlay.style.cssText = 'background-color: rgba(0,0,0,0.5); z-index: 9999;';
+                overlay.innerHTML = `
+                    <div class="spinner-border text-light mb-3" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">${text}</span>
+                    </div>
+                    <p class="text-light mb-0">${text}</p>
+                `;
+                document.body.appendChild(overlay);
+            } else {
+                overlay.querySelector('p').textContent = text;
+                overlay.querySelector('.visually-hidden').textContent = text;
+                overlay.style.display = 'flex';
+            }
+        }
+        
+        // Hide global loading overlay
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('global-loading-overlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+        
+        // Set button loading state
+        function setButtonLoading(button, loading = true, text = 'Procesando...') {
+            if (loading) {
+                button.disabled = true;
+                button.dataset.originalText = button.innerHTML;
+                button.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    ${text}
+                `;
+            } else {
+                button.disabled = false;
+                if (button.dataset.originalText) {
+                    button.innerHTML = button.dataset.originalText;
+                    delete button.dataset.originalText;
+                }
+            }
+        }
+        
+        // Show loading in container
+        function showLoadingInContainer(containerId, text = 'Cargando...') {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = `
+                    <div class="d-flex justify-content-center align-items-center py-5">
+                        <div class="spinner-border text-primary me-3" role="status">
+                            <span class="visually-hidden">${text}</span>
+                        </div>
+                        <span>${text}</span>
+                    </div>
+                `;
+            }
+        }
+        
+        // Update progress bar
+        function updateProgress(progressBarId, percentage, text = null) {
+            const progressBar = document.getElementById(progressBarId);
+            if (progressBar) {
+                progressBar.style.width = percentage + '%';
+                progressBar.setAttribute('aria-valuenow', percentage);
+                progressBar.textContent = percentage + '%';
+                
+                if (text) {
+                    const textElement = progressBar.closest('.progress').previousElementSibling;
+                    if (textElement && textElement.tagName === 'P') {
+                        textElement.textContent = text;
+                    }
+                }
+            }
+        }
+        
+        // Auto-setup loading states for forms
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-loading for form submissions
+            const forms = document.querySelectorAll('form[data-loading]');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        const loadingText = form.dataset.loadingText || 'Enviando...';
+                        setButtonLoading(submitButton, true, loadingText);
+                    }
+                    
+                    if (form.dataset.loading === 'overlay') {
+                        const overlayText = form.dataset.loadingText || 'Procesando...';
+                        showLoadingOverlay(overlayText);
+                    }
+                });
+            });
+            
+            // Auto-loading for links with data-loading attribute
+            const loadingLinks = document.querySelectorAll('a[data-loading]');
+            loadingLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const text = this.dataset.loadingText || 'Cargando...';
+                    if (this.dataset.loading === 'overlay') {
+                        showLoadingOverlay(text);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

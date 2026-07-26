@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/main :: layout (~{::title}, ~{::div})}">
+<head>
+    <title th:text="${pageTitle} + ' - DrinkHouse'">Producto - DrinkHouse</title>
+</head>
+<body>
+    <div>
+        <!-- Header con título -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i th:class="${isEdit ? 'bi bi-pencil-square me-2' : 'bi bi-plus-circle me-2'}"></i>
+                <span th:text="${pageTitle}">Formulario de Producto</span>
+            </h1>
+            <a th:href="@{/productos}" class="btn btn-outline-secondary" style="min-height: 44px; min-width: 44px;">
+                <i class="bi bi-arrow-left me-2"></i>
+                Volver
+            </a>
+        </div>
+        
+        <!-- Mensaje de error (si existe) -->
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            <span th:text="${errorMessage}">Error en la operación</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        
+        <!-- Formulario de producto -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-box-seam me-2"></i>
+                    Información del Producto
+                </h5>
+            </div>
+            <div class="card-body">
+                <form th:object="${producto}" 
+                      th:action="${isEdit ? '/productos/' + producto.productoId + '/edit' : '/productos/new'}" 
+                      method="post">
+                    
+                    <!-- Campo oculto para ID en modo edición -->
+                    <input type="hidden" th:if="${isEdit}" th:field="*{productoId}">
+                    
+                    <!-- Fila 1: Nombre y Marca -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="nombre" class="form-label">
+                                Nombre del Producto <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="nombre" 
+                                   th:field="*{nombre}"
+                                   placeholder="Ej: Whisky Johnnie Walker Red Label"
+                                   maxlength="200"
+                                   required>
+                            <div class="invalid-feedback">
+                                El nombre del producto es obligatorio (máximo 200 caracteres)
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="marca" class="form-label">
+                                Marca <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="marca" 
+                                   th:field="*{marca}"
+                                   placeholder="Ej: Johnnie Walker"
+                                   maxlength="100"
+                                   required>
+                            <div class="invalid-feedback">
+                                La marca es obligatoria (máximo 100 caracteres)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fila 2: Tipo y Categoría -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="tipo" class="form-label">
+                                Tipo <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="tipo" 
+                                   th:field="*{tipo}"
+                                   placeholder="Ej: Whisky, Vodka, Ron"
+                                   maxlength="50"
+                                   required>
+                            <div class="invalid-feedback">
+                                El tipo es obligatorio (máximo 50 caracteres)
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="categoriaId" class="form-label">
+                                Categoría <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" 
+                                    id="categoriaId" 
+                                    th:field="*{categoriaId}"
+                                    required>
+                                <option value="">Seleccione una categoría</option>
+                                <option th:each="cat : ${categorias}" 
+                                        th:value="${cat.categoriaId}"
+                                        th:text="${cat.nombre}"
+                                        th:selected="${cat.categoriaId == producto.categoriaId}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Debe seleccionar una categoría
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fila 3: Costo Promedio y Margen de Ganancia -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="costoPromedio" class="form-label">
+                                Costo Promedio (USD) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="costoPromedio" 
+                                       th:field="*{costoPromedio}"
+                                       placeholder="0.00"
+                                       step="0.01"
+                                       min="0.01"
+                                       required>
+                            </div>
+                            <div class="form-text">
+                                Costo promedio de adquisición del producto
+                            </div>
+                            <div class="invalid-feedback">
+                                El costo promedio es obligatorio (mínimo $0.01)
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="margenGanancia" class="form-label">
+                                Margen de Ganancia (%) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="margenGanancia" 
+                                       th:field="*{margenGanancia}"
+                                       placeholder="0.00"
+                                       step="0.01"
+                                       min="0.01"
+                                       required>
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <div class="form-text">
+                                Porcentaje de ganancia sobre el costo
+                            </div>
+                            <div class="invalid-feedback">
+                                El margen de ganancia es obligatorio (mínimo 0.01%)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fila 4: Precio Personalizado -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="precioPersonalizado" 
+                                       th:field="*{precioPersonalizado}"
+                                       onchange="togglePrecioVenta()">
+                                <label class="form-check-label" for="precioPersonalizado">
+                                    <strong>Usar Precio de Venta Personalizado</strong>
+                                </label>
+                            </div>
+                            <div class="form-text">
+                                Si está marcado, puede establecer un precio de venta manual. 
+                                Si no, se calculará automáticamente: Costo + (Costo × Margen%)
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6" id="precioVentaContainer" style="display: none;">
+                            <label for="precioVenta" class="form-label">
+                                Precio de Venta (USD) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="precioVenta" 
+                                       th:field="*{precioVenta}"
+                                       placeholder="0.00"
+                                       step="0.01"
+                                       min="0.01">
+                            </div>
+                            <div class="form-text">
+                                Precio de venta personalizado al público
+                            </div>
+                            <div class="invalid-feedback">
+                                El precio de venta es obligatorio cuando usa precio personalizado
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fila 5: Código de Barras -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="codigoBarras" class="form-label">
+                                Código de Barras (Opcional)
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="codigoBarras" 
+                                   th:field="*{codigoBarras}"
+                                   placeholder="Ej: 1234567890123"
+                                   maxlength="50"
+                                   pattern="[0-9]*">
+                            <div class="form-text">
+                                Solo números, máximo 50 caracteres
+                            </div>
+                            <div class="invalid-feedback">
+                                El código de barras debe contener solo números
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de acción -->
+                    <div class="row">
+                        <div class="col-12">
+                            <hr class="my-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a th:href="@{/productos}" 
+                                   class="btn btn-secondary"
+                                   style="min-height: 44px; min-width: 44px;">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    Cancelar
+                                </a>
+                                <button type="submit" 
+                                        class="btn btn-primary"
+                                        style="min-height: 44px; min-width: 44px;">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <span th:text="${isEdit ? 'Actualizar' : 'Guardar'}">Guardar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Información adicional -->
+        <div class="card mt-3" th:if="${isEdit and producto.fechaCreacion != null}">
+            <div class="card-body">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    <strong>Producto creado:</strong> 
+                    <span th:text="${#temporals.format(producto.fechaCreacion, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</span>
+                    <span th:if="${producto.usuarioCreacion != null}">
+                        por <strong th:text="${producto.usuarioCreacion}">Usuario</strong>
+                    </span>
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript para toggle de precio personalizado -->
+    <script th:inline="javascript">
+        // Función para mostrar/ocultar el campo de precio de venta
+        function togglePrecioVenta() {
+            const checkbox = document.getElementById('precioPersonalizado');
+            const container = document.getElementById('precioVentaContainer');
+            const precioVentaInput = document.getElementById('precioVenta');
+            
+            if (checkbox.checked) {
+                container.style.display = 'block';
+                precioVentaInput.required = true;
+            } else {
+                container.style.display = 'none';
+                precioVentaInput.required = false;
+                precioVentaInput.value = ''; // Limpiar el valor
+            }
+        }
+        
+        // Ejecutar al cargar la página para establecer el estado inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            togglePrecioVenta();
+            
+            // También agregar validación personalizada al submit
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(event) {
+                const precioPersonalizadoChecked = document.getElementById('precioPersonalizado').checked;
+                const precioVentaValue = document.getElementById('precioVenta').value;
+                
+                if (precioPersonalizadoChecked && (!precioVentaValue || parseFloat(precioVentaValue) <= 0)) {
+                    event.preventDefault();
+                    alert('El precio de venta es obligatorio cuando se usa precio personalizado');
+                    document.getElementById('precioVenta').focus();
+                    return false;
+                }
+                
+                return true;
+            });
+        });
+    </script>
+</body>
+</html>

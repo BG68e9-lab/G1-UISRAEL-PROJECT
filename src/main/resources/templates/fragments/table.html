@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Responsive Table Container Fragment -->
+    <div th:fragment="responsive-table" 
+         th:with="tableClass=${tableClass ?: 'table table-striped table-hover'},
+                  tableId=${tableId},
+                  stickyHeader=${stickyHeader ?: false},
+                  bordered=${bordered ?: false},
+                  small=${small ?: false}">
+        <div class="table-responsive">
+            <table th:id="${tableId}" 
+                   th:class="${tableClass} + 
+                            (${stickyHeader} ? ' sticky-top' : '') + 
+                            (${bordered} ? ' table-bordered' : '') + 
+                            (${small} ? ' table-sm' : '')">
+                <!-- Table content will be replaced by including templates -->
+                <thead class="table-dark sticky-top">
+                    <!-- Headers will be defined by the including template -->
+                </thead>
+                <tbody>
+                    <!-- Rows will be defined by the including template -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Empty State for Tables -->
+    <div th:fragment="empty-state" 
+         th:with="message=${emptyMessage ?: 'No hay datos para mostrar'},
+                  icon=${emptyIcon ?: 'bi-inbox'},
+                  actionText=${emptyActionText},
+                  actionUrl=${emptyActionUrl}">
+        <div class="text-center py-5">
+            <i th:class="'bi ' + ${icon} + ' text-muted'" style="font-size: 3rem;"></i>
+            <p class="text-muted mt-3 mb-3" th:text="${message}">No hay datos para mostrar</p>
+            <a th:if="${actionText != null and actionUrl != null}" 
+               th:href="@{${actionUrl}}" 
+               th:text="${actionText}"
+               class="btn btn-primary">
+                Acción
+            </a>
+        </div>
+    </div>
+    
+    <!-- Loading State for Tables -->
+    <div th:fragment="loading-state">
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="text-muted">Cargando datos...</p>
+        </div>
+    </div>
+    
+    <!-- Mobile-Responsive Card View for Tables -->
+    <div th:fragment="card-table" 
+         th:with="items=${items},
+                  cardClass=${cardClass ?: 'card mb-2'},
+                  showActions=${showActions ?: true}">
+        <div class="d-block d-lg-none">
+            <div th:each="item : ${items}" th:class="${cardClass}">
+                <div class="card-body">
+                    <!-- Card content will be defined by including template -->
+                    <div th:if="${showActions}" class="mt-2 d-flex justify-content-end">
+                        <th:block th:replace="~{fragments/buttons :: action-buttons}"></th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Status Badge -->
+    <div th:fragment="status-badge" 
+         th:with="status=${status}, 
+                  statusConfig=${statusConfig ?: {
+                      'ACTIVO': 'success', 
+                      'INACTIVO': 'secondary',
+                      'PENDIENTE': 'warning',
+                      'BORRADOR': 'secondary',
+                      'ENVIADA': 'info',
+                      'RECIBIDA': 'success',
+                      'ANULADA': 'danger'
+                  }}">
+        <span th:class="'badge bg-' + (${statusConfig[status]} ?: 'secondary')" 
+              th:text="${status}">
+            Estado
+        </span>
+    </div>
+    
+    <!-- Sortable Column Header -->
+    <div th:fragment="sortable-header" 
+         th:with="field=${field}, 
+                  label=${label}, 
+                  currentSort=${currentSort}, 
+                  currentDirection=${currentDirection ?: 'asc'},
+                  baseUrl=${baseUrl ?: ''}">
+        <a th:href="${baseUrl + '?sort=' + field + ',' + (currentSort == field and currentDirection == 'asc' ? 'desc' : 'asc')}"
+           class="text-decoration-none text-white">
+            <span th:text="${label}">Columna</span>
+            <i th:if="${currentSort == field}" 
+               th:class="'bi ms-1 ' + (${currentDirection == 'asc'} ? 'bi-arrow-up' : 'bi-arrow-down')"></i>
+            <i th:if="${currentSort != field}" 
+               class="bi bi-arrow-up-down ms-1 text-muted"></i>
+        </a>
+    </div>
+    
+    <!-- Table Row Selection Checkbox -->
+    <div th:fragment="row-checkbox" th:with="itemId=${itemId}">
+        <div class="form-check">
+            <input class="form-check-input row-checkbox" 
+                   type="checkbox" 
+                   th:id="'row-' + ${itemId}"
+                   th:value="${itemId}"
+                   onchange="updateSelection()">
+            <label class="form-check-label visually-hidden" th:for="'row-' + ${itemId}">
+                Seleccionar fila
+            </label>
+        </div>
+    </div>
+    
+    <!-- Bulk Actions Toolbar -->
+    <div th:fragment="bulk-actions" 
+         th:with="actions=${bulkActions ?: {}}">
+        <div id="bulk-actions-toolbar" class="d-none alert alert-info">
+            <div class="d-flex justify-content-between align-items-center">
+                <span id="selection-count">0 elementos seleccionados</span>
+                <div class="btn-group btn-group-sm">
+                    <button th:each="action : ${actions}" 
+                            type="button"
+                            th:class="'btn btn-' + (${action.style} ?: 'primary')"
+                            th:onclick="${action.onclick}"
+                            th:text="${action.text}">
+                        Acción
+                    </button>
+                    <button type="button" 
+                            class="btn btn-outline-secondary"
+                            onclick="clearSelection()">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Table JavaScript Functionality -->
+    <script th:fragment="table-scripts">
+        // Confirm delete action
+        function confirmDelete(id, deleteUrl) {
+            if (confirm('¿Está seguro de que desea eliminar este elemento?')) {
+                // Create and submit a form for DELETE action
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = deleteUrl.replace('{id}', id);
+                
+                // Add CSRF token if available
+                const csrfToken = document.querySelector('meta[name="_csrf"]');
+                if (csrfToken) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_csrf';
+                    csrfInput.value = csrfToken.content;
+                    form.appendChild(csrfInput);
+                }
+                
+                // Add HTTP method override for DELETE
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        
+        // Row selection functionality
+        function updateSelection() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            const count = checkboxes.length;
+            const toolbar = document.getElementById('bulk-actions-toolbar');
+            const countSpan = document.getElementById('selection-count');
+            
+            if (count > 0) {
+                toolbar.classList.remove('d-none');
+                countSpan.textContent = count + ' elemento' + (count !== 1 ? 's' : '') + ' seleccionado' + (count !== 1 ? 's' : '');
+            } else {
+                toolbar.classList.add('d-none');
+            }
+        }
+        
+        // Clear all selections
+        function clearSelection() {
+            document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false);
+            updateSelection();
+        }
+        
+        // Select all functionality
+        function toggleSelectAll(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+            updateSelection();
+        }
+        
+        // Auto-refresh table data (optional)
+        function setupAutoRefresh(intervalSeconds) {
+            if (intervalSeconds > 0) {
+                setInterval(function() {
+                    // Only refresh if no checkboxes are selected
+                    const hasSelection = document.querySelectorAll('.row-checkbox:checked').length > 0;
+                    if (!hasSelection) {
+                        window.location.reload();
+                    }
+                }, intervalSeconds * 1000);
+            }
+        }
+    </script>
+</body>
+</html>

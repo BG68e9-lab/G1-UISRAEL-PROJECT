@@ -1,0 +1,462 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Standard Action Buttons Fragment -->
+    <div th:fragment="action-buttons" 
+         th:with="itemId=${itemId},
+                  createUrl=${createUrl}, 
+                  editUrl=${editUrl}, 
+                  deleteUrl=${deleteUrl}, 
+                  detailUrl=${detailUrl},
+                  customActions=${customActions},
+                  buttonSize=${buttonSize ?: 'sm'},
+                  showLabels=${showLabels ?: false}">
+        <div class="btn-group" th:class="'btn-group btn-group-' + ${buttonSize}" role="group">
+            <!-- Create button -->
+            <a th:if="${createUrl != null}" 
+               th:href="@{${createUrl}}"
+               th:class="'btn btn-success btn-' + ${buttonSize}"
+               title="Crear nuevo">
+                <i class="bi bi-plus-circle"></i>
+                <span th:if="${showLabels}" class="d-none d-md-inline ms-1">Crear</span>
+            </a>
+            
+            <!-- View/Details button -->
+            <a th:if="${detailUrl != null and itemId != null}" 
+               th:href="@{${detailUrl}(id=${itemId})}"
+               th:class="'btn btn-outline-primary btn-' + ${buttonSize}"
+               title="Ver detalles">
+                <i class="bi bi-eye"></i>
+                <span th:if="${showLabels}" class="d-none d-md-inline ms-1">Ver</span>
+            </a>
+            
+            <!-- Edit button -->
+            <a th:if="${editUrl != null and itemId != null}" 
+               th:href="@{${editUrl}(id=${itemId})}"
+               th:class="'btn btn-outline-secondary btn-' + ${buttonSize}"
+               title="Editar">
+                <i class="bi bi-pencil"></i>
+                <span th:if="${showLabels}" class="d-none d-md-inline ms-1">Editar</span>
+            </a>
+            
+            <!-- Custom actions -->
+            <a th:each="action : ${customActions ?: {}}" 
+               th:href="@{${action.url}(id=${itemId})}"
+               th:class="'btn btn-outline-' + (${action.style} ?: 'secondary') + ' btn-' + ${buttonSize}"
+               th:title="${action.tooltip}"
+               th:onclick="${action.onclick}">
+                <i th:class="'bi ' + ${action.icon}"></i>
+                <span th:if="${showLabels and action.text}" 
+                      class="d-none d-md-inline ms-1" 
+                      th:text="${action.text}">Acción</span>
+            </a>
+            
+            <!-- Delete button -->
+            <button th:if="${deleteUrl != null and itemId != null}" 
+                    type="button" 
+                    th:class="'btn btn-outline-danger btn-' + ${buttonSize}"
+                    title="Eliminar"
+                    th:onclick="'confirmDelete(\'' + ${itemId} + '\', \'' + ${deleteUrl} + '\')'">
+                <i class="bi bi-trash"></i>
+                <span th:if="${showLabels}" class="d-none d-md-inline ms-1">Eliminar</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Create Button Set -->
+    <div th:fragment="create-button" 
+         th:with="createUrl=${createUrl},
+                  buttonText=${buttonText ?: 'Crear Nuevo'},
+                  buttonClass=${buttonClass ?: 'btn-primary'},
+                  buttonSize=${buttonSize ?: ''},
+                  icon=${icon ?: 'bi-plus-circle'}">
+        <a th:href="@{${createUrl}}" 
+           th:class="'btn ' + ${buttonClass} + (${buttonSize} ? ' btn-' + ${buttonSize} : '')"
+           role="button">
+            <i th:class="'bi ' + ${icon} + ' me-2'"></i>
+            <span th:text="${buttonText}">Crear Nuevo</span>
+        </a>
+    </div>
+
+    <!-- Edit Button Set -->
+    <div th:fragment="edit-button" 
+         th:with="editUrl=${editUrl},
+                  itemId=${itemId},
+                  buttonText=${buttonText ?: 'Editar'},
+                  buttonClass=${buttonClass ?: 'btn-outline-secondary'},
+                  buttonSize=${buttonSize ?: 'sm'},
+                  icon=${icon ?: 'bi-pencil'}">
+        <a th:href="@{${editUrl}(id=${itemId})}" 
+           th:class="'btn ' + ${buttonClass} + (${buttonSize} ? ' btn-' + ${buttonSize} : '')"
+           role="button">
+            <i th:class="'bi ' + ${icon} + ' me-2'"></i>
+            <span th:text="${buttonText}">Editar</span>
+        </a>
+    </div>
+
+    <!-- Delete Button with Confirmation -->
+    <div th:fragment="delete-button" 
+         th:with="deleteUrl=${deleteUrl},
+                  itemId=${itemId},
+                  itemName=${itemName ?: 'este elemento'},
+                  buttonText=${buttonText ?: 'Eliminar'},
+                  buttonClass=${buttonClass ?: 'btn-outline-danger'},
+                  buttonSize=${buttonSize ?: 'sm'},
+                  icon=${icon ?: 'bi-trash'}">
+        <button type="button" 
+                th:class="'btn ' + ${buttonClass} + (${buttonSize} ? ' btn-' + ${buttonSize} : '')"
+                th:onclick="'confirmDelete(\'' + ${itemId} + '\', \'' + ${deleteUrl} + '\', \'' + ${itemName} + '\')'">
+            <i th:class="'bi ' + ${icon} + ' me-2'"></i>
+            <span th:text="${buttonText}">Eliminar</span>
+        </button>
+    </div>
+
+    <!-- Details/View Button -->
+    <div th:fragment="details-button" 
+         th:with="detailUrl=${detailUrl},
+                  itemId=${itemId},
+                  buttonText=${buttonText ?: 'Ver Detalles'},
+                  buttonClass=${buttonClass ?: 'btn-outline-primary'},
+                  buttonSize=${buttonSize ?: 'sm'},
+                  icon=${icon ?: 'bi-eye'}">
+        <a th:href="@{${detailUrl}(id=${itemId})}" 
+           th:class="'btn ' + ${buttonClass} + (${buttonSize} ? ' btn-' + ${buttonSize} : '')"
+           role="button">
+            <i th:class="'bi ' + ${icon} + ' me-2'"></i>
+            <span th:text="${buttonText}">Ver Detalles</span>
+        </a>
+    </div>
+
+    <!-- Form Submit Buttons -->
+    <div th:fragment="form-buttons" 
+         th:with="submitText=${submitText ?: 'Guardar'},
+                  cancelUrl=${cancelUrl},
+                  cancelText=${cancelText ?: 'Cancelar'},
+                  showReset=${showReset ?: false},
+                  resetText=${resetText ?: 'Limpiar'},
+                  submitClass=${submitClass ?: 'btn-primary'},
+                  cancelClass=${cancelClass ?: 'btn-outline-secondary'},
+                  additionalButtons=${additionalButtons}">
+        <div class="d-flex flex-wrap gap-2 justify-content-end mt-3">
+            <!-- Additional custom buttons -->
+            <button th:each="btn : ${additionalButtons ?: {}}"
+                    type="button"
+                    th:class="'btn btn-' + (${btn.style} ?: 'outline-secondary')"
+                    th:onclick="${btn.onclick}"
+                    th:disabled="${btn.disabled ?: false}"
+                    th:text="${btn.text}">
+                Custom Button
+            </button>
+            
+            <!-- Reset button -->
+            <button th:if="${showReset}" 
+                    type="reset" 
+                    th:class="'btn ' + ${cancelClass}"
+                    th:text="${resetText}">
+                Limpiar
+            </button>
+            
+            <!-- Cancel button -->
+            <a th:if="${cancelUrl != null}" 
+               th:href="@{${cancelUrl}}" 
+               th:class="'btn ' + ${cancelClass}"
+               role="button"
+               th:text="${cancelText}">
+                Cancelar
+            </a>
+            
+            <!-- Submit button -->
+            <button type="submit" 
+                    th:class="'btn ' + ${submitClass}"
+                    th:text="${submitText}">
+                Guardar
+            </button>
+        </div>
+    </div>
+
+    <!-- Bulk Action Buttons -->
+    <div th:fragment="bulk-actions" 
+         th:with="actions=${bulkActions ?: {}},
+                  selectionRequired=${selectionRequired ?: true}">
+        <div id="bulk-actions-toolbar" class="d-none alert alert-info mb-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-check-square me-2"></i>
+                    <span id="selection-count">0 elementos seleccionados</span>
+                </div>
+                <div class="btn-group btn-group-sm flex-wrap">
+                    <button th:each="action : ${actions}" 
+                            type="button"
+                            th:class="'btn btn-' + (${action.style} ?: 'outline-primary')"
+                            th:onclick="${action.onclick}"
+                            th:title="${action.tooltip}"
+                            th:disabled="${selectionRequired}">
+                        <i th:if="${action.icon}" th:class="'bi ' + ${action.icon} + ' me-1'"></i>
+                        <span th:text="${action.text}">Acción</span>
+                    </button>
+                    <button type="button" 
+                            class="btn btn-outline-secondary"
+                            onclick="clearSelection()"
+                            title="Cancelar selección">
+                        <i class="bi bi-x-circle me-1"></i>
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Toggle Buttons -->
+    <div th:fragment="status-toggle" 
+         th:with="currentStatus=${currentStatus},
+                  itemId=${itemId},
+                  toggleUrl=${toggleUrl},
+                  statusConfig=${statusConfig ?: {
+                      'ACTIVO': {'text': 'Desactivar', 'class': 'btn-warning', 'icon': 'bi-pause-circle', 'nextStatus': 'INACTIVO'},
+                      'INACTIVO': {'text': 'Activar', 'class': 'btn-success', 'icon': 'bi-play-circle', 'nextStatus': 'ACTIVO'},
+                      'PENDIENTE': {'text': 'Aprobar', 'class': 'btn-primary', 'icon': 'bi-check-circle', 'nextStatus': 'ACTIVO'}
+                  }}">
+        <div th:if="${statusConfig[currentStatus] != null}">
+            <form th:action="@{${toggleUrl}(id=${itemId})}" method="post" class="d-inline">
+                <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}"/>
+                <input type="hidden" name="newStatus" th:value="${statusConfig[currentStatus].nextStatus}"/>
+                <button type="submit" 
+                        th:class="'btn btn-sm ' + ${statusConfig[currentStatus].class}"
+                        th:title="'Cambiar estado a ' + ${statusConfig[currentStatus].nextStatus}">
+                    <i th:class="'bi ' + ${statusConfig[currentStatus].icon} + ' me-1'"></i>
+                    <span th:text="${statusConfig[currentStatus].text}">Cambiar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div th:fragment="navigation-buttons" 
+         th:with="backUrl=${backUrl},
+                  backText=${backText ?: 'Volver'},
+                  nextUrl=${nextUrl},
+                  nextText=${nextText ?: 'Siguiente'},
+                  prevUrl=${prevUrl},
+                  prevText=${prevText ?: 'Anterior'}">
+        <div class="d-flex justify-content-between flex-wrap gap-2">
+            <!-- Back/Previous section -->
+            <div class="d-flex gap-2">
+                <a th:if="${backUrl != null}" 
+                   th:href="@{${backUrl}}" 
+                   class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    <span th:text="${backText}">Volver</span>
+                </a>
+                
+                <a th:if="${prevUrl != null}" 
+                   th:href="@{${prevUrl}}" 
+                   class="btn btn-outline-primary">
+                    <i class="bi bi-chevron-left me-2"></i>
+                    <span th:text="${prevText}">Anterior</span>
+                </a>
+            </div>
+            
+            <!-- Next section -->
+            <div th:if="${nextUrl != null}">
+                <a th:href="@{${nextUrl}}" 
+                   class="btn btn-outline-primary">
+                    <span th:text="${nextText}">Siguiente</span>
+                    <i class="bi bi-chevron-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Button JavaScript Functions -->
+    <script th:fragment="button-scripts">
+        // Enhanced delete confirmation with item name
+        function confirmDelete(id, deleteUrl, itemName = 'este elemento') {
+            const message = '¿Está seguro de que desea eliminar ' + itemName + '?';
+            const title = 'Confirmar eliminación';
+            
+            if (typeof showConfirmation === 'function') {
+                // Use modal confirmation if available
+                showConfirmation(title, message, function() {
+                    submitDeleteForm(id, deleteUrl);
+                }, 'Eliminar', 'btn-danger');
+            } else {
+                // Fallback to browser confirm
+                if (confirm(message)) {
+                    submitDeleteForm(id, deleteUrl);
+                }
+            }
+        }
+        
+        // Submit delete form
+        function submitDeleteForm(id, deleteUrl) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = deleteUrl.replace('{id}', id);
+            
+            // Add CSRF token if available
+            const csrfToken = document.querySelector('meta[name="_csrf"]');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]');
+            if (csrfToken && csrfHeader) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = csrfToken.getAttribute('name') || '_csrf';
+                csrfInput.value = csrfToken.getAttribute('content');
+                form.appendChild(csrfInput);
+            }
+            
+            // Add HTTP method override for DELETE
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        // Bulk selection management
+        function updateBulkSelection() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            const count = checkboxes.length;
+            const toolbar = document.getElementById('bulk-actions-toolbar');
+            const countSpan = document.getElementById('selection-count');
+            const actionButtons = toolbar ? toolbar.querySelectorAll('button:not([onclick*="clearSelection"])') : [];
+            
+            if (toolbar) {
+                if (count > 0) {
+                    toolbar.classList.remove('d-none');
+                    countSpan.textContent = count + ' elemento' + (count !== 1 ? 's' : '') + ' seleccionado' + (count !== 1 ? 's' : '');
+                    
+                    // Enable action buttons
+                    actionButtons.forEach(btn => btn.disabled = false);
+                } else {
+                    toolbar.classList.add('d-none');
+                    
+                    // Disable action buttons
+                    actionButtons.forEach(btn => btn.disabled = true);
+                }
+            }
+        }
+        
+        // Clear all selections
+        function clearSelection() {
+            document.querySelectorAll('.row-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+            updateBulkSelection();
+        }
+        
+        // Select all functionality
+        function toggleSelectAll(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = masterCheckbox.checked;
+            });
+            updateBulkSelection();
+        }
+        
+        // Bulk action execution
+        function executeBulkAction(actionType, confirmMessage) {
+            const selectedIds = Array.from(document.querySelectorAll('.row-checkbox:checked'))
+                .map(cb => cb.value);
+                
+            if (selectedIds.length === 0) {
+                alert('No hay elementos seleccionados');
+                return;
+            }
+            
+            if (confirmMessage && !confirm(confirmMessage + ' (' + selectedIds.length + ' elementos)?')) {
+                return;
+            }
+            
+            // Create form for bulk action
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = window.location.pathname + '/bulk-action';
+            
+            // Add CSRF token
+            const csrfToken = document.querySelector('meta[name="_csrf"]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_csrf';
+                csrfInput.value = csrfToken.content;
+                form.appendChild(csrfInput);
+            }
+            
+            // Add action type
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = actionType;
+            form.appendChild(actionInput);
+            
+            // Add selected IDs
+            selectedIds.forEach(id => {
+                const idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'selectedIds';
+                idInput.value = id;
+                form.appendChild(idInput);
+            });
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        // Button loading state management
+        function setButtonLoading(button, loading = true) {
+            if (loading) {
+                button.disabled = true;
+                button.dataset.originalText = button.innerHTML;
+                button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Procesando...';
+            } else {
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalText || button.innerHTML;
+            }
+        }
+        
+        // Auto-setup for form submissions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup row checkboxes
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('row-checkbox')) {
+                    updateBulkSelection();
+                }
+            });
+            
+            // Setup master checkbox
+            const masterCheckbox = document.querySelector('#selectAll');
+            if (masterCheckbox) {
+                masterCheckbox.addEventListener('change', function() {
+                    toggleSelectAll(this);
+                });
+            }
+            
+            // Setup form button loading states
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    if (submitButton && !submitButton.disabled) {
+                        setTimeout(() => setButtonLoading(submitButton, true), 10);
+                    }
+                });
+            });
+            
+            // Setup confirmation dialogs for dangerous actions
+            const dangerButtons = document.querySelectorAll('.btn-danger[data-confirm]');
+            dangerButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const confirmMessage = this.dataset.confirm;
+                    if (!confirm(confirmMessage)) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/main :: layout (~{::title}, ~{::div})}">
+<head>
+    <title>Catálogo de Productos - DrinkHouse</title>
+    <style>
+        /* Estilos personalizados para el dashboard público */
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .hero-section:hover {
+            transform: translateY(-5px);
+        }
+        
+        .search-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .product-card .card-body {
+            padding: 1.5rem;
+        }
+        
+        .product-title {
+            font-weight: 600;
+            color: #333;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stock-badge {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+        }
+        
+        .btn-admin-access {
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-admin-access:hover {
+            background: #f8f9fa;
+            color: #764ba2;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Mobile-first responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 1.5rem !important;
+            }
+            
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .search-section {
+                padding: 1rem;
+            }
+            
+            .product-card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <!-- Hero Section -->
+        <div class="hero-section p-5 mb-4">
+            <div class="text-center">
+                <i class="bi bi-cup-straw display-1 mb-3"></i>
+                <h1 class="display-4 mb-3">Bienvenido a DrinkHouse</h1>
+                <p class="lead mb-4">Tu catálogo de bebidas premium</p>
+                <hr class="my-4" style="border-color: rgba(255,255,255,0.3);">
+                <p class="mb-4">Explora nuestro catálogo de productos o accede al panel administrativo</p>
+                <a th:href="@{/login}" class="btn btn-admin-access btn-lg">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    Acceso Administrativo
+                </a>
+            </div>
+        </div>
+        
+        <!-- Filtros y Búsqueda -->
+        <div class="search-section mb-4">
+            <form th:action="@{/dashboard}" method="get" class="row g-3">
+                <div class="col-12 col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-search text-primary"></i>
+                        </span>
+                        <input type="text" 
+                               name="busqueda" 
+                               class="form-control" 
+                               placeholder="Buscar productos por nombre..." 
+                               th:value="${busqueda}"
+                               aria-label="Buscar productos">
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <select name="categoriaId" 
+                            class="form-select" 
+                            aria-label="Filtrar por categoría">
+                        <option value="">📂 Todas las categorías</option>
+                        <option th:each="cat : ${categorias}" 
+                                th:value="${cat.categoriaId}"
+                                th:text="${cat.nombre}"
+                                th:selected="${cat.categoriaId == categoriaSeleccionada}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search me-1"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Grid de Productos -->
+        <div class="row g-4 mb-4">
+            <div th:each="producto : ${productos}" class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card product-card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <!-- Icono del producto -->
+                        <div class="text-center mb-3">
+                            <i class="bi bi-cup-straw text-primary" style="font-size: 3rem;"></i>
+                        </div>
+                        
+                        <!-- Nombre del producto -->
+                        <h5 class="card-title product-title text-center mb-3" 
+                            th:text="${producto.nombre}">
+                            Producto
+                        </h5>
+                        
+                        <!-- Información del producto -->
+                        <div class="mb-3 flex-grow-1">
+                            <p class="mb-2">
+                                <i class="bi bi-tag-fill text-muted me-2"></i>
+                                <strong>Marca:</strong> 
+                                <span th:text="${producto.marca}">Marca</span>
+                            </p>
+                            <p class="mb-2">
+                                <i class="bi bi-grid-3x3-gap-fill text-muted me-2"></i>
+                                <strong>Tipo:</strong> 
+                                <span th:text="${producto.tipo}">Tipo</span>
+                            </p>
+                        </div>
+                        
+                        <!-- Precio -->
+                        <h4 class="product-price text-center mb-3" 
+                            th:text="'$' + ${#numbers.formatDecimal(producto.precioVenta, 1, 2)}">
+                            $0.00
+                        </h4>
+                        
+                        <!-- Stock y disponibilidad -->
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <span th:if="${producto.stockActual > 0}" 
+                                  class="badge bg-success stock-badge">
+                                <i class="bi bi-check-circle-fill me-1"></i>
+                                En Stock
+                            </span>
+                            <span th:unless="${producto.stockActual > 0}" 
+                                  class="badge bg-danger stock-badge">
+                                <i class="bi bi-x-circle-fill me-1"></i>
+                                Agotado
+                            </span>
+                            <small class="text-muted">
+                                <i class="bi bi-box-seam me-1"></i>
+                                <span th:text="${producto.stockActual}">0</span> unidades
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mensaje si no hay productos -->
+        <div th:if="${#lists.isEmpty(productos)}" 
+             class="empty-state alert alert-info text-center">
+            <i class="bi bi-inbox"></i>
+            <h4 class="mt-3">No se encontraron productos</h4>
+            <p class="text-muted mb-0">
+                Intenta ajustar tus filtros de búsqueda o explora todas las categorías
+            </p>
+        </div>
+    </div>
+</body>
+</html>

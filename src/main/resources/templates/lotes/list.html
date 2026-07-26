@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
+<head>
+    <title>Gestión de Lotes - Drinkhouse</title>
+</head>
+<body>
+<div th:fragment="content">
+    <!-- Page Title -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="bi bi-archive me-2"></i>Gestión de Lotes
+        </h1>
+        
+        <!-- Filter Controls -->
+        <div class="d-flex gap-2">
+            <a th:href="@{/lotes(filter='expiring')}" 
+               class="btn btn-outline-warning"
+               th:classappend="${filter == 'expiring'} ? 'active' : ''">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                <span class="d-none d-sm-inline">Próximos a Vencer</span>
+                <span class="d-sm-none">Vencimiento</span>
+            </a>
+            <a th:href="@{/lotes}" 
+               class="btn btn-outline-primary"
+               th:classappend="${filter != 'expiring'} ? 'active' : ''">
+                <i class="bi bi-list me-1"></i>
+                <span class="d-none d-sm-inline">Todos los Lotes</span>
+                <span class="d-sm-none">Todos</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Filter Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h6 class="card-title mb-0">
+                <i class="bi bi-search me-2"></i>Filtros de Búsqueda
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="get" th:action="@{/lotes}" class="row g-3">
+                <input type="hidden" name="filter" th:value="${filter}"/>
+                
+                <div class="col-md-4">
+                    <label for="productoId" class="form-label">Producto</label>
+                    <select id="productoId" name="productoId" class="form-select">
+                        <option value="">Todos los productos</option>
+                        <option th:each="product : ${products}" 
+                                th:value="${product.productoId}"
+                                th:text="${product.nombre + ' - ' + product.marca}"
+                                th:selected="${product.productoId == filterProductoId}">
+                            Producto - Marca
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="codigoEntrada" class="form-label">Código de Entrada</label>
+                    <input type="text" 
+                           id="codigoEntrada" 
+                           name="codigoEntrada" 
+                           class="form-control" 
+                           th:value="${filterCodigoEntrada}"
+                           placeholder="Buscar por código">
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="diasVencimiento" class="form-label">Días hasta Vencimiento</label>
+                    <select id="diasVencimiento" name="diasVencimiento" class="form-select">
+                        <option value="">Todos</option>
+                        <option th:value="7" th:selected="${filterDiasVencimiento == 7}">≤ 7 días</option>
+                        <option th:value="15" th:selected="${filterDiasVencimiento == 15}">≤ 15 días</option>
+                        <option th:value="30" th:selected="${filterDiasVencimiento == 30}">≤ 30 días</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end">
+                    <div class="btn-group w-100" role="group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i>Buscar
+                        </button>
+                        <a th:href="@{/lotes}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lots List Card -->
+    <div class="card">
+        <div class="card-header bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-list-ul me-2"></i>Lista de Lotes
+                        <span th:if="${filter == 'expiring'}" class="badge bg-warning text-dark ms-2">Próximos a Vencer</span>
+                    </h5>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge bg-secondary" th:text="${totalElements + ' total'}">0 total</span>
+                    <span th:if="${expiringCount > 0}" class="badge bg-danger ms-1" th:text="${expiringCount + ' vencen pronto'}">5 vencen pronto</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <!-- Lots Table -->
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="px-3">Código</th>
+                            <th scope="col">Producto</th>
+                            <th scope="col" class="text-center">Cant. Inicial</th>
+                            <th scope="col" class="text-center">Disponible</th>
+                            <th scope="col" class="text-end">Precio Costo</th>
+                            <th scope="col" class="d-none d-md-table-cell">F. Ingreso</th>
+                            <th scope="col">F. Vencimiento</th>
+                            <th scope="col" class="text-center" style="width: 100px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Lot Rows -->
+                        <tr th:each="lot : ${lots}" th:object="${lot}">
+                            <td class="px-3">
+                                <code class="text-primary" th:text="*{codigoEntrada}">LOT-20240101-001</code>
+                            </td>
+                            <td>
+                                <div>
+                                    <strong th:text="*{productoNombre}">Nombre del Producto</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        <span th:text="*{productoMarca}">Marca</span>
+                                        <span th:if="*{productoTipo}">
+                                            - <span th:text="*{productoTipo}">Tipo</span>
+                                        </span>
+                                    </small>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark" th:text="${#numbers.formatInteger(lot.cantidadInicial, 1, 'COMMA')}">
+                                    100
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span th:class="'badge ' + (*{cantidadDisponible > 0} ? 'bg-success' : 'bg-danger')" 
+                                      th:text="${#numbers.formatInteger(lot.cantidadDisponible, 1, 'COMMA')}">
+                                    85
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <span class="fw-bold" th:text="'$' + ${#numbers.formatDecimal(lot.precioCosto, 1, 2)}">
+                                    $12.50
+                                </span>
+                            </td>
+                            <td class="d-none d-md-table-cell text-muted">
+                                <small th:text="*{fechaIngreso != null ? #temporals.format(fechaIngreso, 'dd/MM/yyyy') : 'N/A'}">
+                                    01/01/2024
+                                </small>
+                            </td>
+                            <td>
+                                <div th:with="diasHastaVencimiento=${lot.diasHastaVencimiento}">
+                                    <small th:text="*{fechaVencimiento != null ? #temporals.format(fechaVencimiento, 'dd/MM/yyyy') : 'N/A'}"
+                                           th:class="${diasHastaVencimiento != null and diasHastaVencimiento <= 7} ? 'text-danger fw-bold' :
+                                                     ${diasHastaVencimiento != null and diasHastaVencimiento <= 15} ? 'text-warning fw-bold' :
+                                                     'text-muted'">
+                                        15/12/2024
+                                    </small>
+                                    <div th:if="${diasHastaVencimiento != null}">
+                                        <span th:class="${diasHastaVencimiento <= 7} ? 'badge bg-danger' :
+                                                       ${diasHastaVencimiento <= 15} ? 'badge bg-warning text-dark' :
+                                                       'badge bg-success'"
+                                              th:text="${diasHastaVencimiento <= 0} ? 'VENCIDO' :
+                                                       ${diasHastaVencimiento == 1} ? '1 día' :
+                                                       ${diasHastaVencimiento} + ' días'">
+                                            7 días
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/lotes/{id}(id=*{loteId})}" 
+                                   class="btn btn-outline-primary btn-sm" 
+                                   title="Ver detalles del lote"
+                                   data-bs-toggle="tooltip">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        
+                        <!-- Empty State -->
+                        <tr th:if="${#lists.isEmpty(lots)}">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <div>
+                                    <i class="bi bi-archive" style="font-size: 3rem; opacity: 0.3;"></i>
+                                    <p class="mt-2 mb-1">
+                                        <span th:if="${filter == 'expiring'}">No hay lotes próximos a vencer</span>
+                                        <span th:unless="${filter == 'expiring'}">No hay lotes registrados</span>
+                                    </p>
+                                    <small>
+                                        <span th:if="${filter == 'expiring'}">
+                                            Todos los lotes están dentro de fechas seguras de vencimiento
+                                        </span>
+                                        <span th:unless="${filter == 'expiring'}">
+                                            Los lotes se crean automáticamente al recibir órdenes de compra
+                                        </span>
+                                    </small>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination Footer -->
+        <div th:if="${totalPages > 1}" class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Page Size Selector -->
+                <div class="d-none d-md-block">
+                    <label for="pageSizeSelect" class="form-label mb-0 me-2">Elementos por página:</label>
+                    <select id="pageSizeSelect" class="form-select form-select-sm d-inline-block w-auto"
+                            onchange="changePageSize(this.value)">
+                        <option th:each="size : ${pageSizes}" 
+                                th:value="${size}" 
+                                th:text="${size}"
+                                th:selected="${size == pageSize}">25</option>
+                    </select>
+                </div>
+
+                <!-- Pagination Controls -->
+                <nav aria-label="Navegación de páginas">
+                    <ul class="pagination pagination-sm mb-0">
+                        <!-- Previous Page -->
+                        <li class="page-item" th:classappend="${!hasPrevious} ? 'disabled' : ''">
+                            <a th:if="${hasPrevious}" 
+                               class="page-link" 
+                               th:href="@{/lotes(page=${currentPage - 1}, size=${pageSize}, filter=${filter}, productoId=${filterProductoId}, codigoEntrada=${filterCodigoEntrada}, diasVencimiento=${filterDiasVencimiento})}">
+                                <i class="bi bi-chevron-left"></i>
+                                <span class="d-none d-sm-inline ms-1">Anterior</span>
+                            </a>
+                            <span th:unless="${hasPrevious}" class="page-link text-muted">
+                                <i class="bi bi-chevron-left"></i>
+                                <span class="d-none d-sm-inline ms-1">Anterior</span>
+                            </span>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <li th:each="page : ${#numbers.sequence(0, totalPages - 1)}" 
+                            class="page-item" 
+                            th:classappend="${page == currentPage} ? 'active' : ''"
+                            th:if="${page >= currentPage - 2 and page <= currentPage + 2}">
+                            <a th:if="${page != currentPage}" 
+                               class="page-link" 
+                               th:href="@{/lotes(page=${page}, size=${pageSize}, filter=${filter}, productoId=${filterProductoId}, codigoEntrada=${filterCodigoEntrada}, diasVencimiento=${filterDiasVencimiento})}"
+                               th:text="${page + 1}">1</a>
+                            <span th:if="${page == currentPage}" 
+                                  class="page-link" 
+                                  th:text="${page + 1}">1</span>
+                        </li>
+
+                        <!-- Next Page -->
+                        <li class="page-item" th:classappend="${!hasNext} ? 'disabled' : ''">
+                            <a th:if="${hasNext}" 
+                               class="page-link" 
+                               th:href="@{/lotes(page=${currentPage + 1}, size=${pageSize}, filter=${filter}, productoId=${filterProductoId}, codigoEntrada=${filterCodigoEntrada}, diasVencimiento=${filterDiasVencimiento})}">
+                                <span class="d-none d-sm-inline me-1">Siguiente</span>
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                            <span th:unless="${hasNext}" class="page-link text-muted">
+                                <span class="d-none d-sm-inline me-1">Siguiente</span>
+                                <i class="bi bi-chevron-right"></i>
+                            </span>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Page Info -->
+                <small class="text-muted d-none d-md-block">
+                    Página <span th:text="${currentPage + 1}">1</span> de <span th:text="${totalPages}">1</span>
+                    (<span th:text="${totalElements}">0</span> elementos)
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expiration Alert -->
+    <div th:if="${expiringCount > 0 and filter != 'expiring'}" class="alert alert-warning mt-3" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle me-2 fs-4"></i>
+            <div class="flex-grow-1">
+                <strong>¡Atención!</strong> Hay <span th:text="${expiringCount}">5</span> lotes que vencen en los próximos 7 días.
+            </div>
+            <a th:href="@{/lotes(filter='expiring')}" class="btn btn-outline-warning btn-sm ms-2">
+                <i class="bi bi-eye me-1"></i>Ver Lotes
+            </a>
+        </div>
+    </div>
+
+
+    <!-- Page Scripts -->
+    <script>
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+        
+        // Change page size function
+        function changePageSize(newSize) {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('size', newSize);
+            currentUrl.searchParams.set('page', '0');
+            window.location.href = currentUrl.toString();
+        }
+        
+        // Auto-refresh for expiring lots (every 5 minutes)
+        if (window.location.href.includes('filter=expiring')) {
+            setInterval(function() {
+                const refreshAlert = document.querySelector('.alert-info');
+                if (!refreshAlert) {
+                    location.reload();
+                }
+            }, 300000); // 5 minutes
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // E for Expiring lots
+            if (e.key === 'e' || e.key === 'E') {
+                const expiringBtn = document.querySelector('a[href*="filter=expiring"]');
+                if (expiringBtn && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                    const activeElement = document.activeElement;
+                    if (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'SELECT') {
+                        e.preventDefault();
+                        window.location.href = expiringBtn.href;
+                    }
+                }
+            }
+            
+            // A for All lots
+            if (e.key === 'a' || e.key === 'A') {
+                const allBtn = document.querySelector('a[href="/lotes"]:not([href*="filter"])');
+                if (allBtn && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                    const activeElement = document.activeElement;
+                    if (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'SELECT') {
+                        e.preventDefault();
+                        window.location.href = allBtn.href;
+                    }
+                }
+            }
+        });
+        
+        // Highlight expiring rows
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(function(row) {
+                const expirationCell = row.querySelector('td:nth-child(7)');
+                if (expirationCell) {
+                    const badge = expirationCell.querySelector('.badge');
+                    if (badge && (badge.classList.contains('bg-danger') || badge.textContent.includes('VENCIDO'))) {
+                        row.classList.add('table-danger');
+                    } else if (badge && badge.classList.contains('bg-warning')) {
+                        row.classList.add('table-warning');
+                    }
+                }
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

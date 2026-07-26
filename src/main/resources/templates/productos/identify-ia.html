@@ -1,0 +1,448 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
+<head>
+    <title>Identificación IA de Productos - Drinkhouse</title>
+</head>
+<body>
+<div th:fragment="content">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">
+                <i class="bi bi-camera me-2"></i>Identificación IA de Productos
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/productos}">
+                            <i class="bi bi-box-seam me-1"></i>Productos
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Identificación IA
+                    </li>
+                </ol>
+            </nav>
+        </div>
+        
+        <!-- Back Button -->
+        <div>
+            <a th:href="@{/productos}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                <span class="d-none d-sm-inline">Volver a Productos</span>
+                <span class="d-sm-none">Volver</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Instructions Card -->
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>¿Cómo funciona la identificación por IA?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <ol class="mb-0">
+                                <li class="mb-2">Tome una <strong>foto clara</strong> del producto que desea identificar</li>
+                                <li class="mb-2">La imagen debe mostrar la <strong>etiqueta del producto</strong> de forma legible</li>
+                                <li class="mb-2">Haga clic en "Cargar Imagen" y seleccione su foto</li>
+                                <li class="mb-2">Presione "Identificar Producto" para procesar la imagen</li>
+                                <li class="mb-0">Revise los resultados y <strong>use los datos</strong> si son correctos</li>
+                            </ol>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="bg-light p-3 rounded">
+                                <i class="bi bi-camera-fill text-primary" style="font-size: 3rem;"></i>
+                                <p class="mt-2 mb-0 small text-muted">
+                                    Formatos soportados:<br>JPG, PNG, GIF
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quota Warning (if exceeded) -->
+            <div th:if="${quotaExceeded}" class="alert alert-warning" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>Cuota de IA Agotada:</strong> 
+                Ha excedido el límite mensual de identificaciones por IA. 
+                La cuota se restablece el primer día de cada mes.
+            </div>
+
+            <!-- Upload and Identification Card -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-upload me-2"></i>Subir Imagen para Identificación
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <!-- Upload Form -->
+                    <form method="post" th:action="@{/productos/identify-ia}" enctype="multipart/form-data" id="iaForm">
+                        <!-- CSRF Token -->
+                        <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}"/>
+                        
+                        <!-- Image Upload Section -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="imageFile" class="form-label">
+                                    Seleccionar Imagen <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" 
+                                       class="form-control" 
+                                       id="imageFile" 
+                                       accept="image/jpeg,image/jpg,image/png,image/gif"
+                                       required
+                                       onchange="previewImage(this)">
+                                <div class="form-text">
+                                    Seleccione una imagen JPG, PNG o GIF (máximo 5MB)
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <!-- Image Preview -->
+                                <div class="text-center">
+                                    <div id="imagePreview" class="border rounded p-3 bg-light" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                                        <div class="text-muted">
+                                            <i class="bi bi-image" style="font-size: 3rem;"></i>
+                                            <p class="mt-2 mb-0">Vista previa de la imagen</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden input for base64 image -->
+                        <input type="hidden" id="imagenBase64" name="imagenBase64">
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" 
+                                    class="btn btn-primary btn-lg" 
+                                    id="identifyBtn"
+                                    disabled
+                                    th:disabled="${quotaExceeded}">
+                                <i class="bi bi-cpu me-2"></i>Identificar Producto
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Identification Results (if available) -->
+            <div th:if="${identificationResult}" class="card mt-4">
+                <div class="card-header" 
+                     th:class="${identificationResult.successful} ? 'bg-success text-white' : 'bg-danger text-white'">
+                    <h5 class="card-title mb-0">
+                        <i th:class="${identificationResult.successful} ? 'bi bi-check-circle' : 'bi bi-x-circle' me-2"></i>
+                        <span th:text="${identificationResult.successful} ? 'Producto Identificado' : 'Identificación Fallida'">
+                            Resultados de Identificación
+                        </span>
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <!-- Success Results -->
+                    <div th:if="${identificationResult.successful}">
+                        <!-- Confidence Level -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="fw-bold">Nivel de Confianza:</span>
+                                    <span class="badge badge-lg" 
+                                          th:class="${identificationResult.confianzaCssClass}"
+                                          th:text="${identificationResult.nivelConfianza + ' (' + identificationResult.porcentajeConfianza + '%)'}"}>
+                                        ALTA (95%)
+                                    </span>
+                                </div>
+                                
+                                <!-- Confidence Recommendations -->
+                                <div th:if="${identificationResult.nivelConfianza == 'ALTA'}" 
+                                     class="alert alert-success mt-2" role="alert">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <strong>Alta Confianza:</strong> Los datos identificados son muy probables de ser correctos.
+                                </div>
+                                
+                                <div th:if="${identificationResult.nivelConfianza == 'MEDIA'}" 
+                                     class="alert alert-warning mt-2" role="alert">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    <strong>Confianza Media:</strong> Revise los datos antes de usarlos. Se recomienda verificación manual.
+                                </div>
+                                
+                                <div th:if="${identificationResult.nivelConfianza == 'BAJA'}" 
+                                     class="alert alert-danger mt-2" role="alert">
+                                    <i class="bi bi-exclamation-circle me-2"></i>
+                                    <strong>Baja Confianza:</strong> Los datos pueden ser incorrectos. Verificación manual requerida.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Identified Product Information -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Producto Identificado:</label>
+                                <div class="p-3 bg-light rounded">
+                                    <div class="mb-2">
+                                        <strong>Nombre:</strong> 
+                                        <span th:text="${identificationResult.productoNombre}">Whisky Johnnie Walker</span>
+                                    </div>
+                                    <div class="mb-2" th:if="${identificationResult.productoMarca}">
+                                        <strong>Marca:</strong> 
+                                        <span th:text="${identificationResult.productoMarca}">Johnnie Walker</span>
+                                    </div>
+                                    <div class="mb-2" th:if="${identificationResult.productoTipo}">
+                                        <strong>Tipo:</strong> 
+                                        <span th:text="${identificationResult.productoTipo}">Whisky</span>
+                                    </div>
+                                    <div class="mb-2" th:if="${identificationResult.codigoBarras}">
+                                        <strong>Código de Barras:</strong> 
+                                        <span th:text="${identificationResult.codigoBarras}">1234567890123</span>
+                                    </div>
+                                    <div th:if="${identificationResult.categoriaSugerida}">
+                                        <strong>Categoría Sugerida:</strong> 
+                                        <span th:text="${identificationResult.categoriaSugerida}">Licores</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Processing Information -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Información del Procesamiento:</label>
+                                <div class="p-3 bg-light rounded">
+                                    <div class="mb-2" th:if="${identificationResult.tiempoProcesamiento}">
+                                        <strong>Tiempo:</strong> 
+                                        <span th:text="${identificationResult.tiempoProcesamiento + ' ms'}">2500 ms</span>
+                                    </div>
+                                    <div class="mb-2" th:if="${identificationResult.modeloVersion}">
+                                        <strong>Modelo IA:</strong> 
+                                        <span th:text="${identificationResult.modeloVersion}">v2.1</span>
+                                    </div>
+                                    <div th:if="${identificationResult.fechaProcesamiento}">
+                                        <strong>Procesado:</strong> 
+                                        <span th:text="${#temporals.format(identificationResult.fechaProcesamiento, 'dd/MM/yyyy HH:mm')}">
+                                            01/01/2024 15:30
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alternative Suggestions -->
+                        <div th:if="${identificationResult.alternativasSugeridas != null and !#lists.isEmpty(identificationResult.alternativasSugeridas)}" 
+                             class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Alternativas Sugeridas:</label>
+                                <div class="p-3 bg-light rounded">
+                                    <ul class="mb-0">
+                                        <li th:each="alternativa : ${identificationResult.alternativasSugeridas}" 
+                                            th:text="${alternativa}">Alternativa</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions for ADMIN users -->
+                        <div th:if="${#lists.contains(session.userRoles, 'ADMIN') and newProduct != null}" class="text-center mt-4">
+                            <h6 class="mb-3">¿Desea crear un producto con estos datos?</h6>
+                            
+                            <!-- Pre-filled Product Form -->
+                            <form method="get" th:action="@{/productos/new}" class="d-inline">
+                                <input type="hidden" name="nombre" th:value="${newProduct.nombre}">
+                                <input type="hidden" name="marca" th:value="${newProduct.marca}">
+                                <input type="hidden" name="tipo" th:value="${newProduct.tipo}">
+                                <input type="hidden" name="codigoBarras" th:value="${newProduct.codigoBarras}">
+                                
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-plus-circle me-2"></i>Usar Estos Datos para Crear Producto
+                                </button>
+                            </form>
+                            
+                            <div class="mt-2">
+                                <small class="text-muted">Los datos se pre-completarán en el formulario de creación</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Results -->
+                    <div th:unless="${identificationResult.successful}">
+                        <div class="text-center">
+                            <i class="bi bi-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
+                            <p class="mt-3 text-muted" th:text="${identificationResult.mensajeError}">
+                                No se pudo identificar el producto en la imagen
+                            </p>
+                            <small class="text-muted">
+                                Intente con una imagen más clara o con mejor iluminación
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips Card -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-lightbulb me-2"></i>Consejos para Mejores Resultados
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-success">
+                                <i class="bi bi-check-circle me-1"></i>Recomendado
+                            </h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="bi bi-arrow-right text-success me-2"></i>Imagen clara y enfocada</li>
+                                <li class="mb-2"><i class="bi bi-arrow-right text-success me-2"></i>Buena iluminación natural</li>
+                                <li class="mb-2"><i class="bi bi-arrow-right text-success me-2"></i>Etiqueta completamente visible</li>
+                                <li class="mb-2"><i class="bi bi-arrow-right text-success me-2"></i>Fondo simple sin distracciones</li>
+                                <li class="mb-0"><i class="bi bi-arrow-right text-success me-2"></i>Imagen en posición vertical</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-danger">
+                                <i class="bi bi-x-circle me-1"></i>Evitar
+                            </h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="bi bi-x text-danger me-2"></i>Imágenes borrosas o movidas</li>
+                                <li class="mb-2"><i class="bi bi-x text-danger me-2"></i>Poca luz o sombras excesivas</li>
+                                <li class="mb-2"><i class="bi bi-x text-danger me-2"></i>Etiquetas parcialmente tapadas</li>
+                                <li class="mb-2"><i class="bi bi-x text-danger me-2"></i>Múltiples productos en la imagen</li>
+                                <li class="mb-0"><i class="bi bi-x text-danger me-2"></i>Imágenes muy pequeñas</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Page Scripts -->
+    <script>
+        // Image preview and base64 conversion
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const identifyBtn = document.getElementById('identifyBtn');
+            const base64Input = document.getElementById('imagenBase64');
+            
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('El archivo es muy grande. Por favor seleccione una imagen menor a 5MB.');
+                    input.value = '';
+                    resetPreview();
+                    return;
+                }
+                
+                // Validate file type
+                if (!file.type.match(/^image\/(jpeg|jpg|png|gif)$/)) {
+                    alert('Formato de archivo no soportado. Use JPG, PNG o GIF.');
+                    input.value = '';
+                    resetPreview();
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Create image element for preview
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '200px';
+                    img.className = 'img-fluid rounded';
+                    
+                    // Clear previous content and add new image
+                    preview.innerHTML = '';
+                    preview.appendChild(img);
+                    
+                    // Set base64 value (remove data URL prefix)
+                    base64Input.value = e.target.result.split(',')[1];
+                    
+                    // Enable identify button
+                    identifyBtn.disabled = false;
+                };
+                
+                reader.onerror = function() {
+                    alert('Error al leer el archivo. Intente con otra imagen.');
+                    resetPreview();
+                };
+                
+                reader.readAsDataURL(file);
+            } else {
+                resetPreview();
+            }
+        }
+        
+        // Reset preview to initial state
+        function resetPreview() {
+            const preview = document.getElementById('imagePreview');
+            const identifyBtn = document.getElementById('identifyBtn');
+            const base64Input = document.getElementById('imagenBase64');
+            
+            preview.innerHTML = `
+                <div class="text-muted">
+                    <i class="bi bi-image" style="font-size: 3rem;"></i>
+                    <p class="mt-2 mb-0">Vista previa de la imagen</p>
+                </div>
+            `;
+            
+            base64Input.value = '';
+            identifyBtn.disabled = true;
+        }
+        
+        // Form submission handling
+        document.getElementById('iaForm').addEventListener('submit', function(e) {
+            const base64Input = document.getElementById('imagenBase64');
+            const identifyBtn = document.getElementById('identifyBtn');
+            
+            if (!base64Input.value) {
+                e.preventDefault();
+                alert('Por favor seleccione una imagen antes de continuar.');
+                return false;
+            }
+            
+            // Disable button and show loading state
+            identifyBtn.disabled = true;
+            identifyBtn.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Procesando...
+            `;
+            
+            // Show processing message
+            const processingAlert = document.createElement('div');
+            processingAlert.className = 'alert alert-info mt-3';
+            processingAlert.innerHTML = `
+                <i class="bi bi-clock me-2"></i>
+                <strong>Procesando imagen...</strong> Esto puede tomar unos segundos.
+            `;
+            
+            const form = document.getElementById('iaForm');
+            form.appendChild(processingAlert);
+        });
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips if any
+            const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltips.forEach(tooltip => {
+                new bootstrap.Tooltip(tooltip);
+            });
+            
+            // Auto-focus file input
+            document.getElementById('imageFile').focus();
+        });
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,483 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
+<head>
+    <title th:text="${pageTitle + ' - Drinkhouse'}">Gestión de Roles - Drinkhouse</title>
+</head>
+<body>
+<div th:fragment="content">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">
+                <i class="bi bi-person-gear me-2"></i>
+                <span th:text="${pageTitle}">Gestión de Roles</span>
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/dashboard}" class="text-decoration-none">
+                            <i class="bi bi-house"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/usuarios}" class="text-decoration-none">Usuarios</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${pageTitle}">Gestión de Roles</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <!-- Back Button -->
+        <a th:href="@{/usuarios}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>
+            <span class="d-none d-sm-inline">Volver a Usuarios</span>
+            <span class="d-sm-none">Volver</span>
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - User Information -->
+        <div class="col-lg-4">
+            <div class="card" th:object="${user}">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-person me-2"></i>Información del Usuario
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="bi bi-person-circle text-muted" style="font-size: 4rem;"></i>
+                        </div>
+                        <h4 class="mb-1" th:text="*{nombres + ' ' + apellidos}">Juan Pérez</h4>
+                        <p class="text-muted mb-2" th:text="*{email}">usuario@email.com</p>
+                        <span th:switch="*{estadoCuenta}"
+                              th:class="'badge fs-6 ' + 
+                                      (*{estadoCuenta} == 'ACTIVO' ? 'bg-success' :
+                                       *{estadoCuenta} == 'INACTIVO' ? 'bg-danger' :
+                                       'bg-warning text-dark')">
+                            <span th:case="'ACTIVO'">
+                                <i class="bi bi-check-circle me-1"></i>ACTIVO
+                            </span>
+                            <span th:case="'INACTIVO'">
+                                <i class="bi bi-x-circle me-1"></i>INACTIVO
+                            </span>
+                            <span th:case="'PENDIENTE'">
+                                <i class="bi bi-clock me-1"></i>PENDIENTE
+                            </span>
+                        </span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h6 class="text-muted mb-1">ID Usuario</h6>
+                                <span class="h5 text-primary" th:text="*{usuarioId}">123</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="text-muted mb-1">Roles Asignados</h6>
+                            <span class="h5 text-success" th:text="${#lists.size(user.roles)}">2</span>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">Método de Autenticación</h6>
+                        <span th:switch="*{metodoAutenticacion}"
+                              th:class="'badge ' + 
+                                       (*{metodoAutenticacion} == 'LOCAL' ? 'bg-success' : 'bg-info')">
+                            <span th:case="'LOCAL'">
+                                <i class="bi bi-shield-lock me-1"></i>LOCAL
+                            </span>
+                            <span th:case="'SSO'">
+                                <i class="bi bi-cloud me-1"></i>SSO
+                            </span>
+                        </span>
+                        <div th:if="*{metodoAutenticacion == 'SSO' and ssoProvider}" class="mt-1">
+                            <small class="text-muted" th:text="'Proveedor: ' + *{ssoProvider}">Proveedor: Google</small>
+                        </div>
+                    </div>
+                    
+                    <div th:if="*{ultimoAcceso}">
+                        <h6 class="text-muted mb-1">Último Acceso</h6>
+                        <small class="text-muted" th:text="${#temporals.format(user.ultimoAcceso, 'dd/MM/yyyy HH:mm')}">
+                            01/01/2024 10:00
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Current Roles Summary Card -->
+            <div class="card mt-4">
+                <div class="card-header bg-success text-white">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-shield-check me-2"></i>Roles Actuales
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div th:if="${!#lists.isEmpty(user.roles)}" class="d-flex flex-wrap gap-2">
+                        <span th:each="role : ${user.roles}" 
+                              th:class="'badge ' + 
+                                       (${role} == 'ADMIN' ? 'bg-primary' :
+                                        ${role} == 'EMPLEADO' ? 'bg-secondary' :
+                                        'bg-info') + ' fs-6'"
+                              th:text="${role}">
+                            ADMIN
+                        </span>
+                    </div>
+                    <div th:if="${#lists.isEmpty(user.roles)}" class="text-center text-muted">
+                        <i class="bi bi-shield-x" style="font-size: 2rem; opacity: 0.3;"></i>
+                        <p class="mt-2 mb-0">No tiene roles asignados</p>
+                        <small>Asigne al menos un rol para dar acceso al sistema</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Role Assignment -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-person-gear me-2"></i>Asignación de Roles
+                            </h5>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-secondary" th:text="${#lists.size(availableRoles)} + ' disponibles'">3 disponibles</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <!-- Role Assignment Form -->
+                    <form method="post" th:action="@{/usuarios/{id}/roles(id=${user.usuarioId})}" id="rolesForm">
+                        <!-- CSRF Token -->
+                        <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}"/>
+                        
+                        <!-- Available Roles -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold mb-3">
+                                Seleccionar Roles <span class="text-danger">*</span>
+                            </label>
+                            
+                            <div class="row g-3">
+                                <div th:each="role : ${availableRoles}" class="col-md-6 col-lg-4">
+                                    <div class="card role-card border-2" 
+                                         th:classappend="${#lists.contains(user.roles, role.nombre)} ? 'border-primary' : 'border-light'">
+                                        <div class="card-body text-center p-3">
+                                            <div class="form-check form-switch d-flex justify-content-center mb-3">
+                                                <input class="form-check-input role-checkbox" 
+                                                       type="checkbox" 
+                                                       th:id="'role-' + ${role.rolId}"
+                                                       th:name="roles"
+                                                       th:value="${role.nombre}"
+                                                       th:checked="${#lists.contains(user.roles, role.nombre)}"
+                                                       style="transform: scale(1.3);">
+                                            </div>
+                                            
+                                            <div>
+                                                <h6 class="card-title mb-2" 
+                                                    th:text="${role.nombre}"
+                                                    th:class="${#lists.contains(user.roles, role.nombre)} ? 'text-primary' : ''">
+                                                    ADMIN
+                                                </h6>
+                                                <p class="card-text small text-muted mb-2" th:text="${role.descripcion}">
+                                                    Administrador del sistema con acceso completo
+                                                </p>
+                                                
+                                                <!-- Role Badge -->
+                                                <span th:class="'badge ' + 
+                                                               (${role.nombre} == 'ADMIN' ? 'bg-primary' :
+                                                                ${role.nombre} == 'EMPLEADO' ? 'bg-secondary' :
+                                                                'bg-info')"
+                                                      th:text="${role.nombre}">
+                                                    ADMIN
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Empty State -->
+                            <div th:if="${#lists.isEmpty(availableRoles)}" class="text-center py-5 text-muted">
+                                <i class="bi bi-shield-x" style="font-size: 3rem; opacity: 0.3;"></i>
+                                <p class="mt-2 mb-1">No hay roles disponibles</p>
+                                <small>Contacte al administrador para crear roles del sistema</small>
+                            </div>
+                        </div>
+
+                        <!-- Role Descriptions -->
+                        <div class="alert alert-info" role="alert">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-info-circle fs-5 me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="alert-heading">Información sobre Roles</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p class="mb-2"><strong>ADMIN</strong></p>
+                                            <ul class="mb-3 ps-3">
+                                                <li>Acceso completo al sistema</li>
+                                                <li>Puede gestionar usuarios y roles</li>
+                                                <li>Puede crear, editar y eliminar registros</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-2"><strong>EMPLEADO</strong></p>
+                                            <ul class="mb-0 ps-3">
+                                                <li>Acceso de solo lectura</li>
+                                                <li>Puede consultar productos y movimientos</li>
+                                                <li>No puede modificar configuraciones</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                            <!-- Cancel Button -->
+                            <a th:href="@{/usuarios}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>
+                                Cancelar
+                            </a>
+                            
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Guardar Roles
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Page Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('rolesForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const roleCheckboxes = document.querySelectorAll('.role-checkbox');
+            const roleCards = document.querySelectorAll('.role-card');
+            
+            // Initialize card states
+            updateCardStates();
+            
+            // Role checkbox change handlers
+            roleCheckboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    updateCardStates();
+                    validateForm();
+                    
+                    // Animate the card
+                    const card = this.closest('.role-card');
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        card.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+            
+            function updateCardStates() {
+                roleCheckboxes.forEach(function(checkbox) {
+                    const card = checkbox.closest('.role-card');
+                    const cardBody = card.querySelector('.card-body');
+                    const cardTitle = card.querySelector('.card-title');
+                    
+                    if (checkbox.checked) {
+                        card.classList.remove('border-light');
+                        card.classList.add('border-primary');
+                        cardBody.classList.add('bg-primary', 'bg-opacity-10');
+                        cardTitle.classList.add('text-primary');
+                    } else {
+                        card.classList.remove('border-primary');
+                        card.classList.add('border-light');
+                        cardBody.classList.remove('bg-primary', 'bg-opacity-10');
+                        cardTitle.classList.remove('text-primary');
+                    }
+                });
+            }
+            
+            function validateForm() {
+                const checkedRoles = document.querySelectorAll('.role-checkbox:checked');
+                const hasSelection = checkedRoles.length > 0;
+                
+                submitBtn.disabled = !hasSelection;
+                
+                if (hasSelection) {
+                    submitBtn.classList.remove('btn-secondary');
+                    submitBtn.classList.add('btn-primary');
+                } else {
+                    submitBtn.classList.remove('btn-primary');
+                    submitBtn.classList.add('btn-secondary');
+                }
+                
+                // Update summary
+                updateRoleSummary(checkedRoles);
+            }
+            
+            function updateRoleSummary(checkedRoles) {
+                const currentRolesCard = document.querySelector('.card-header.bg-success').parentElement;
+                const currentRolesBody = currentRolesCard.querySelector('.card-body');
+                
+                if (checkedRoles.length > 0) {
+                    let rolesHtml = '<div class="d-flex flex-wrap gap-2">';
+                    checkedRoles.forEach(function(checkbox) {
+                        const roleName = checkbox.value;
+                        const badgeClass = roleName === 'ADMIN' ? 'bg-primary' :
+                                          roleName === 'EMPLEADO' ? 'bg-secondary' : 'bg-info';
+                        rolesHtml += `<span class="badge ${badgeClass} fs-6">${roleName}</span>`;
+                    });
+                    rolesHtml += '</div>';
+                    currentRolesBody.innerHTML = rolesHtml;
+                } else {
+                    currentRolesBody.innerHTML = `
+                        <div class="text-center text-muted">
+                            <i class="bi bi-shield-x" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <p class="mt-2 mb-0">No tiene roles asignados</p>
+                            <small>Asigne al menos un rol para dar acceso al sistema</small>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Form submission handling
+            form.addEventListener('submit', function(e) {
+                const checkedRoles = document.querySelectorAll('.role-checkbox:checked');
+                
+                if (checkedRoles.length === 0) {
+                    e.preventDefault();
+                    alert('Debe seleccionar al menos un rol para el usuario.');
+                    return;
+                }
+                
+                // Disable submit button and show loading state
+                submitBtn.disabled = true;
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Guardando Roles...';
+                
+                // Re-enable button after 5 seconds as fallback
+                setTimeout(function() {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }, 5000);
+            });
+            
+            // Initialize form validation
+            validateForm();
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                const activeElement = document.activeElement;
+                
+                // Only handle shortcuts when not in input fields
+                if (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'BUTTON') {
+                    switch(e.key) {
+                        case '1':
+                            // Toggle first role (usually ADMIN)
+                            if (roleCheckboxes[0]) {
+                                roleCheckboxes[0].checked = !roleCheckboxes[0].checked;
+                                roleCheckboxes[0].dispatchEvent(new Event('change'));
+                            }
+                            break;
+                            
+                        case '2':
+                            // Toggle second role (usually EMPLEADO)
+                            if (roleCheckboxes[1]) {
+                                roleCheckboxes[1].checked = !roleCheckboxes[1].checked;
+                                roleCheckboxes[1].dispatchEvent(new Event('change'));
+                            }
+                            break;
+                            
+                        case 'a':
+                        case 'A':
+                            // Select all roles
+                            if (e.ctrlKey || e.metaKey) {
+                                e.preventDefault();
+                                roleCheckboxes.forEach(function(checkbox) {
+                                    checkbox.checked = true;
+                                    checkbox.dispatchEvent(new Event('change'));
+                                });
+                            }
+                            break;
+                            
+                        case 'Escape':
+                            // Clear all selections
+                            roleCheckboxes.forEach(function(checkbox) {
+                                checkbox.checked = false;
+                                checkbox.dispatchEvent(new Event('change'));
+                            });
+                            break;
+                    }
+                }
+                
+                // Ctrl+S to save
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    if (!submitBtn.disabled) {
+                        submitBtn.click();
+                    }
+                }
+            });
+            
+            // Add hover effects to role cards
+            roleCards.forEach(function(card) {
+                card.addEventListener('mouseenter', function() {
+                    if (!this.classList.contains('border-primary')) {
+                        this.style.transform = 'translateY(-2px)';
+                        this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+                    }
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '';
+                });
+                
+                // Click on card toggles checkbox
+                card.addEventListener('click', function(e) {
+                    if (e.target.type !== 'checkbox') {
+                        const checkbox = this.querySelector('.role-checkbox');
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                });
+            });
+            
+            // Auto-save indication
+            let formDirty = false;
+            roleCheckboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    formDirty = true;
+                });
+            });
+            
+            // Warn before leaving if form is dirty
+            window.addEventListener('beforeunload', function(e) {
+                if (formDirty) {
+                    const message = '¿Está seguro que desea salir? Los cambios de roles no guardados se perderán.';
+                    e.returnValue = message;
+                    return message;
+                }
+            });
+            
+            // Clear dirty flag on form submit
+            form.addEventListener('submit', function() {
+                formDirty = false;
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Responsive Modal Dialog Component -->
+    <div th:fragment="modal" 
+         th:with="modalId=${modalId ?: 'basicModal'},
+                  modalTitle=${modalTitle ?: 'Modal'},
+                  modalSize=${modalSize ?: ''},
+                  modalCentered=${modalCentered ?: false},
+                  modalScrollable=${modalScrollable ?: false},
+                  modalBackdrop=${modalBackdrop ?: 'true'},
+                  modalKeyboard=${modalKeyboard ?: 'true'}">
+        <div class="modal fade" 
+             th:id="${modalId}" 
+             tabindex="-1" 
+             th:aria-labelledby="${modalId + 'Label'}" 
+             aria-hidden="true"
+             th:data-bs-backdrop="${modalBackdrop}"
+             th:data-bs-keyboard="${modalKeyboard}">
+            <div th:class="'modal-dialog' + 
+                          (${modalSize} ? ' modal-' + ${modalSize} : '') + 
+                          (${modalCentered} ? ' modal-dialog-centered' : '') + 
+                          (${modalScrollable} ? ' modal-dialog-scrollable' : '')">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" th:id="${modalId + 'Label'}" th:text="${modalTitle}">Modal Title</h1>
+                        <button type="button" 
+                                class="btn-close" 
+                                data-bs-dismiss="modal" 
+                                aria-label="Cerrar modal"
+                                title="Cerrar modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Content will be replaced by including templates -->
+                        <p>Modal content goes here.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div th:fragment="confirmation-modal" 
+         th:with="modalId=${modalId ?: 'confirmationModal'},
+                  title=${title ?: 'Confirmar Acción'},
+                  message=${message ?: '¿Está seguro de que desea realizar esta acción?'},
+                  confirmText=${confirmText ?: 'Confirmar'},
+                  cancelText=${cancelText ?: 'Cancelar'},
+                  confirmClass=${confirmClass ?: 'btn-danger'},
+                  icon=${icon ?: 'bi-exclamation-triangle-fill'},
+                  iconColor=${iconColor ?: 'text-warning'}">
+        <div class="modal fade" 
+             th:id="${modalId}" 
+             tabindex="-1" 
+             th:aria-labelledby="${modalId + 'Label'}" 
+             aria-hidden="true"
+             data-bs-backdrop="static"
+             data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <h1 class="modal-title fs-5" th:id="${modalId + 'Label'}" th:text="${title}">Confirm Action</h1>
+                        <button type="button" 
+                                class="btn-close" 
+                                data-bs-dismiss="modal" 
+                                aria-label="Cerrar modal"
+                                title="Cerrar modal"></button>
+                    </div>
+                    <div class="modal-body pt-2">
+                        <div class="d-flex align-items-start">
+                            <i th:class="'bi ' + ${icon} + ' ' + ${iconColor} + ' me-3 mt-1'" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <p class="mb-0" th:text="${message}">Confirmation message</p>
+                                <div id="confirmationDetails" class="mt-2 text-muted small" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" 
+                                class="btn btn-outline-secondary" 
+                                data-bs-dismiss="modal" 
+                                th:text="${cancelText}">Cancelar</button>
+                        <button type="button" 
+                                th:class="'btn ' + ${confirmClass}" 
+                                th:id="${modalId + 'ConfirmBtn'}"
+                                th:text="${confirmText}">
+                            Confirmar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Form Modal -->
+    <div th:fragment="form-modal" 
+         th:with="modalId=${modalId ?: 'formModal'},
+                  modalTitle=${modalTitle ?: 'Form'},
+                  formAction=${formAction ?: '#'},
+                  formMethod=${formMethod ?: 'POST'},
+                  submitText=${submitText ?: 'Guardar'},
+                  cancelText=${cancelText ?: 'Cancelar'}">
+        <div class="modal fade" 
+             th:id="${modalId}" 
+             tabindex="-1" 
+             th:aria-labelledby="${modalId + 'Label'}" 
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{${formAction}}" th:method="${formMethod}">
+                        <div class="modal-header">
+                            <h5 class="modal-title" th:id="${modalId + 'Label'}" th:text="${modalTitle}">Form Title</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- CSRF Token -->
+                            <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" th:if="${_csrf}"/>
+                            <!-- Form fields will be replaced by including templates -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="${cancelText}">Cancel</button>
+                            <button type="submit" class="btn btn-primary" th:text="${submitText}">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Modal -->
+    <div th:fragment="loading-modal" 
+         th:with="modalId=${modalId ?: 'loadingModal'},
+                  loadingText=${loadingText ?: 'Procesando...'}">
+        <div class="modal fade" 
+             th:id="${modalId}" 
+             tabindex="-1" 
+             aria-hidden="true"
+             data-bs-backdrop="static" 
+             data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body text-center py-5">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mb-0" th:text="${loadingText}">Processing...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Image Preview Modal -->
+    <div th:fragment="image-preview-modal" 
+         th:with="modalId=${modalId ?: 'imagePreviewModal'}">
+        <div class="modal fade" 
+             th:id="${modalId}" 
+             tabindex="-1" 
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Vista Previa de Imagen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="previewImage" 
+                             src="" 
+                             alt="Vista previa" 
+                             class="img-fluid"
+                             style="max-height: 70vh;">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Info Modal -->
+    <div th:fragment="info-modal" 
+         th:with="modalId=${modalId ?: 'infoModal'},
+                  iconClass=${iconClass ?: 'bi-info-circle-fill text-primary'}">
+        <div class="modal fade" 
+             th:id="${modalId}" 
+             tabindex="-1" 
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body text-center py-4">
+                        <i th:class="'bi ' + ${iconClass}" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 mb-2" id="infoModalTitle">Información</h5>
+                        <p class="mb-3" id="infoModalMessage">Mensaje de información</p>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal JavaScript -->
+    <script th:fragment="modal-scripts">
+        // Show confirmation modal with custom message
+        function showConfirmation(title, message, onConfirm, confirmText = 'Confirmar', confirmClass = 'btn-danger') {
+            const modal = document.getElementById('confirmationModal');
+            if (modal) {
+                modal.querySelector('.modal-title').textContent = title;
+                modal.querySelector('.modal-body p').textContent = message;
+                const confirmBtn = modal.querySelector('#confirmationModalConfirmBtn');
+                confirmBtn.textContent = confirmText;
+                confirmBtn.className = 'btn ' + confirmClass;
+                
+                // Remove existing event listeners
+                const newBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+                
+                // Add new event listener
+                newBtn.addEventListener('click', function() {
+                    bootstrap.Modal.getInstance(modal).hide();
+                    onConfirm();
+                });
+                
+                new bootstrap.Modal(modal).show();
+            }
+        }
+        
+        // Show info modal with message
+        function showInfo(title, message, iconClass = 'bi-info-circle-fill text-primary') {
+            const modal = document.getElementById('infoModal');
+            if (modal) {
+                modal.querySelector('#infoModalTitle').textContent = title;
+                modal.querySelector('#infoModalMessage').textContent = message;
+                modal.querySelector('.bi').className = 'bi ' + iconClass;
+                new bootstrap.Modal(modal).show();
+            }
+        }
+        
+        // Show loading modal
+        function showLoading(message = 'Procesando...') {
+            const modal = document.getElementById('loadingModal');
+            if (modal) {
+                modal.querySelector('.modal-body p').textContent = message;
+                new bootstrap.Modal(modal).show();
+            }
+        }
+        
+        // Hide loading modal
+        function hideLoading() {
+            const modal = document.getElementById('loadingModal');
+            if (modal) {
+                const instance = bootstrap.Modal.getInstance(modal);
+                if (instance) {
+                    instance.hide();
+                }
+            }
+        }
+        
+        // Show image preview
+        function showImagePreview(imageSrc, altText = 'Vista previa') {
+            const modal = document.getElementById('imagePreviewModal');
+            if (modal) {
+                const img = modal.querySelector('#previewImage');
+                img.src = imageSrc;
+                img.alt = altText;
+                new bootstrap.Modal(modal).show();
+            }
+        }
+        
+        // Handle form submission with loading
+        function submitFormWithLoading(form, loadingMessage = 'Enviando...') {
+            showLoading(loadingMessage);
+            form.submit();
+        }
+        
+        // Auto-hide modal on successful form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            // If there's a success message, hide any open modals
+            if (document.querySelector('.alert-success')) {
+                const openModals = document.querySelectorAll('.modal.show');
+                openModals.forEach(modal => {
+                    const instance = bootstrap.Modal.getInstance(modal);
+                    if (instance) {
+                        instance.hide();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

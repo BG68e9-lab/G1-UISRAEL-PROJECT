@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Notification Fragment -->
+    <div th:fragment="notifications">
+        <!-- Flash attribute notifications (from WebUIExceptionHandler) -->
+        <div th:if="${notificationType} and ${notificationMessage}" 
+             th:class="'alert alert-' + (${notificationType} == 'success' ? 'success' : (${notificationType} == 'error' ? 'danger' : (${notificationType} == 'info' ? 'info' : 'warning'))) + ' alert-dismissible fade show'" 
+             role="alert"
+             th:data-timeout="${notificationTimeout ?: 5000}">
+            <i th:class="'bi me-2 ' + (${notificationType} == 'success' ? 'bi-check-circle-fill' : (${notificationType} == 'error' ? 'bi-exclamation-triangle-fill' : (${notificationType} == 'info' ? 'bi-info-circle-fill' : 'bi-exclamation-triangle-fill')))"></i>
+            <span th:text="${notificationMessage}">Mensaje de notificación</span>
+            <div th:if="${notificationDetails} and ${notificationDetails != ''}" class="mt-2">
+                <small class="text-muted" th:text="${notificationDetails}">Detalles adicionales</small>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        
+        <!-- Legacy support for existing notification messages -->
+        <!-- Success messages -->
+        <div th:if="${successMessage} and not ${notificationType}" 
+             class="alert alert-success alert-dismissible fade show" 
+             role="alert"
+             data-timeout="3000">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Mensaje de éxito</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        
+        <!-- Error messages -->
+        <div th:if="${errorMessage} and not ${notificationType}" 
+             class="alert alert-danger alert-dismissible fade show" 
+             role="alert"
+             data-timeout="5000">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${errorMessage}">Mensaje de error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        
+        <!-- Warning messages -->
+        <div th:if="${warningMessage} and not ${notificationType}" 
+             class="alert alert-warning alert-dismissible fade show" 
+             role="alert"
+             data-timeout="4000">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${warningMessage}">Mensaje de advertencia</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        
+        <!-- Info messages -->
+        <div th:if="${infoMessage} and not ${notificationType}" 
+             class="alert alert-info alert-dismissible fade show" 
+             role="alert"
+             data-timeout="4000">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <span th:text="${infoMessage}">Mensaje informativo</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        
+        <!-- Flash attribute messages (legacy URL params) -->
+        <div th:if="${param.success} and not ${notificationType}" 
+             class="alert alert-success alert-dismissible fade show" 
+             role="alert"
+             data-timeout="3000">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span>Operación realizada exitosamente.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        
+        <div th:if="${param.error} and not ${notificationType}" 
+             class="alert alert-danger alert-dismissible fade show" 
+             role="alert"
+             data-timeout="5000">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span>Ha ocurrido un error. Por favor, intente nuevamente.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    </div>
+
+    <!-- Toast Notifications (Auto-dismiss) -->
+    <div th:fragment="toast-notifications" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+        <!-- Success Toast -->
+        <div th:if="${notificationType == 'success' or successMessage != null}" 
+             class="toast show" 
+             role="alert" 
+             aria-live="assertive" 
+             aria-atomic="true"
+             data-bs-autohide="true"
+             data-bs-delay="3000">
+            <div class="toast-header bg-success text-white">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <strong class="me-auto">Éxito</strong>
+                <small class="text-white-50">ahora</small>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+            </div>
+            <div class="toast-body">
+                <span th:text="${notificationMessage ?: successMessage}">Operación exitosa</span>
+            </div>
+        </div>
+        
+        <!-- Error Toast -->
+        <div th:if="${notificationType == 'error' or errorMessage != null}" 
+             class="toast show" 
+             role="alert" 
+             aria-live="assertive" 
+             aria-atomic="true"
+             data-bs-autohide="true"
+             data-bs-delay="5000">
+            <div class="toast-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong class="me-auto">Error</strong>
+                <small class="text-white-50">ahora</small>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+            </div>
+            <div class="toast-body">
+                <span th:text="${notificationMessage ?: errorMessage}">Ha ocurrido un error</span>
+                <div th:if="${notificationDetails} and ${notificationDetails != ''}" class="mt-2">
+                    <small class="text-muted" th:text="${notificationDetails}">Detalles del error</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Info Toast -->
+        <div th:if="${notificationType == 'info' or infoMessage != null}" 
+             class="toast show" 
+             role="alert" 
+             aria-live="polite" 
+             aria-atomic="true"
+             data-bs-autohide="true"
+             data-bs-delay="4000">
+            <div class="toast-header bg-info text-white">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong class="me-auto">Información</strong>
+                <small class="text-white-50">ahora</small>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+            </div>
+            <div class="toast-body">
+                <span th:text="${notificationMessage ?: infoMessage}">Información</span>
+            </div>
+        </div>
+        
+        <!-- Warning Toast -->
+        <div th:if="${notificationType == 'warning' or warningMessage != null}" 
+             class="toast show" 
+             role="alert" 
+             aria-live="polite" 
+             aria-atomic="true"
+             data-bs-autohide="true"
+             data-bs-delay="4000">
+            <div class="toast-header bg-warning text-dark">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong class="me-auto">Advertencia</strong>
+                <small class="text-muted">ahora</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+            </div>
+            <div class="toast-body">
+                <span th:text="${notificationMessage ?: warningMessage}">Advertencia</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-dismiss script for notifications -->
+    <script th:fragment="notification-script">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-dismiss alert notifications after timeout
+            const notifications = document.querySelectorAll('.alert[data-timeout]');
+            notifications.forEach(function(notification) {
+                const timeout = parseInt(notification.getAttribute('data-timeout')) || 5000;
+                setTimeout(function() {
+                    // Use Bootstrap's alert dismiss method
+                    const alert = new bootstrap.Alert(notification);
+                    if (alert) {
+                        alert.close();
+                    }
+                }, timeout);
+            });
+
+            // Initialize Bootstrap toasts
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(function(toast) {
+                new bootstrap.Toast(toast);
+            });
+
+            // Make notifications focusable for accessibility
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.setAttribute('tabindex', '-1');
+                // Focus briefly for screen readers, then remove focus
+                alert.focus();
+                setTimeout(() => alert.blur(), 100);
+            });
+        });
+        
+        // Show dynamic toast notification
+        function showToast(type, message, details = null, duration = null) {
+            const toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) {
+                console.warn('Toast container not found');
+                return;
+            }
+            
+            const typeConfig = {
+                'success': { 
+                    bgClass: 'bg-success text-white', 
+                    icon: 'bi-check-circle-fill', 
+                    title: 'Éxito', 
+                    defaultDuration: 3000,
+                    closeClass: 'btn-close-white'
+                },
+                'error': { 
+                    bgClass: 'bg-danger text-white', 
+                    icon: 'bi-exclamation-triangle-fill', 
+                    title: 'Error', 
+                    defaultDuration: 5000,
+                    closeClass: 'btn-close-white'
+                },
+                'warning': { 
+                    bgClass: 'bg-warning text-dark', 
+                    icon: 'bi-exclamation-triangle-fill', 
+                    title: 'Advertencia', 
+                    defaultDuration: 4000,
+                    closeClass: 'btn-close'
+                },
+                'info': { 
+                    bgClass: 'bg-info text-white', 
+                    icon: 'bi-info-circle-fill', 
+                    title: 'Información', 
+                    defaultDuration: 4000,
+                    closeClass: 'btn-close-white'
+                }
+            };
+            
+            const config = typeConfig[type] || typeConfig['info'];
+            const toastDuration = duration || config.defaultDuration;
+            
+            const toastId = 'toast-' + Date.now();
+            const detailsHtml = details ? `<div class="mt-2"><small class="text-muted">${details}</small></div>` : '';
+            
+            const toastHtml = `
+                <div id="${toastId}" class="toast" role="alert" aria-live="${type === 'error' ? 'assertive' : 'polite'}" aria-atomic="true" data-bs-autohide="true" data-bs-delay="${toastDuration}">
+                    <div class="toast-header ${config.bgClass}">
+                        <i class="bi ${config.icon} me-2"></i>
+                        <strong class="me-auto">${config.title}</strong>
+                        <small class="${config.bgClass.includes('text-white') ? 'text-white-50' : 'text-muted'}">ahora</small>
+                        <button type="button" class="btn-close ${config.closeClass}" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                        ${detailsHtml}
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+            
+            // Remove from DOM after hiding
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                toastElement.remove();
+            });
+        }
+        
+        // Convenience functions for different notification types
+        function showSuccess(message, details = null, duration = 3000) {
+            showToast('success', message, details, duration);
+        }
+        
+        function showError(message, details = null, duration = 5000) {
+            showToast('error', message, details, duration);
+        }
+        
+        function showWarning(message, details = null, duration = 4000) {
+            showToast('warning', message, details, duration);
+        }
+        
+        function showInfo(message, details = null, duration = 4000) {
+            showToast('info', message, details, duration);
+        }
+        
+        // Show notification from URL parameters (for redirects)
+        function showNotificationFromParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('notification');
+            const message = urlParams.get('message');
+            
+            if (type && message) {
+                showToast(type, decodeURIComponent(message));
+                
+                // Clean URL parameters
+                const newUrl = window.location.pathname + window.location.hash;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+        }
+        
+        // Auto-setup on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            showNotificationFromParams();
+        });
+    </script>
+</body>
+</html>

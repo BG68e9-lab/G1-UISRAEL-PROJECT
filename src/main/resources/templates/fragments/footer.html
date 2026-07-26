@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Footer Fragment -->
+    <div th:fragment="footer">
+        <footer class="footer bg-light border-top mt-auto">
+            <div class="container-fluid">
+                <!-- Main footer content -->
+                <div class="row py-4">
+                    <!-- Copyright and branding -->
+                    <div class="col-md-4 col-12 mb-3 mb-md-0">
+                        <div class="footer-brand mb-2">
+                            <i class="bi bi-shop me-2 text-primary"></i>
+                            <span class="fw-semibold" th:text="${businessName ?: 'Drinkhouse'}">Drinkhouse</span>
+                        </div>
+                        <p class="text-muted mb-2 small">
+                            © <span th:text="${#dates.year(#dates.createNow())}">2024</span> 
+                            <span th:text="${businessName ?: 'Drinkhouse'}">Drinkhouse</span>. 
+                            Todos los derechos reservados.
+                        </p>
+                        <p class="text-muted mb-0 small">
+                            Sistema de gestión integral para licorería
+                        </p>
+                    </div>
+                    
+                    <!-- Version and technical info -->
+                    <div class="col-md-4 col-12 mb-3 mb-md-0">
+                        <h6 class="text-dark mb-2">Información Técnica</h6>
+                        <ul class="list-unstyled mb-0">
+                            <li class="small text-muted mb-1">
+                                <i class="bi bi-code-square me-1"></i>
+                                Versión: <span class="fw-semibold" th:text="${appVersion ?: '1.0.0'}">1.0.0</span>
+                            </li>
+                            <li th:if="${buildDate != null}" class="small text-muted mb-1">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                Build: <span th:text="${#dates.format(buildDate, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</span>
+                            </li>
+                            <li th:if="${environment != null}" class="small text-muted mb-1">
+                                <i class="bi bi-server me-1"></i>
+                                Entorno: <span class="fw-semibold text-uppercase" th:text="${environment}">DEVELOPMENT</span>
+                            </li>
+                            <li class="small text-muted mb-1">
+                                <i class="bi bi-bootstrap me-1"></i>
+                                Bootstrap 5 + Thymeleaf
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Contact and support -->
+                    <div class="col-md-4 col-12">
+                        <h6 class="text-dark mb-2">Soporte y Contacto</h6>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <a href="mailto:support@drinkhouse.com" 
+                                   class="text-decoration-none text-muted d-flex align-items-center"
+                                   title="Enviar correo de soporte técnico">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    <span class="small">support@drinkhouse.com</span>
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="tel:+593987654321" 
+                                   class="text-decoration-none text-muted d-flex align-items-center"
+                                   title="Llamar a soporte técnico">
+                                    <i class="bi bi-telephone me-2"></i>
+                                    <span class="small">+593 98 765 4321</span>
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" 
+                                   class="text-decoration-none text-muted d-flex align-items-center"
+                                   data-bs-toggle="modal" 
+                                   data-bs-target="#helpModal"
+                                   title="Ver ayuda en línea">
+                                    <i class="bi bi-question-circle me-2"></i>
+                                    <span class="small">Ayuda en línea</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" 
+                                   class="text-decoration-none text-muted d-flex align-items-center"
+                                   onclick="showSystemInfo()"
+                                   title="Ver información del sistema">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <span class="small">Info del Sistema</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Bottom bar with additional info -->
+                <div class="row border-top pt-3">
+                    <div class="col-md-6 col-12 mb-2 mb-md-0">
+                        <small class="text-muted d-flex align-items-center">
+                            <i class="bi bi-shield-check me-1 text-success"></i>
+                            Conexión segura SSL/TLS
+                        </small>
+                    </div>
+                    <div class="col-md-6 col-12 text-md-end">
+                        <small class="text-muted">
+                            Desarrollado con 
+                            <i class="bi bi-heart-fill text-danger mx-1"></i> 
+                            por <strong>UISRAEL DevTeam</strong>
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- Environment indicator for non-production -->
+                <div th:if="${environment != null and environment != 'production'}" 
+                     class="text-center mt-3">
+                    <div class="alert alert-warning py-2 mb-0" role="alert">
+                        <small>
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            <strong>ENTORNO DE DESARROLLO:</strong> 
+                            <span th:text="${#strings.toUpperCase(environment)}">DEV</span>
+                            - Los datos pueden no ser reales
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        
+        <!-- Help Modal -->
+        <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="helpModalLabel">
+                            <i class="bi bi-question-circle me-2"></i>
+                            Ayuda del Sistema
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="bi bi-book me-1"></i>Guías Rápidas</h6>
+                                <ul class="list-unstyled">
+                                    <li><a href="#" class="text-decoration-none">Gestión de Productos</a></li>
+                                    <li><a href="#" class="text-decoration-none">Órdenes de Compra</a></li>
+                                    <li><a href="#" class="text-decoration-none">Control de Inventario</a></li>
+                                    <li><a href="#" class="text-decoration-none">Usuarios y Roles</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><i class="bi bi-keyboard me-1"></i>Atajos de Teclado</h6>
+                                <ul class="list-unstyled small">
+                                    <li><kbd>Ctrl</kbd> + <kbd>N</kbd> - Nuevo elemento</li>
+                                    <li><kbd>Ctrl</kbd> + <kbd>S</kbd> - Guardar</li>
+                                    <li><kbd>Ctrl</kbd> + <kbd>F</kbd> - Buscar</li>
+                                    <li><kbd>Esc</kbd> - Cancelar/Cerrar</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="text-center">
+                            <p class="mb-2">¿Necesitas más ayuda?</p>
+                            <a href="mailto:support@drinkhouse.com" class="btn btn-primary btn-sm">
+                                <i class="bi bi-envelope me-1"></i>
+                                Contactar Soporte
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer styles -->
+        <style>
+            .footer {
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border-top: 1px solid #dee2e6;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            }
+            
+            .footer-brand {
+                font-size: 1.1rem;
+                color: var(--bs-primary);
+            }
+            
+            .footer h6 {
+                color: #495057;
+                font-weight: 600;
+                font-size: 0.875rem;
+            }
+            
+            .footer .list-unstyled li {
+                margin-bottom: 0.25rem;
+            }
+            
+            .footer a:hover {
+                color: var(--bs-primary) !important;
+                transform: translateX(2px);
+                transition: all 0.3s ease;
+            }
+            
+            @media (max-width: 767.98px) {
+                .footer .col-12 {
+                    text-align: center;
+                }
+                
+                .footer .col-12 .d-flex {
+                    justify-content: center;
+                }
+            }
+        </style>
+        
+        <!-- Footer JavaScript -->
+        <script>
+            function showSystemInfo() {
+                const info = {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    cookiesEnabled: navigator.cookieEnabled,
+                    screenResolution: screen.width + 'x' + screen.height,
+                    timestamp: new Date().toLocaleString()
+                };
+                
+                let message = 'Información del Sistema:\n\n';
+                for (const [key, value] of Object.entries(info)) {
+                    message += `${key}: ${value}\n`;
+                }
+                
+                alert(message);
+            }
+        </script>
+    </div>
+</body>
+</html>

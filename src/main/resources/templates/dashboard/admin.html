@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/main :: layout (~{::title}, ~{::div})}">
+<head>
+    <title>Dashboard Administrativo - DrinkHouse</title>
+    <style>
+        /* Dashboard Admin Responsive Styles */
+        
+        /* KPI Cards - Enhanced Responsive */
+        .card.border-0.shadow-sm {
+            transition: all 0.3s ease;
+        }
+        
+        .card-body {
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Action Buttons - Touch-Friendly (44x44px minimum) */
+        .btn.w-100.py-3 {
+            min-height: 88px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 0.5rem !important;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .btn.w-100.py-3 i {
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Alert Items - Responsive */
+        .list-group-item {
+            padding: 1rem;
+            transition: background-color 0.2s ease;
+        }
+        
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Mobile First - Extra Small Devices (< 576px) */
+        @media (max-width: 575.98px) {
+            /* Dashboard Header */
+            .d-flex.justify-content-between.align-items-center.mb-4 {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 0.75rem;
+            }
+            
+            .d-flex.justify-content-between.align-items-center.mb-4 h1 {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            /* KPI Cards - Stack on mobile */
+            .row.g-4 .col-md-6.col-lg-3 {
+                padding: 0 0.75rem;
+                margin-bottom: 1rem;
+            }
+            
+            .card-body {
+                padding: 1rem;
+                min-height: 100px;
+            }
+            
+            .card-body h2 {
+                font-size: 1.75rem;
+            }
+            
+            .card-body h6 {
+                font-size: 0.875rem;
+            }
+            
+            .card-body .bg-primary.bg-opacity-10,
+            .card-body .bg-warning.bg-opacity-10,
+            .card-body .bg-info.bg-opacity-10,
+            .card-body .bg-success.bg-opacity-10 {
+                padding: 0.75rem !important;
+            }
+            
+            .card-body .fs-4 {
+                font-size: 1.25rem !important;
+            }
+            
+            /* Action Buttons - Stack on mobile */
+            .row.g-3 .col-md-6.col-lg-3 {
+                padding: 0 0.5rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .btn.w-100.py-3 {
+                min-height: 80px;
+                padding: 0.75rem 0.5rem !important;
+            }
+            
+            .btn.w-100.py-3 i {
+                font-size: 1.5rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .btn.w-100.py-3 .d-block.mb-2 {
+                margin-bottom: 0.5rem !important;
+            }
+            
+            /* Card Headers - Mobile */
+            .card-header {
+                padding: 0.75rem 1rem;
+            }
+            
+            .card-header h5 {
+                font-size: 1rem;
+                margin: 0;
+            }
+            
+            .card-header .btn-sm {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+                min-height: 32px;
+            }
+            
+            /* Alert List - Mobile */
+            .list-group-item {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .list-group-item h6 {
+                font-size: 0.875rem;
+            }
+            
+            .list-group-item .small {
+                font-size: 0.75rem !important;
+            }
+            
+            .list-group-item .badge {
+                font-size: 0.65rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .list-group-item .btn-link {
+                font-size: 0.75rem;
+                padding: 0.25rem;
+            }
+            
+            /* System Status - Mobile */
+            .d-flex.justify-content-between.align-items-center {
+                font-size: 0.875rem;
+            }
+            
+            .d-flex.justify-content-between.align-items-center .badge {
+                font-size: 0.7rem;
+            }
+            
+            /* Row spacing - Mobile */
+            .row.g-4 {
+                margin-bottom: 1rem !important;
+                gap: 0.5rem;
+            }
+            
+            .mb-4 {
+                margin-bottom: 1rem !important;
+            }
+            
+            /* Text overflow handling */
+            .text-muted.small {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+            
+            /* Ensure minimum touch target size */
+            a, button, .btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            /* Icon adjustments */
+            .bi {
+                vertical-align: middle;
+            }
+        }
+        
+        /* Small Devices - Portrait Phones (≥ 576px) */
+        @media (min-width: 576px) and (max-width: 767.98px) {
+            .d-flex.justify-content-between.align-items-center.mb-4 h1 {
+                font-size: 1.75rem;
+            }
+            
+            /* KPI Cards - 2 columns on small devices */
+            .row.g-4 .col-md-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+            
+            .card-body h2 {
+                font-size: 2rem;
+            }
+            
+            /* Action Buttons - 2 columns */
+            .row.g-3 .col-md-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+            
+            .btn.w-100.py-3 {
+                min-height: 85px;
+            }
+        }
+        
+        /* Medium Devices - Tablets (≥ 768px) */
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            /* KPI Cards - 2 columns on tablets */
+            .row.g-4 .col-md-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+            
+            .card-body {
+                padding: 1.25rem;
+            }
+            
+            /* Action Buttons - 2 columns on tablets */
+            .row.g-3 .col-md-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+            
+            .btn.w-100.py-3 {
+                min-height: 90px;
+                font-size: 0.9rem;
+            }
+            
+            /* Alert and Status cards - Full width */
+            .col-lg-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+                margin-bottom: 1.5rem;
+            }
+        }
+        
+        /* Large Devices - Desktops (≥ 992px) */
+        @media (min-width: 992px) and (max-width: 1199.98px) {
+            /* KPI Cards - 4 columns on desktop */
+            .row.g-4 .col-lg-3 {
+                flex: 0 0 25%;
+                max-width: 25%;
+            }
+            
+            /* Action Buttons - 4 columns */
+            .row.g-3 .col-lg-3 {
+                flex: 0 0 25%;
+                max-width: 25%;
+            }
+            
+            /* Alert and Status cards - 2 columns */
+            .col-lg-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+        
+        /* Extra Large Devices - Large Desktops (≥ 1200px) */
+        @media (min-width: 1200px) {
+            .container-fluid {
+                padding: 0 2rem;
+            }
+            
+            .card-body {
+                padding: 1.5rem;
+            }
+            
+            .btn.w-100.py-3 {
+                min-height: 95px;
+                font-size: 1rem;
+            }
+        }
+        
+        /* Landscape Orientation - Mobile */
+        @media (max-width: 767.98px) and (orientation: landscape) {
+            .row.g-4 .col-md-6.col-lg-3 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+            
+            .card-body {
+                min-height: 90px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .btn,
+            .card-header .btn-sm,
+            .list-group-item .btn-link {
+                display: none !important;
+            }
+            
+            .card {
+                page-break-inside: avoid;
+                box-shadow: none !important;
+                border: 1px solid #dee2e6 !important;
+            }
+            
+            .row.g-4,
+            .row.g-3 {
+                gap: 1rem;
+            }
+        }
+        
+        /* High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+            .card {
+                border: 2px solid #000 !important;
+            }
+            
+            .btn {
+                border: 2px solid currentColor !important;
+            }
+            
+            .badge {
+                border: 1px solid currentColor;
+            }
+        }
+        
+        /* Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+            .card,
+            .btn,
+            .list-group-item {
+                transition: none !important;
+            }
+        }
+        
+        /* Focus Visible for Accessibility */
+        .card:focus-visible,
+        .btn:focus-visible,
+        .list-group-item:focus-visible {
+            outline: 3px solid #4c84ff;
+            outline-offset: 2px;
+        }
+        
+        /* Ensure icon sizing is consistent */
+        .bi-speedometer2,
+        .bi-person-circle,
+        .bi-box-seam,
+        .bi-exclamation-triangle,
+        .bi-clipboard-check,
+        .bi-people,
+        .bi-lightning-charge,
+        .bi-bell,
+        .bi-activity {
+            font-size: 1em;
+            vertical-align: middle;
+        }
+        
+        /* Scrollbar styling for alert lists on mobile */
+        @media (max-width: 767.98px) {
+            .card-body {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            
+            .card-body::-webkit-scrollbar {
+                width: 6px;
+            }
+            
+            .card-body::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+            
+            .card-body::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 10px;
+            }
+            
+            .card-body::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <!-- Header del Dashboard -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i class="bi bi-speedometer2 me-2"></i>
+                Dashboard Administrativo
+            </h1>
+            <div class="text-muted">
+                <i class="bi bi-person-circle me-1"></i>
+                <span th:text="${userName}">Usuario</span>
+            </div>
+        </div>
+
+        <!-- Tarjetas de KPIs -->
+        <div class="row g-4 mb-4">
+            <!-- Total de Productos -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted mb-2">Total Productos</h6>
+                                <h2 class="mb-0 fw-bold" th:text="${totalProducts}">0</h2>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 p-3 rounded">
+                                <i class="bi bi-box-seam text-primary fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alertas de Stock Bajo -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted mb-2">Alertas Stock Bajo</h6>
+                                <h2 class="mb-0 fw-bold text-warning" th:text="${lowStockAlerts}">0</h2>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 p-3 rounded">
+                                <i class="bi bi-exclamation-triangle text-warning fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Órdenes Pendientes -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted mb-2">Órdenes Pendientes</h6>
+                                <h2 class="mb-0 fw-bold text-info" th:text="${pendingOrders}">0</h2>
+                            </div>
+                            <div class="bg-info bg-opacity-10 p-3 rounded">
+                                <i class="bi bi-clipboard-check text-info fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usuarios Activos (solo admin) -->
+            <div class="col-md-6 col-lg-3" th:if="${activeUsers != null}">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted mb-2">Usuarios Activos</h6>
+                                <h2 class="mb-0 fw-bold text-success" th:text="${activeUsers}">0</h2>
+                            </div>
+                            <div class="bg-success bg-opacity-10 p-3 rounded">
+                                <i class="bi bi-people text-success fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-lightning-charge me-2"></i>
+                            Acciones Rápidas
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6 col-lg-3">
+                                <a th:href="@{/productos/new}" class="btn btn-outline-primary w-100 py-3">
+                                    <i class="bi bi-plus-circle fs-4 d-block mb-2"></i>
+                                    Nuevo Producto
+                                </a>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <a th:href="@{/ordenes/new}" class="btn btn-outline-info w-100 py-3">
+                                    <i class="bi bi-cart-plus fs-4 d-block mb-2"></i>
+                                    Nueva Orden
+                                </a>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <a th:href="@{/productos/identify-ia}" class="btn btn-outline-success w-100 py-3">
+                                    <i class="bi bi-cpu fs-4 d-block mb-2"></i>
+                                    Identificar con IA
+                                </a>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <a th:href="@{/movimientos/new}" class="btn btn-outline-warning w-100 py-3">
+                                    <i class="bi bi-arrow-left-right fs-4 d-block mb-2"></i>
+                                    Nuevo Movimiento
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas Recientes y Estado del Sistema -->
+        <div class="row g-4">
+            <!-- Alertas Recientes -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-bell me-2"></i>
+                            Alertas Recientes
+                        </h5>
+                        <a th:href="@{/alertas}" class="btn btn-sm btn-outline-primary">
+                            Ver todas
+                            <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <!-- Lista de alertas recientes -->
+                        <div th:if="${recentAlerts != null and !#lists.isEmpty(recentAlerts)}" class="list-group list-group-flush">
+                            <div th:each="alerta : ${recentAlerts}" 
+                                 class="list-group-item px-0 border-start-0 border-end-0">
+                                <div class="d-flex align-items-start">
+                                    <!-- Icono según tipo de alerta -->
+                                    <div th:classappend="${alerta.tipo == 'STOCK_BAJO' ? 'text-warning' : 
+                                                          alerta.tipo == 'VENCIMIENTO_PROXIMO' ? 'text-danger' :
+                                                          alerta.tipo == 'SISTEMA' ? 'text-info' :
+                                                          alerta.tipo == 'USUARIO' ? 'text-primary' : 'text-secondary'}" 
+                                         class="me-3 fs-5 mt-1">
+                                        <i th:classappend="${alerta.tipo == 'STOCK_BAJO' ? 'bi-exclamation-triangle' : 
+                                                            alerta.tipo == 'VENCIMIENTO_PROXIMO' ? 'bi-clock-history' :
+                                                            alerta.tipo == 'SISTEMA' ? 'bi-gear' :
+                                                            alerta.tipo == 'USUARIO' ? 'bi-person' : 'bi-building'}"></i>
+                                    </div>
+                                    
+                                    <!-- Contenido de la alerta -->
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start mb-1">
+                                            <h6 class="mb-0 fw-semibold" th:text="${alerta.titulo}">Título de la alerta</h6>
+                                            <!-- Badge de prioridad -->
+                                            <span th:classappend="${alerta.prioridad == 'ALTA' ? 'bg-danger' : 
+                                                                   alerta.prioridad == 'MEDIA' ? 'bg-warning' : 'bg-secondary'}" 
+                                                  class="badge ms-2 text-uppercase small" 
+                                                  th:text="${alerta.prioridad}">
+                                                MEDIA
+                                            </span>
+                                        </div>
+                                        <p class="mb-1 text-muted small" th:text="${alerta.mensaje}">
+                                            Mensaje de la alerta
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-muted small">
+                                                <i class="bi bi-clock me-1"></i>
+                                                <span th:if="${alerta.fechaCreacion != null}"
+                                                      th:text="${#temporals.format(alerta.fechaCreacion, 'dd/MM/yyyy HH:mm')}">
+                                                    01/01/2024 12:00
+                                                </span>
+                                            </span>
+                                            <!-- Link a la entidad relacionada si existe -->
+                                            <a th:if="${alerta.entidadTipo == 'PRODUCTO' and alerta.entidadId != null}"
+                                               th:href="@{/productos/{id}/edit(id=${alerta.entidadId})}"
+                                               class="btn btn-sm btn-link p-0">
+                                                Ver producto
+                                                <i class="bi bi-arrow-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mensaje cuando no hay alertas -->
+                        <div th:if="${recentAlerts == null or #lists.isEmpty(recentAlerts)}" 
+                             class="text-center text-muted py-5">
+                            <i class="bi bi-check-circle fs-1 d-block mb-3 text-success"></i>
+                            <h6 class="mb-1">No hay alertas pendientes</h6>
+                            <p class="small mb-0">Todo está funcionando correctamente</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado del Sistema -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-activity me-2"></i>
+                            Estado del Sistema
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Estado de la Base de Datos -->
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                            <div>
+                                <i th:classappend="${dbStatusClass == 'success' ? 'bi-database text-success' : 
+                                                     dbStatusClass == 'danger' ? 'bi-database text-danger' : 
+                                                     'bi-database text-secondary'}" 
+                                   class="me-2"></i>
+                                <span>Base de Datos</span>
+                            </div>
+                            <span th:classappend="${'bg-' + dbStatusClass}" 
+                                  class="badge" 
+                                  th:text="${dbStatus}">
+                                Operativo
+                            </span>
+                        </div>
+                        
+                        <!-- Estado del API Backend -->
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                            <div>
+                                <i th:classappend="${apiStatusClass == 'success' ? 'bi-cloud text-success' : 
+                                                     apiStatusClass == 'danger' ? 'bi-cloud-slash text-danger' : 
+                                                     'bi-cloud text-secondary'}" 
+                                   class="me-2"></i>
+                                <span>API Backend</span>
+                            </div>
+                            <span th:classappend="${'bg-' + apiStatusClass}" 
+                                  class="badge" 
+                                  th:text="${apiStatus}">
+                                Conectado
+                            </span>
+                        </div>
+                        
+                        <!-- Última Sincronización -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-clock-history me-2 text-info"></i>
+                                <span>Última sincronización</span>
+                            </div>
+                            <span class="text-muted small" th:text="${lastSync}">
+                                Hace 2 minutos
+                            </span>
+                        </div>
+                        
+                        <!-- Información adicional del sistema -->
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="text-muted small mb-1">Tiempo de actividad</div>
+                                    <div class="fw-semibold text-success">
+                                        <i class="bi bi-arrow-up-circle me-1"></i>
+                                        Activo
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-muted small mb-1">Estado general</div>
+                                    <div class="fw-semibold" 
+                                         th:classappend="${dbStatusClass == 'success' and apiStatusClass == 'success' ? 'text-success' : 'text-warning'}">
+                                        <i th:classappend="${dbStatusClass == 'success' and apiStatusClass == 'success' ? 
+                                                           'bi-check-circle-fill' : 'bi-exclamation-circle-fill'}" 
+                                           class="me-1"></i>
+                                        <span th:text="${dbStatusClass == 'success' and apiStatusClass == 'success' ? 
+                                                        'Saludable' : 'Con alertas'}">
+                                            Saludable
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

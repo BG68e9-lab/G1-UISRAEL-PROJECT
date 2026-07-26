@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/main :: layout (~{::title}, ~{::div})}">
+<head>
+    <title th:text="${pageTitle} + ' - DrinkHouse'">Proveedor - DrinkHouse</title>
+</head>
+<body>
+    <div>
+        <!-- Header con título -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i th:class="${isEdit ? 'bi bi-pencil-square me-2' : 'bi bi-plus-circle me-2'}"></i>
+                <span th:text="${pageTitle}">Formulario de Proveedor</span>
+            </h1>
+            <a th:href="@{/proveedores}" class="btn btn-outline-secondary" style="min-height: 44px; min-width: 44px;">
+                <i class="bi bi-arrow-left me-2"></i>
+                Volver
+            </a>
+        </div>
+        
+        <!-- Mensaje de error (si existe) -->
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            <span th:text="${errorMessage}">Error en la operación</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        
+        <!-- Formulario de proveedor -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-truck me-2"></i>
+                    Información del Proveedor
+                </h5>
+            </div>
+            <div class="card-body">
+                <form th:object="${proveedor}" 
+                      th:action="${isEdit ? '/proveedores/' + ${proveedor.proveedorId} + '/edit' : '/proveedores/new'}" 
+                      method="post"
+                      novalidate>
+                    
+                    <!-- Campo oculto para ID en modo edición -->
+                    <input type="hidden" th:if="${isEdit}" th:field="*{proveedorId}">
+                    
+                    <!-- Sección: Identificación -->
+                    <h6 class="mb-3 text-primary">
+                        <i class="bi bi-card-text me-2"></i>
+                        Identificación Tributaria
+                    </h6>
+                    
+                    <div class="row g-3 mb-4">
+                        <!-- RUC -->
+                        <div class="col-md-4">
+                            <label for="ruc" class="form-label">
+                                <i class="bi bi-hash me-1"></i>
+                                RUC <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="ruc" 
+                                   th:field="*{ruc}"
+                                   placeholder="1234567890001"
+                                   maxlength="13"
+                                   pattern="\d{13}"
+                                   required
+                                   autofocus>
+                            <div class="form-text">
+                                Exactamente 13 dígitos (formato Ecuador)
+                            </div>
+                            <div class="invalid-feedback">
+                                El RUC debe tener exactamente 13 dígitos numéricos
+                            </div>
+                        </div>
+                        
+                        <!-- Razón Social -->
+                        <div class="col-md-8">
+                            <label for="razonSocial" class="form-label">
+                                <i class="bi bi-building me-1"></i>
+                                Razón Social <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="razonSocial" 
+                                   th:field="*{razonSocial}"
+                                   placeholder="Ej: Distribuidora de Licores S.A."
+                                   maxlength="200"
+                                   required>
+                            <div class="form-text">
+                                Nombre legal de la empresa (máximo 200 caracteres)
+                            </div>
+                            <div class="invalid-feedback">
+                                La razón social es obligatoria
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección: Información de Contacto -->
+                    <h6 class="mb-3 text-primary">
+                        <i class="bi bi-envelope me-2"></i>
+                        Información de Contacto
+                    </h6>
+                    
+                    <div class="row g-3 mb-4">
+                        <!-- Dirección -->
+                        <div class="col-md-12">
+                            <label for="direccion" class="form-label">
+                                <i class="bi bi-geo-alt me-1"></i>
+                                Dirección <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" 
+                                      id="direccion" 
+                                      th:field="*{direccion}"
+                                      placeholder="Ej: Av. Principal 123 y Secundaria, Edificio XYZ, Piso 5"
+                                      rows="2"
+                                      maxlength="300"
+                                      required></textarea>
+                            <div class="form-text">
+                                Dirección completa del proveedor (máximo 300 caracteres)
+                            </div>
+                            <div class="invalid-feedback">
+                                La dirección es obligatoria
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mb-4">
+                        <!-- Teléfono -->
+                        <div class="col-md-6">
+                            <label for="telefono" class="form-label">
+                                <i class="bi bi-telephone me-1"></i>
+                                Teléfono
+                            </label>
+                            <input type="tel" 
+                                   class="form-control" 
+                                   id="telefono" 
+                                   th:field="*{telefono}"
+                                   placeholder="Ej: +593-2-2345678 o 0999999999"
+                                   pattern="^[+]?[0-9\-\s\(\)]{7,20}$"
+                                   maxlength="20">
+                            <div class="form-text">
+                                Teléfono de contacto (opcional, 7-20 caracteres)
+                            </div>
+                            <div class="invalid-feedback">
+                                El teléfono debe tener un formato válido (7-20 caracteres, solo números, espacios, guiones y paréntesis)
+                            </div>
+                        </div>
+                        
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope-at me-1"></i>
+                                Email <span class="text-danger">*</span>
+                            </label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   th:field="*{email}"
+                                   placeholder="contacto@proveedor.com"
+                                   maxlength="100"
+                                   required>
+                            <div class="form-text">
+                                Correo electrónico de contacto (máximo 100 caracteres)
+                            </div>
+                            <div class="invalid-feedback">
+                                El email es obligatorio y debe tener un formato válido
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección: Estado -->
+                    <h6 class="mb-3 text-primary">
+                        <i class="bi bi-toggle-on me-2"></i>
+                        Estado del Proveedor
+                    </h6>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       role="switch"
+                                       id="activo" 
+                                       th:field="*{activo}"
+                                       style="width: 48px; height: 24px;">
+                                <label class="form-check-label ms-2" for="activo">
+                                    <strong>Proveedor Activo</strong>
+                                </label>
+                            </div>
+                            <div class="form-text ms-5">
+                                Solo los proveedores activos aparecerán disponibles al crear órdenes de compra
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información sobre validación de RUC -->
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Formato de RUC:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>El RUC debe tener <strong>exactamente 13 dígitos</strong> (formato Ecuador)</li>
+                            <li>Solo se permiten números, sin espacios ni guiones</li>
+                            <li>Ejemplo válido: <code>1234567890001</code></li>
+                            <li>El sistema verificará que el RUC no esté duplicado</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Botones de acción -->
+                    <div class="row">
+                        <div class="col-12">
+                            <hr class="my-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a th:href="@{/proveedores}" 
+                                   class="btn btn-secondary"
+                                   style="min-height: 44px; min-width: 44px;">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    Cancelar
+                                </a>
+                                <button type="submit" 
+                                        class="btn btn-primary"
+                                        style="min-height: 44px; min-width: 44px;">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <span th:text="${isEdit ? 'Actualizar' : 'Guardar'}">Guardar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Información adicional en modo edición -->
+        <div class="card mt-3" th:if="${isEdit and proveedor.fechaCreacion != null}">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="bi bi-calendar-check me-1"></i>
+                            <strong>Proveedor creado:</strong> 
+                            <span th:text="${#temporals.format(proveedor.fechaCreacion, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</span>
+                        </small>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <small class="text-muted" th:if="${proveedor.usuarioCreacion != null}">
+                            <i class="bi bi-person me-1"></i>
+                            <strong>Creado por:</strong> 
+                            <span th:text="${proveedor.usuarioCreacion}">Usuario</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript para validación del RUC -->
+    <script>
+        // Validación en tiempo real del RUC
+        document.addEventListener('DOMContentLoaded', function() {
+            const rucInput = document.getElementById('ruc');
+            const form = rucInput.closest('form');
+            
+            // Solo permitir números en el campo RUC
+            rucInput.addEventListener('input', function(e) {
+                // Eliminar cualquier carácter que no sea número
+                this.value = this.value.replace(/\D/g, '');
+                
+                // Limitar a 13 caracteres
+                if (this.value.length > 13) {
+                    this.value = this.value.substring(0, 13);
+                }
+                
+                // Validación visual
+                if (this.value.length === 13) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else if (this.value.length > 0) {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.remove('is-invalid');
+                }
+            });
+            
+            // Validación al enviar el formulario
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                
+                // Validar RUC
+                const rucValue = rucInput.value.trim();
+                if (rucValue.length !== 13 || !/^\d{13}$/.test(rucValue)) {
+                    rucInput.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    rucInput.classList.remove('is-invalid');
+                    rucInput.classList.add('is-valid');
+                }
+                
+                // Validar otros campos requeridos
+                const requiredFields = form.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        field.classList.remove('is-invalid');
+                        field.classList.add('is-valid');
+                    }
+                });
+                
+                // Validar email
+                const emailInput = document.getElementById('email');
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (emailInput.value && !emailPattern.test(emailInput.value)) {
+                    emailInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+                
+                // Validar teléfono (si tiene valor)
+                const telefonoInput = document.getElementById('telefono');
+                const telefonoPattern = /^[+]?[0-9\-\s\(\)]{7,20}$/;
+                if (telefonoInput.value && !telefonoPattern.test(telefonoInput.value)) {
+                    telefonoInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Scroll al primer campo inválido
+                    const firstInvalid = form.querySelector('.is-invalid');
+                    if (firstInvalid) {
+                        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        firstInvalid.focus();
+                    }
+                }
+            });
+            
+            // Limpiar validación cuando el usuario empieza a escribir
+            const allInputs = form.querySelectorAll('input, textarea');
+            allInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value.trim() && this !== rucInput) {
+                        this.classList.remove('is-invalid');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

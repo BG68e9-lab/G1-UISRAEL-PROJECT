@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Breadcrumb Fragment -->
+    <div th:fragment="breadcrumb">
+        <!-- Dynamic breadcrumb based on controller-provided breadcrumbs -->
+        <nav th:if="${breadcrumbs != null and not #lists.isEmpty(breadcrumbs)}" 
+             aria-label="navegación de ruta" 
+             class="breadcrumb-nav">
+            <ol class="breadcrumb enhanced-breadcrumb">
+                <li th:each="crumb, iterStat : ${breadcrumbs}" 
+                    th:class="${crumb.active ? 'breadcrumb-item active' : 'breadcrumb-item'}">
+                    <a th:if="${not crumb.active}" 
+                       th:href="${crumb.url}" 
+                       th:text="${crumb.name}"
+                       class="breadcrumb-link"
+                       th:title="'Ir a ' + ${crumb.name}">Enlace</a>
+                    <span th:if="${crumb.active}" 
+                          th:text="${crumb.name}"
+                          class="breadcrumb-current">Activo</span>
+                    <i th:if="${not iterStat.last and not crumb.active}" 
+                       class="bi bi-chevron-right breadcrumb-separator"></i>
+                </li>
+            </ol>
+        </nav>
+        
+        <!-- Default breadcrumb when no breadcrumbs are provided -->
+        <nav th:if="${breadcrumbs == null or #lists.isEmpty(breadcrumbs)}" 
+             aria-label="navegación de ruta"
+             class="breadcrumb-nav">
+            <ol class="breadcrumb enhanced-breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/dashboard}" 
+                       class="breadcrumb-link"
+                       title="Ir al panel principal">
+                        <i class="bi bi-house-door me-1"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li th:if="${pageTitle != null}" 
+                    class="breadcrumb-item active" 
+                    aria-current="page">
+                    <span class="breadcrumb-current" th:text="${pageTitle}">Página Actual</span>
+                </li>
+            </ol>
+        </nav>
+    </div>
+    
+    <!-- Simple breadcrumb for specific paths -->
+    <div th:fragment="simple-breadcrumb" th:with="homeName=${homeName ?: 'Dashboard'}, homeUrl=${homeUrl ?: '/dashboard'}">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{${homeUrl}}" class="text-decoration-none">
+                        <i class="bi bi-house-door me-1"></i>
+                        <span th:text="${homeName}">Dashboard</span>
+                    </a>
+                </li>
+                <li th:if="${currentPageName != null}" 
+                    class="breadcrumb-item active" 
+                    aria-current="page" 
+                    th:text="${currentPageName}">
+                    Página Actual
+                </li>
+            </ol>
+        </nav>
+    </div>
+</body>
+</html>
+        
+        <!-- Breadcrumb styles -->
+        <style>
+            .breadcrumb-nav {
+                margin-bottom: 1.5rem;
+            }
+            
+            .enhanced-breadcrumb {
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+                border-radius: 12px;
+                padding: 1rem 1.5rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                border: 1px solid #e9ecef;
+                margin-bottom: 0;
+                font-size: 0.9rem;
+            }
+            
+            .enhanced-breadcrumb .breadcrumb-item {
+                display: inline-flex;
+                align-items: center;
+            }
+            
+            .breadcrumb-link {
+                color: #6c757d;
+                text-decoration: none;
+                padding: 0.25rem 0.5rem;
+                border-radius: 6px;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+            }
+            
+            .breadcrumb-link:hover {
+                color: var(--primary-color);
+                background-color: rgba(76, 132, 255, 0.1);
+                transform: translateX(2px);
+            }
+            
+            .breadcrumb-current {
+                color: #495057;
+                font-weight: 600;
+                padding: 0.25rem 0.5rem;
+                background-color: rgba(76, 132, 255, 0.1);
+                border-radius: 6px;
+            }
+            
+            .breadcrumb-separator {
+                color: var(--primary-color);
+                font-size: 0.8rem;
+                margin: 0 0.5rem;
+            }
+            
+            /* Override default Bootstrap breadcrumb separator */
+            .enhanced-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+                content: none;
+            }
+            
+            /* Mobile adjustments */
+            @media (max-width: 767.98px) {
+                .enhanced-breadcrumb {
+                    padding: 0.75rem 1rem;
+                    font-size: 0.85rem;
+                    border-radius: 8px;
+                }
+                
+                .breadcrumb-link span:not(.bi) {
+                    display: none;
+                }
+                
+                .breadcrumb-current {
+                    max-width: 150px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                
+                .breadcrumb-separator {
+                    margin: 0 0.25rem;
+                }
+            }
+            
+            /* Animation for breadcrumb updates */
+            .breadcrumb-nav {
+                animation: slideInFromTop 0.5s ease-out;
+            }
+            
+            @keyframes slideInFromTop {
+                from {
+                    transform: translateY(-20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+        </style>
+    </div>

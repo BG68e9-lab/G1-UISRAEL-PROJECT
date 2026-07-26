@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Test Menu Fragment (Test version without httpServletRequest dependency) -->
+    <div th:fragment="menu">
+        <!-- Desktop Sidebar -->
+        <nav class="sidebar d-none d-lg-block">
+            <div class="sidebar-content p-3">
+                <!-- User welcome section -->
+                <div class="user-welcome mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="user-avatar-sidebar me-3">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <div class="user-details">
+                            <div class="user-name-sidebar" th:text="${session.userName ?: #strings.substringBefore(session.userEmail, '@')}">Usuario</div>
+                            <small class="user-role-sidebar" th:text="${#sets.contains(session.userRoles, 'ADMIN') ? 'Administrador' : 'Empleado'}">Empleado</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="sidebar-divider">
+                
+                <!-- Main Navigation -->
+                <ul class="nav nav-pills flex-column">
+                    <!-- Dashboard -->
+                    <li class="nav-item mb-1">
+                        <a th:href="@{/dashboard}" 
+                           class="nav-link sidebar-link" 
+                           th:classappend="${currentURI == '/dashboard' ? 'active' : ''}"
+                           title="Ver panel principal">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Products section -->
+                    <li class="nav-section-header">
+                        <small class="text-uppercase fw-semibold">Productos</small>
+                    </li>
+                    
+                    <li class="nav-item mb-1">
+                        <a th:href="@{/productos}" 
+                           class="nav-link sidebar-link"
+                           th:classappend="${#strings.contains(currentURI, '/productos') ? 'active' : ''}"
+                           title="Gestionar productos">
+                            <i class="bi bi-box me-2"></i>
+                            <span class="nav-text">Productos</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Categories (Admin only) -->
+                    <li th:if="${session.userRoles != null and session.userRoles.contains('ADMIN')}" class="nav-item mb-1">
+                        <a th:href="@{/categorias}" 
+                           class="nav-link sidebar-link"
+                           th:classappend="${#strings.contains(currentURI, '/categorias') ? 'active' : ''}"
+                           title="Gestionar categorías de productos">
+                            <i class="bi bi-tags me-2"></i>
+                            <span class="nav-text">Categorías</span>
+                        </a>
+                    </li>
+                    
+                    <!-- IA Product Identification -->
+                    <li class="nav-item mb-1">
+                        <a th:href="@{/productos/identify-ia}" 
+                           class="nav-link sidebar-link"
+                           th:classappend="${#strings.contains(currentURI, '/productos/identify-ia') ? 'active' : ''}"
+                           title="Identificar productos con IA">
+                            <i class="bi bi-camera me-2"></i>
+                            <span class="nav-text">Identificación IA</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Suppliers section (Admin only) -->
+                    <li th:if="${session.userRoles != null and session.userRoles.contains('ADMIN')}" class="nav-section-header">
+                        <small class="text-uppercase fw-semibold">Proveedores</small>
+                    </li>
+                    
+                    <li th:if="${session.userRoles != null and session.userRoles.contains('ADMIN')}" class="nav-item mb-1">
+                        <a th:href="@{/proveedores}" 
+                           class="nav-link sidebar-link"
+                           th:classappend="${#strings.contains(currentURI, '/proveedores') ? 'active' : ''}"
+                           title="Gestionar proveedores">
+                            <i class="bi bi-truck me-2"></i>
+                            <span class="nav-text">Proveedores</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Orders section -->
+                    <li class="nav-section-header">
+                        <small class="text-uppercase fw-semibold">Órdenes</small>
+                    </li>
+                    
+                    <li class="nav-item mb-1">
+                        <a th:href="@{/ordenes}" 
+                           class="nav-link sidebar-link"
+                           th:classappend="${#strings.contains(currentURI, '/ordenes') ? 'active' : ''}"
+                           title="Gestionar órdenes de compra">
+                            <i class="bi bi-cart me-2"></i>
+                            <span class="nav-text">Órdenes de Compra</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Inventory section -->
+                    <li class="nav-section-header">
+                        <small class="text-uppercase fw-semibold">Inventario</small>
+                    </li>
+                    
+                    <li class="nav-item mb-1">
+                        <a th:href="@{/lotes}" 
+                           class="nav-link sidebar-link"
+                           th:classappend="${#strings.contains(currentURI, '/lotes') ? 'active' : ''}"
+                           title="Ver lotes de productos">
+                            <i class="bi bi-archive me-2"></i>
+                            <span class="nav-text">Lotes de Producto</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item mb-1">
+                        <a th:href="@{/movimientos}" 
+                           class="nav-link sidebar-link"
+                           th:classappend="${#strings.contains(currentURI, '/movimientos') ? 'active' : ''}"
+                           title="Registrar movimientos de inventario">
+                            <i class="bi bi-arrow-left-right me-2"></i>
+                            <span class="nav-text">Movimientos</span>
+                        </a>
+                    </li>
+                    
+                    <!-- User Management (Admin only) -->
+                    <li th:if="${session.userRoles != null and session.userRoles.contains('ADMIN')}" class="nav-section-header">
+                        <small class="text-uppercase fw-semibold">Administración</small>
+                    </li>
+                    
+                    <li th:if="${session.userRoles != null and session.userRoles.contains('ADMIN')}" class="nav-item mb-1">
+                        <a th:href="@{/usuarios}" 
+                           class="nav-link sidebar-link"
+                           th:classappend="${#strings.contains(currentURI, '/usuarios') ? 'active' : ''}"
+                           title="Gestionar usuarios del sistema">
+                            <i class="bi bi-people me-2"></i>
+                            <span class="nav-text">Usuarios</span>
+                        </a>
+                    </li>
+                    
+                    <li th:if="${session.userRoles != null and session.userRoles.contains('ADMIN')}" class="nav-item mb-1">
+                        <a th:href="@{/roles}" 
+                           class="nav-link sidebar-link"
+                           th:classappend="${#strings.contains(currentURI, '/roles') ? 'active' : ''}"
+                           title="Gestionar roles y permisos">
+                            <i class="bi bi-shield-check me-2"></i>
+                            <span class="nav-text">Roles</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Monitoring section -->
+                    <li class="nav-section-header">
+                        <small class="text-uppercase fw-semibold">Monitoreo</small>
+                    </li>
+                    
+                    <!-- Alerts -->
+                    <li class="nav-item mb-1">
+                        <a th:href="@{/alertas}" 
+                           class="nav-link sidebar-link d-flex justify-content-between align-items-center"
+                           th:classappend="${#strings.contains(currentURI, '/alertas') ? 'active' : ''}"
+                           title="Ver alertas del sistema">
+                            <span class="d-flex align-items-center">
+                                <i class="bi bi-bell me-2"></i>
+                                <span class="nav-text">Alertas</span>
+                            </span>
+                            <!-- Alert badge -->
+                            <span th:if="${alertCount != null and alertCount > 0}" 
+                                  class="badge bg-danger rounded-pill alert-badge" 
+                                  th:text="${alertCount > 99 ? '99+' : alertCount}">0</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Audit (Admin only) -->
+                    <li th:if="${session.userRoles != null and session.userRoles.contains('ADMIN')}" class="nav-item mb-1">
+                        <a th:href="@{/auditoria}" 
+                           class="nav-link sidebar-link"
+                           th:classappend="${#strings.contains(currentURI, '/auditoria') ? 'active' : ''}"
+                           title="Ver registros de auditoría">
+                            <i class="bi bi-journal-text me-2"></i>
+                            <span class="nav-text">Auditoría</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Configuration (Admin only) -->
+                    <li th:if="${session.userRoles != null and session.userRoles.contains('ADMIN')}" class="nav-item mb-1">
+                        <a th:href="@{/configuracion}" 
+                           class="nav-link sidebar-link"
+                           th:classappend="${#strings.contains(currentURI, '/configuracion') ? 'active' : ''}"
+                           title="Configurar sistema">
+                            <i class="bi bi-gear me-2"></i>
+                            <span class="nav-text">Configuración</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Sidebar footer with system status -->
+                <div class="sidebar-footer mt-4 pt-3 border-top">
+                    <small class="text-muted d-block mb-1">Estado del Sistema</small>
+                    <div class="d-flex align-items-center">
+                        <div class="status-indicator bg-success me-2"></div>
+                        <small class="text-muted">Operativo</small>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Mobile Sidebar (Offcanvas) -->
+        <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarMenu">
+            <div class="offcanvas-header">
+                <div class="d-flex align-items-center">
+                    <div class="logo-background-small me-2">
+                        <i class="bi bi-shop"></i>
+                    </div>
+                    <h5 class="offcanvas-title mb-0">
+                        <span th:text="${businessName ?: 'Drinkhouse'}">Drinkhouse</span>
+                    </h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar menú"></button>
+            </div>
+            <div class="offcanvas-body p-0">
+                <!-- Mobile user section -->
+                <div class="mobile-user-section p-3 bg-light border-bottom">
+                    <div class="d-flex align-items-center">
+                        <div class="user-avatar-mobile me-3">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold" th:text="${session.userName ?: #strings.substringBefore(session.userEmail, '@')}">Usuario</div>
+                            <small class="text-muted" th:text="${#sets.contains(session.userRoles, 'ADMIN') ? 'Administrador' : 'Empleado'}">Empleado</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-3">
+                    <!-- Mobile menu items (simplified version of desktop menu) -->
+                    <ul class="nav nav-pills flex-column mobile-nav">
+                        <!-- Dashboard -->
+                        <li class="nav-item mb-1">
+                            <a th:href="@{/dashboard}" 
+                               class="nav-link mobile-nav-link" 
+                               th:classappend="${currentURI == '/dashboard' ? 'active' : ''}"
+                               data-bs-dismiss="offcanvas">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item mb-1">
+                            <a th:href="@{/productos}" 
+                               class="nav-link mobile-nav-link"
+                               th:classappend="${#strings.contains(currentURI, '/productos') ? 'active' : ''}"
+                               data-bs-dismiss="offcanvas">
+                                <i class="bi bi-box me-2"></i>
+                                Productos
+                            </a>
+                        </li>
+                        
+                        <li th:if="${session.userRoles != null and session.userRoles.contains('ADMIN')}" class="nav-item mb-1">
+                            <a th:href="@{/categorias}" 
+                               class="nav-link mobile-nav-link"
+                               th:classappend="${#strings.contains(currentURI, '/categorias') ? 'active' : ''}"
+                               data-bs-dismiss="offcanvas">
+                                <i class="bi bi-tags me-2"></i>
+                                Categorías
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item mb-1">
+                            <a th:href="@{/ordenes}" 
+                               class="nav-link mobile-nav-link"
+                               th:classappend="${#strings.contains(currentURI, '/ordenes') ? 'active' : ''}"
+                               data-bs-dismiss="offcanvas">
+                                <i class="bi bi-cart me-2"></i>
+                                Órdenes de Compra
+                            </a>
+                        </li>
+                        
+                        <!-- Alerts with badge -->
+                        <li class="nav-item mb-1">
+                            <a th:href="@{/alertas}" 
+                               class="nav-link mobile-nav-link d-flex justify-content-between align-items-center"
+                               th:classappend="${#strings.contains(currentURI, '/alertas') ? 'active' : ''}"
+                               data-bs-dismiss="offcanvas">
+                                <span class="d-flex align-items-center">
+                                    <i class="bi bi-bell me-2"></i>
+                                    Alertas
+                                </span>
+                                <span th:if="${alertCount != null and alertCount > 0}" 
+                                      class="badge bg-danger rounded-pill" 
+                                      th:text="${alertCount}">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

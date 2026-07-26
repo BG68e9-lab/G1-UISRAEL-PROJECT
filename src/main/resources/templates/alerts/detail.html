@@ -1,0 +1,598 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
+<head>
+    <title th:text="${pageTitle + ' - Drinkhouse'}">Detalles de Alerta - Drinkhouse</title>
+</head>
+<body>
+<div th:fragment="content">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">
+                <i class="bi bi-bell me-2"></i>
+                <span th:text="${pageTitle}">Detalles de Alerta</span>
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/dashboard}" class="text-decoration-none">
+                            <i class="bi bi-house"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/alertas}" class="text-decoration-none">Alertas</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="'ID: ' + ${alert.alertaId}">ID: 123</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="d-flex gap-2">
+            <!-- Back Button -->
+            <a th:href="@{/alertas}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                <span class="d-none d-sm-inline">Volver a Alertas</span>
+                <span class="d-sm-none">Volver</span>
+            </a>
+            
+            <!-- Mark as Read/Unread Button -->
+            <form method="post" th:action="@{/alertas/{id}/mark-read(id=${alert.alertaId})}" class="d-inline">
+                <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}"/>
+                <input type="hidden" name="leida" th:value="${!alert.leida}"/>
+                <button type="submit" class="btn"
+                        th:classappend="*{alert.leida} ? 'btn-outline-warning' : 'btn-success'">
+                    <i th:class="*{alert.leida} ? 'bi bi-arrow-clockwise me-1' : 'bi bi-check-circle me-1'"></i>
+                    <span class="d-none d-sm-inline" th:text="*{alert.leida} ? 'Marcar como No Leída' : 'Marcar como Leída'">Marcar como Leída</span>
+                    <span class="d-sm-none" th:text="*{alert.leida} ? 'No Leída' : 'Leída'">Leída</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Alert Details -->
+        <div class="col-lg-8">
+            <!-- Alert Header Card -->
+            <div class="card mb-4" th:object="${alert}">
+                <div class="card-header" 
+                     th:class="'text-white ' + 
+                              (*{tipo} == 'STOCK_BAJO' ? 'bg-warning text-dark' :
+                               *{tipo} == 'VENCIMIENTO_PROXIMO' ? 'bg-danger' :
+                               *{tipo} == 'ALERTA_SISTEMA' ? 'bg-info' :
+                               'bg-secondary')">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="card-title mb-0">
+                                <i th:switch="*{tipo}"
+                                   th:class="'me-2 ' + 
+                                           (*{tipo} == 'STOCK_BAJO' ? 'bi bi-exclamation-triangle' :
+                                            *{tipo} == 'VENCIMIENTO_PROXIMO' ? 'bi bi-clock' :
+                                            *{tipo} == 'ALERTA_SISTEMA' ? 'bi bi-gear' :
+                                            'bi bi-wifi-off')">
+                                    <span th:case="'STOCK_BAJO'"></span>
+                                    <span th:case="'VENCIMIENTO_PROXIMO'"></span>
+                                    <span th:case="'ALERTA_SISTEMA'"></span>
+                                    <span th:case="'ERROR_INTEGRACION'"></span>
+                                </i>
+                                <span th:text="*{titulo}">Stock bajo detectado en productos</span>
+                            </h5>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <!-- Read Status -->
+                            <span th:if="*{!leida}" class="badge bg-light text-dark fs-6">
+                                <i class="bi bi-bell-fill me-1"></i>SIN LEER
+                            </span>
+                            <span th:if="*{leida}" class="badge bg-success fs-6">
+                                <i class="bi bi-check-circle me-1"></i>LEÍDA
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6 class="text-muted">Mensaje de la Alerta</h6>
+                            <div class="bg-light p-3 rounded mb-3">
+                                <p class="mb-0" th:text="*{mensaje}">
+                                    Se detectaron 3 productos con stock por debajo del nivel mínimo configurado. 
+                                    Es necesario realizar pedidos de reposición para evitar desabastecimiento.
+                                </p>
+                            </div>
+                            
+                            <!-- Additional Details -->
+                            <div th:if="*{detallesAdicionales}" class="mb-3">
+                                <h6 class="text-muted">Detalles Adicionales</h6>
+                                <div class="bg-info bg-opacity-10 p-3 rounded border border-info">
+                                    <pre class="mb-0 small" th:text="*{detallesAdicionales}">
+{
+  "productos_afectados": ["Producto A", "Producto B", "Producto C"],
+  "stock_minimo": 10,
+  "stock_actual": [5, 3, 2]
+}
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <h6 class="text-muted">Información General</h6>
+                            
+                            <div class="mb-3">
+                                <strong>ID de Alerta:</strong><br>
+                                <code th:text="*{alertaId}">12345</code>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <strong>Tipo:</strong><br>
+                                <span th:switch="*{tipo}" class="badge"
+                                      th:class="'badge ' + 
+                                               (*{tipo} == 'STOCK_BAJO' ? 'bg-warning text-dark' :
+                                                *{tipo} == 'VENCIMIENTO_PROXIMO' ? 'bg-danger' :
+                                                *{tipo} == 'ALERTA_SISTEMA' ? 'bg-info' :
+                                                'bg-secondary')">
+                                    <span th:case="'STOCK_BAJO'">STOCK BAJO</span>
+                                    <span th:case="'VENCIMIENTO_PROXIMO'">VENCIMIENTO PRÓXIMO</span>
+                                    <span th:case="'ALERTA_SISTEMA'">ALERTA DE SISTEMA</span>
+                                    <span th:case="'ERROR_INTEGRACION'">ERROR DE INTEGRACIÓN</span>
+                                </span>
+                            </div>
+                            
+                            <div th:if="*{prioridad}" class="mb-3">
+                                <strong>Prioridad:</strong><br>
+                                <span th:switch="*{prioridad}" class="badge"
+                                      th:class="'badge ' + 
+                                               (*{prioridad} == 'ALTA' ? 'bg-danger' :
+                                                *{prioridad} == 'MEDIA' ? 'bg-warning text-dark' :
+                                                'bg-success')">
+                                    <span th:case="'ALTA'">ALTA</span>
+                                    <span th:case="'MEDIA'">MEDIA</span>
+                                    <span th:case="'BAJA'">BAJA</span>
+                                </span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <strong>Fecha de Creación:</strong><br>
+                                <span th:text="*{fechaCreacion != null ? #temporals.format(fechaCreacion, 'dd/MM/yyyy HH:mm:ss') : 'N/A'}">
+                                    01/01/2024 10:30:45
+                                </span>
+                            </div>
+                            
+                            <div th:if="*{fechaLeida}" class="mb-3">
+                                <strong>Fecha de Lectura:</strong><br>
+                                <span th:text="${#temporals.format(alert.fechaLeida, 'dd/MM/yyyy HH:mm:ss')}">
+                                    01/01/2024 11:15:20
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Entity Card -->
+            <div th:if="${alert.entidadReferencia and alert.entidadId}" class="card mb-4" th:object="${alert}">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-link me-2"></i>Entidad Relacionada
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div>
+                                <h6 class="mb-1">Tipo de Entidad</h6>
+                                <p class="mb-2" th:text="*{entidadReferencia}">Producto</p>
+                                
+                                <h6 class="mb-1">ID de la Entidad</h6>
+                                <code th:text="*{entidadId}">123</code>
+                                
+                                <div th:if="*{entidadNombre}" class="mt-2">
+                                    <h6 class="mb-1">Nombre</h6>
+                                    <strong th:text="*{entidadNombre}">Whisky Johnnie Walker Red Label</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <!-- Dynamic link based on entity type -->
+                            <div th:switch="*{entidadReferencia}">
+                                <a th:case="'Producto'" 
+                                   th:href="@{'/products/' + *{entidadId}}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="bi bi-box me-1"></i>Ver Producto
+                                </a>
+                                <a th:case="'Lote'" 
+                                   th:href="@{/lotes/{id}(id=*{entidadId})}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="bi bi-archive me-1"></i>Ver Lote
+                                </a>
+                                <a th:case="'Order'" 
+                                   th:href="@{'/orders/' + *{entidadId}}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="bi bi-receipt me-1"></i>Ver Orden
+                                </a>
+                                <a th:case="'Usuario'" 
+                                   th:href="@{/usuarios/{id}(id=*{entidadId})}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="bi bi-person me-1"></i>Ver Usuario
+                                </a>
+                                <span th:case="*" class="text-muted">
+                                    Entidad no navegable
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Alert Metadata and Actions -->
+        <div class="col-lg-4">
+            <!-- Alert Timeline Card -->
+            <div class="card mb-4" th:object="${alert}">
+                <div class="card-header bg-success text-white">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-clock-history me-2"></i>Línea de Tiempo
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <!-- Alert Created -->
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 32px; height: 32px;">
+                                    <i class="bi bi-bell" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Alerta Creada</h6>
+                                <small class="text-muted">
+                                    <span th:text="*{fechaCreacion != null ? #temporals.format(fechaCreacion, 'dd/MM/yyyy HH:mm') : 'N/A'}">
+                                        01/01/2024 10:30
+                                    </span>
+                                </small>
+                                <div th:if="*{usuarioId}" class="mt-1">
+                                    <small class="text-muted">por <span th:text="*{usuarioId}">Sistema</span></small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Alert Read -->
+                        <div th:if="*{leida and fechaLeida}" class="d-flex align-items-start">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 32px; height: 32px;">
+                                    <i class="bi bi-check" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Alerta Leída</h6>
+                                <small class="text-muted">
+                                    <span th:text="${#temporals.format(alert.fechaLeida, 'dd/MM/yyyy HH:mm')}">
+                                        01/01/2024 11:15
+                                    </span>
+                                </small>
+                                <div th:if="*{usuarioLectura}" class="mt-1">
+                                    <small class="text-muted">por <span th:text="*{usuarioLectura}">admin</span></small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Unread State -->
+                        <div th:unless="*{leida}" class="d-flex align-items-start">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 32px; height: 32px;">
+                                    <i class="bi bi-clock" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 text-warning">Pendiente de Lectura</h6>
+                                <small class="text-muted">
+                                    Esta alerta aún no ha sido leída
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Information Card -->
+            <div class="card mb-4" th:object="${alert}">
+                <div class="card-header bg-light">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Información del Sistema
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h6 class="text-muted mb-1">Estado</h6>
+                                <span th:if="*{leida}" class="text-success">
+                                    <i class="bi bi-check-circle"></i> Leída
+                                </span>
+                                <span th:unless="*{leida}" class="text-warning">
+                                    <i class="bi bi-bell"></i> Sin Leer
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="text-muted mb-1">Prioridad</h6>
+                            <span th:if="*{prioridad}" 
+                                  th:switch="*{prioridad}"
+                                  th:class="*{prioridad} == 'ALTA' ? 'text-danger' : 
+                                          *{prioridad} == 'MEDIA' ? 'text-warning' : 'text-success'">
+                                <span th:case="'ALTA'">
+                                    <i class="bi bi-exclamation-triangle"></i> Alta
+                                </span>
+                                <span th:case="'MEDIA'">
+                                    <i class="bi bi-dash-circle"></i> Media
+                                </span>
+                                <span th:case="'BAJA'">
+                                    <i class="bi bi-check-circle"></i> Baja
+                                </span>
+                            </span>
+                            <span th:unless="*{prioridad}" class="text-muted">N/A</span>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div th:if="*{origen}" class="mb-2">
+                        <strong class="text-muted">Origen:</strong>
+                        <span th:text="*{origen}">Sistema Automático</span>
+                    </div>
+                    
+                    <div th:if="*{version}" class="mb-2">
+                        <strong class="text-muted">Versión:</strong>
+                        <code th:text="*{version}">v1.0.0</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggested Actions Card -->
+            <div class="card border-info">
+                <div class="card-header bg-info bg-opacity-10 border-info">
+                    <h6 class="card-title mb-0 text-info">
+                        <i class="bi bi-lightbulb me-2"></i>Acciones Sugeridas
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div th:switch="${alert.tipo}">
+                        <!-- Stock Bajo Actions -->
+                        <div th:case="'STOCK_BAJO'">
+                            <p class="mb-3">Para resolver esta alerta de stock bajo:</p>
+                            <div class="d-grid gap-2">
+                                <a th:href="@{/orders/new}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-plus-circle me-1"></i>Crear Orden de Compra
+                                </a>
+                                <a th:href="@{/products}" class="btn btn-outline-info btn-sm">
+                                    <i class="bi bi-box me-1"></i>Revisar Productos
+                                </a>
+                                <a th:href="@{/movimientos/new}" class="btn btn-outline-warning btn-sm">
+                                    <i class="bi bi-arrow-left-right me-1"></i>Ajustar Inventario
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Vencimiento Actions -->
+                        <div th:case="'VENCIMIENTO_PROXIMO'">
+                            <p class="mb-3">Para productos próximos a vencer:</p>
+                            <div class="d-grid gap-2">
+                                <a th:href="@{/lotes(filter='expiring')}" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-clock me-1"></i>Ver Lotes por Vencer
+                                </a>
+                                <a th:href="@{/movimientos/new(type='SALIDA')}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-arrow-up me-1"></i>Registrar Salida
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Sistema Actions -->
+                        <div th:case="'ALERTA_SISTEMA'">
+                            <p class="mb-3">Revisar configuración del sistema:</p>
+                            <div class="d-grid gap-2">
+                                <a th:href="@{/configuration}" class="btn btn-info btn-sm">
+                                    <i class="bi bi-gear me-1"></i>Configuración
+                                </a>
+                                <a th:href="@{/audit}" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-file-text me-1"></i>Ver Auditoría
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Default Actions -->
+                        <div th:case="*">
+                            <p class="mb-3">Acciones generales disponibles:</p>
+                            <div class="d-grid gap-2">
+                                <a th:href="@{/dashboard}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-house me-1"></i>Ir al Dashboard
+                                </a>
+                                <a th:href="@{/alertas(leida=false)}" class="btn btn-outline-warning btn-sm">
+                                    <i class="bi bi-bell me-1"></i>Ver Otras Alertas
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Page Scripts -->
+    <script>
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+        
+        // Mark as read/unread handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const markReadForm = document.querySelector('form[action*="/mark-read"]');
+            if (markReadForm) {
+                markReadForm.addEventListener('submit', function() {
+                    const button = this.querySelector('button[type="submit"]');
+                    button.disabled = true;
+                    
+                    const icon = button.querySelector('i');
+                    const originalClass = icon.className;
+                    icon.className = 'bi bi-spinner';
+                    icon.style.animation = 'spin 1s linear infinite';
+                    
+                    const originalText = button.innerHTML;
+                    
+                    // Reset after timeout as fallback
+                    setTimeout(() => {
+                        button.disabled = false;
+                        icon.className = originalClass;
+                        icon.style.animation = '';
+                    }, 3000);
+                });
+            }
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            const activeElement = document.activeElement;
+            if (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'TEXTAREA' && activeElement.tagName !== 'SELECT') {
+                switch(e.key) {
+                    case 'Escape':
+                    case 'b':
+                    case 'B':
+                        // Back to alerts list
+                        const backBtn = document.querySelector('a[href="/alertas"]');
+                        if (backBtn) {
+                            e.preventDefault();
+                            window.location.href = backBtn.href;
+                        }
+                        break;
+                    
+                    case 'r':
+                    case 'R':
+                        // Toggle read status
+                        const markReadBtn = document.querySelector('form[action*="/mark-read"] button[type="submit"]');
+                        if (markReadBtn && !markReadBtn.disabled) {
+                            e.preventDefault();
+                            markReadBtn.click();
+                        }
+                        break;
+                        
+                    case 'e':
+                    case 'E':
+                        // View related entity (if available)
+                        const entityBtn = document.querySelector('a[href*="/productos/"], a[href*="/lotes/"], a[href*="/ordenes/"], a[href*="/usuarios/"]');
+                        if (entityBtn) {
+                            e.preventDefault();
+                            window.location.href = entityBtn.href;
+                        }
+                        break;
+                }
+            }
+        });
+        
+        // Auto-mark as read when page loads (if unread)
+        document.addEventListener('DOMContentLoaded', function() {
+            const isUnread = document.querySelector('.badge:contains("SIN LEER")');
+            if (isUnread) {
+                // Wait 3 seconds then automatically mark as read
+                setTimeout(function() {
+                    const markReadForm = document.querySelector('form[action*="/mark-read"]');
+                    const readInput = markReadForm?.querySelector('input[name="leida"]');
+                    if (markReadForm && readInput && readInput.value === 'true') {
+                        // Auto-submit to mark as read
+                        markReadForm.submit();
+                    }
+                }, 3000);
+            }
+        });
+        
+        // Timeline animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const timelineItems = document.querySelectorAll('.timeline .d-flex');
+            timelineItems.forEach(function(item, index) {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                
+                setTimeout(function() {
+                    item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+        
+        // JSON formatting for additional details
+        document.addEventListener('DOMContentLoaded', function() {
+            const preElements = document.querySelectorAll('pre');
+            preElements.forEach(function(pre) {
+                try {
+                    const content = pre.textContent.trim();
+                    if (content.startsWith('{') || content.startsWith('[')) {
+                        const parsed = JSON.parse(content);
+                        pre.innerHTML = JSON.stringify(parsed, null, 2);
+                        pre.classList.add('language-json');
+                    }
+                } catch (e) {
+                    // If it's not valid JSON, leave as is
+                }
+            });
+        });
+        
+        // Copy alert ID to clipboard
+        document.addEventListener('DOMContentLoaded', function() {
+            const alertIdCode = document.querySelector('code');
+            if (alertIdCode) {
+                alertIdCode.style.cursor = 'pointer';
+                alertIdCode.title = 'Clic para copiar ID';
+                
+                alertIdCode.addEventListener('click', function() {
+                    navigator.clipboard.writeText(this.textContent).then(function() {
+                        // Show temporary feedback
+                        const originalContent = alertIdCode.textContent;
+                        alertIdCode.textContent = '¡Copiado!';
+                        alertIdCode.classList.add('text-success');
+                        
+                        setTimeout(function() {
+                            alertIdCode.textContent = originalContent;
+                            alertIdCode.classList.remove('text-success');
+                        }, 1500);
+                    }).catch(function() {
+                        console.log('No se pudo copiar al portapapeles');
+                    });
+                });
+            }
+        });
+        
+        // CSS animation for spinning loader
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            
+            .timeline .d-flex:not(:last-child)::after {
+                content: '';
+                position: absolute;
+                left: 15px;
+                top: 50px;
+                width: 2px;
+                height: 20px;
+                background-color: #dee2e6;
+            }
+            
+            .timeline .d-flex {
+                position: relative;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</div>
+</body>
+</html>

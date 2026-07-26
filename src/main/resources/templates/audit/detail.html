@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+
+<head>
+    <title>Detalle de Auditoría - Drinkhouse Web UI</title>
+</head>
+
+<body>
+
+<!-- Main Content -->
+<div layout:fragment="content" class="container-fluid mt-4">
+    
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-0">
+                <i class="fas fa-eye me-2"></i>
+                Detalle de Auditoría
+            </h2>
+            <p class="text-muted mb-0">Información completa del registro de auditoría</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/auditoria" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>
+                Volver a Lista
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:replace="~{fragments/notification :: notifications}"></div>
+
+    <!-- Error Message -->
+    <div class="alert alert-danger" role="alert" th:if="${error}">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Audit Detail Content -->
+    <div class="row" th:if="${auditLog != null}">
+        
+        <!-- Basic Information Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Información Básica
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong>ID de Log:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <code th:text="${auditLog.logId}"></code>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong>Fecha y Hora:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span th:text="${#temporals.format(auditLog.fechaHora, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong>Entidad:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span class="badge bg-primary" th:text="${auditLog.entidad}"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong>ID de Entidad:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <code th:text="${auditLog.entidadId}"></code>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong>Acción:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span th:class="'badge ' + ${auditLog.accionCssClass}">
+                                <i th:class="${auditLog.accionIconClass} + ' me-1'"></i>
+                                <span th:text="${auditLog.accionDescripcion}"></span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3" th:if="${auditLog.negocioId != null}">
+                        <div class="col-sm-4">
+                            <strong>ID Negocio:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <code th:text="${auditLog.negocioId}"></code>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-0" th:if="${auditLog.sistemaGenerado != null}">
+                        <div class="col-sm-4">
+                            <strong>Sistema:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span th:if="${auditLog.sistemaGenerado}" class="badge bg-info">
+                                <i class="fas fa-robot me-1"></i>
+                                Auto-generado
+                            </span>
+                            <span th:unless="${auditLog.sistemaGenerado}" class="badge bg-secondary">
+                                <i class="fas fa-user me-1"></i>
+                                Manual
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Information Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>
+                        Información de Usuario
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <strong>ID de Usuario:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <code th:text="${auditLog.usuarioId}"></code>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3" th:if="${auditLog.usuarioNombre != null}">
+                        <div class="col-sm-4">
+                            <strong>Nombre:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span th:text="${auditLog.usuarioNombre}"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3" th:if="${auditLog.usuarioEmail != null}">
+                        <div class="col-sm-4">
+                            <strong>Email:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span th:text="${auditLog.usuarioEmail}"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3" th:if="${auditLog.direccionIp != null}">
+                        <div class="col-sm-4">
+                            <strong>Dirección IP:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <code th:text="${auditLog.direccionIp}"></code>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3" th:if="${auditLog.sessionId != null}">
+                        <div class="col-sm-4">
+                            <strong>ID de Sesión:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <small><code th:text="${auditLog.sessionId}"></code></small>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-0" th:if="${auditLog.userAgent != null}">
+                        <div class="col-sm-4">
+                            <strong>Navegador:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <small class="text-muted" th:text="${auditLog.userAgent}"></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Details Card -->
+        <div class="col-md-12 mb-4" th:if="${auditLog.detalles != null}">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-sticky-note me-2"></i>
+                        Detalles Adicionales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0" th:text="${auditLog.detalles}"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entity State Before (for UPDATE and DELETE actions) -->
+        <div class="col-md-6 mb-4" th:if="${auditLog.hasEstadoAnterior()}">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Estado Anterior
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <pre class="bg-light p-3 rounded small overflow-auto" 
+                         style="max-height: 400px;"
+                         th:text="${auditLog.estadoAnterior}"></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entity State After (for CREATE and UPDATE actions) -->
+        <div class="col-md-6 mb-4" th:if="${auditLog.hasEstadoPosterior()}">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Estado Posterior
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <pre class="bg-light p-3 rounded small overflow-auto" 
+                         style="max-height: 400px;"
+                         th:text="${auditLog.estadoPosterior}"></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Changes Details (for UPDATE actions) -->
+        <div class="col-md-12 mb-4" th:if="${auditLog.hasChanges()}">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>
+                        Cambios Realizados
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Formatted JSON Changes -->
+                    <div th:if="${formattedChanges != null}" class="mb-3">
+                        <h6>Cambios formateados:</h6>
+                        <div class="bg-light p-3 rounded">
+                            <div th:utext="${formattedChanges}"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Raw JSON Changes -->
+                    <div>
+                        <h6>JSON raw:</h6>
+                        <pre class="bg-light p-3 rounded small overflow-auto" 
+                             style="max-height: 300px;"
+                             th:text="${auditLog.cambios}"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Changes Message -->
+        <div class="col-md-12 mb-4" th:unless="${auditLog.hasChanges() or auditLog.hasEstadoAnterior() or auditLog.hasEstadoPosterior()}">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Sin Cambios de Estado</h5>
+                    <p class="text-muted mb-0">
+                        Este registro de auditoría no contiene información de cambios de estado de la entidad.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Log Not Found -->
+    <div class="row" th:if="${auditLog == null}">
+        <div class="col-md-12">
+            <div class="alert alert-warning text-center">
+                <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                <h4>Registro de Auditoría No Encontrado</h4>
+                <p class="mb-0">No se pudo cargar el registro de auditoría solicitado.</p>
+                <a href="/auditoria" class="btn btn-primary mt-3">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Volver a Lista
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<th:block layout:fragment="scripts">
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Make JSON content copyable
+    const preElements = document.querySelectorAll('pre');
+    
+    preElements.forEach(pre => {
+        pre.style.cursor = 'pointer';
+        pre.title = 'Clic para copiar contenido';
+        
+        pre.addEventListener('click', function() {
+            // Select and copy text
+            const range = document.createRange();
+            range.selectNode(this);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            
+            try {
+                document.execCommand('copy');
+                
+                // Show temporary feedback
+                const originalBg = this.style.backgroundColor;
+                this.style.backgroundColor = '#d4edda';
+                setTimeout(() => {
+                    this.style.backgroundColor = originalBg;
+                }, 500);
+                
+                // Show toast notification if available
+                if (typeof showNotification === 'function') {
+                    showNotification('Contenido copiado al portapapeles', 'success');
+                }
+            } catch (err) {
+                console.error('Error copying text: ', err);
+            }
+            
+            window.getSelection().removeAllRanges();
+        });
+    });
+    
+    // Add syntax highlighting if Prism.js is available
+    if (typeof Prism !== 'undefined') {
+        Prism.highlightAll();
+    }
+});
+</script>
+</th:block>
+
+</body>
+</html>

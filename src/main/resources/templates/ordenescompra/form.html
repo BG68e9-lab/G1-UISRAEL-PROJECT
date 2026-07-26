@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/main :: layout (~{::title}, ~{::div})}">
+<head>
+    <title>Nueva Orden de Compra - DrinkHouse</title>
+</head>
+<body>
+    <div>
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/dashboard}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/ordencompra}">Órdenes de Compra</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Nueva Orden</li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i class="bi bi-cart-plus me-2"></i>
+                Nueva Orden de Compra
+            </h1>
+        </div>
+
+        <!-- Placeholder Content -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-tools fs-1 text-muted d-block mb-3"></i>
+                <h5 class="text-muted mb-3">Funcionalidad en Desarrollo</h5>
+                <p class="text-muted mb-4">
+                    El formulario de creación de órdenes de compra será implementado próximamente.
+                </p>
+                <a th:href="@{/ordencompra}" class="btn btn-primary">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Volver a Órdenes
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

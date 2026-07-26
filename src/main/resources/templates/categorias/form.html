@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/main :: layout (~{::title}, ~{::div})}">
+<head>
+    <title th:text="${pageTitle} + ' - DrinkHouse'">Categoría - DrinkHouse</title>
+</head>
+<body>
+    <div>
+        <!-- Header con título -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i th:class="${isEdit ? 'bi bi-pencil-square me-2' : 'bi bi-plus-circle me-2'}"></i>
+                <span th:text="${pageTitle}">Formulario de Categoría</span>
+            </h1>
+            <a th:href="@{/categorias}" class="btn btn-outline-secondary" style="min-height: 44px; min-width: 44px;">
+                <i class="bi bi-arrow-left me-2"></i>
+                Volver
+            </a>
+        </div>
+        
+        <!-- Mensaje de error (si existe) -->
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            <span th:text="${errorMessage}">Error en la operación</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        
+        <!-- Formulario de categoría -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-tag me-2"></i>
+                    Información de la Categoría
+                </h5>
+            </div>
+            <div class="card-body">
+                <form th:object="${categoria}" 
+                      th:action="${isEdit ? '/categorias/' + ${categoria.categoriaId} + '/edit' : '/categorias/new'}" 
+                      method="post">
+                    
+                    <!-- Campo oculto para ID en modo edición -->
+                    <input type="hidden" th:if="${isEdit}" th:field="*{categoriaId}">
+                    
+                    <!-- Nombre de la categoría -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-8">
+                            <label for="nombre" class="form-label">
+                                <i class="bi bi-tag-fill me-1"></i>
+                                Nombre de la Categoría <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="nombre" 
+                                   th:field="*{nombre}"
+                                   placeholder="Ej: Whisky, Vodka, Ron, Tequila, Licores, etc."
+                                   maxlength="100"
+                                   required
+                                   autofocus>
+                            <div class="form-text">
+                                Nombre descriptivo de la categoría (máximo 100 caracteres)
+                            </div>
+                            <div class="invalid-feedback">
+                                El nombre de la categoría es obligatorio
+                            </div>
+                        </div>
+                        
+                        <!-- Margen de Ganancia -->
+                        <div class="col-md-4">
+                            <label for="margenGananciaPct" class="form-label">
+                                <i class="bi bi-percent me-1"></i>
+                                Margen de Ganancia <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="margenGananciaPct" 
+                                       th:field="*{margenGananciaPct}"
+                                       placeholder="0.00"
+                                       step="0.01"
+                                       min="0.01"
+                                       max="999.99"
+                                       required>
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <div class="form-text">
+                                Porcentaje de ganancia por defecto
+                            </div>
+                            <div class="invalid-feedback">
+                                El margen de ganancia es obligatorio (mínimo 0.01%)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información sobre el margen -->
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>¿Cómo funciona el margen de ganancia?</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Este porcentaje se aplicará automáticamente a todos los productos de esta categoría.</li>
+                            <li>Ejemplo: Si el costo es $10.00 y el margen es 50%, el precio de venta será $15.00</li>
+                            <li>Los productos pueden sobrescribir este valor usando "Precio Personalizado"</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Calculadora de ejemplo -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="bi bi-calculator me-2"></i>
+                                Calculadora de Ejemplo
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="ejemploCosto" class="form-label small">Costo de Ejemplo ($)</label>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           id="ejemploCosto" 
+                                           value="10.00"
+                                           step="0.01"
+                                           min="0.01"
+                                           onchange="calcularEjemplo()">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small">Precio de Venta Calculado ($)</label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm bg-white" 
+                                           id="ejemploPrecio" 
+                                           value="15.00"
+                                           readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small">Ganancia ($)</label>
+                                    <input type="text" 
+                                           class="form-control form-control-sm bg-white text-success fw-bold" 
+                                           id="ejemploGanancia" 
+                                           value="5.00"
+                                           readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de acción -->
+                    <div class="row">
+                        <div class="col-12">
+                            <hr class="my-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a th:href="@{/categorias}" 
+                                   class="btn btn-secondary"
+                                   style="min-height: 44px; min-width: 44px;">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    Cancelar
+                                </a>
+                                <button type="submit" 
+                                        class="btn btn-primary"
+                                        style="min-height: 44px; min-width: 44px;">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <span th:text="${isEdit ? 'Actualizar' : 'Guardar'}">Guardar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Información adicional en modo edición -->
+        <div class="card mt-3" th:if="${isEdit and categoria.fechaCreacion != null}">
+            <div class="card-body">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    <strong>Categoría creada:</strong> 
+                    <span th:text="${#temporals.format(categoria.fechaCreacion, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</span>
+                    <span th:if="${categoria.usuarioCreacion != null}">
+                        por <strong th:text="${categoria.usuarioCreacion}">Usuario</strong>
+                    </span>
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript para calculadora de ejemplo -->
+    <script th:inline="javascript">
+        // Función para calcular el precio de venta de ejemplo
+        function calcularEjemplo() {
+            const costo = parseFloat(document.getElementById('ejemploCosto').value) || 0;
+            const margen = parseFloat(document.getElementById('margenGananciaPct').value) || 0;
+            
+            if (costo > 0 && margen > 0) {
+                const ganancia = costo * (margen / 100);
+                const precioVenta = costo + ganancia;
+                
+                document.getElementById('ejemploPrecio').value = precioVenta.toFixed(2);
+                document.getElementById('ejemploGanancia').value = ganancia.toFixed(2);
+            } else {
+                document.getElementById('ejemploPrecio').value = '0.00';
+                document.getElementById('ejemploGanancia').value = '0.00';
+            }
+        }
+        
+        // Actualizar cálculo cuando cambia el margen
+        document.addEventListener('DOMContentLoaded', function() {
+            const margenInput = document.getElementById('margenGananciaPct');
+            const costoInput = document.getElementById('ejemploCosto');
+            
+            margenInput.addEventListener('input', calcularEjemplo);
+            costoInput.addEventListener('input', calcularEjemplo);
+            
+            // Calcular al cargar
+            calcularEjemplo();
+        });
+    </script>
+</body>
+</html>

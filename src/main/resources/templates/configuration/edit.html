@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+
+<head>
+    <title>Editar Configuración - Drinkhouse Web UI</title>
+</head>
+
+<body>
+
+<!-- Main Content -->
+<div layout:fragment="content" class="container-fluid mt-4">
+    
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-0">
+                <i class="fas fa-edit me-2"></i>
+                Editar Configuración
+            </h2>
+            <p class="text-muted mb-0">Modificar parámetro de configuración del sistema</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/configuracion" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>
+                Volver a Lista
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:replace="~{fragments/notification :: notifications}"></div>
+
+    <!-- Error Message -->
+    <div class="alert alert-danger" role="alert" th:if="${error}">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Configuration Edit Form -->
+    <div class="row" th:if="${configuration != null}">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header" th:classappend="${configuration.category == 'Cache' ? 'bg-primary text-white' : 
+                                                       (configuration.category == 'Backend' ? 'bg-success text-white' : 
+                                                       (configuration.category == 'Session' ? 'bg-warning text-dark' : 'bg-info text-white'))}">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cog me-2"></i>
+                        Configuración: <span th:text="${configuration.category}"></span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/config/update}" th:object="${configuration}" method="post">
+                        
+                        <!-- Configuration Key (readonly) -->
+                        <div class="mb-3">
+                            <label for="key" class="form-label">
+                                <strong>Clave de Configuración</strong>
+                            </label>
+                            <input type="text" 
+                                   class="form-control bg-light" 
+                                   id="key" 
+                                   th:field="*{key}" 
+                                   readonly>
+                        </div>
+
+                        <!-- Configuration Value -->
+                        <div class="mb-3">
+                            <label for="value" class="form-label">
+                                <strong>Valor</strong>
+                                <span class="text-danger">*</span>
+                            </label>
+                            
+                            <!-- String/Text Input -->
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="value" 
+                                   th:field="*{value}"
+                                   th:if="${configuration.dataType == 'STRING'}"
+                                   required>
+                            
+                            <!-- Integer Input -->
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="value" 
+                                   th:field="*{value}"
+                                   th:if="${configuration.dataType == 'INTEGER'}"
+                                   step="1"
+                                   min="0"
+                                   required>
+                            
+                            <!-- Long Input -->
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="value" 
+                                   th:field="*{value}"
+                                   th:if="${configuration.dataType == 'LONG'}"
+                                   step="1"
+                                   min="0"
+                                   required>
+                            
+                            <!-- Boolean Select -->
+                            <select class="form-select" 
+                                    id="value" 
+                                    th:field="*{value}"
+                                    th:if="${configuration.dataType == 'BOOLEAN'}"
+                                    required>
+                                <option value="">Seleccionar...</option>
+                                <option value="true">Verdadero</option>
+                                <option value="false">Falso</option>
+                            </select>
+                            
+                            <div class="form-text">
+                                Tipo de dato: <span class="badge bg-info" th:text="${configuration.dataType}"></span>
+                            </div>
+                        </div>
+
+                        <!-- Configuration Description -->
+                        <div class="mb-3" th:if="${configuration.description != null}">
+                            <label class="form-label">
+                                <strong>Descripción</strong>
+                            </label>
+                            <p class="form-control-plaintext text-muted" th:text="${configuration.description}"></p>
+                        </div>
+
+                        <!-- Configuration Metadata -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <strong>Categoría</strong>
+                                </label>
+                                <p class="form-control-plaintext">
+                                    <span class="badge bg-secondary" th:text="${configuration.category}"></span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <strong>Requiere Reinicio</strong>
+                                </label>
+                                <p class="form-control-plaintext">
+                                    <span th:if="${configuration.requiresRestart}" class="badge bg-warning">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        Sí, requiere reinicio
+                                    </span>
+                                    <span th:unless="${configuration.requiresRestart}" class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>
+                                        No requiere reinicio
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Warning for restart required -->
+                        <div class="alert alert-warning" th:if="${configuration.requiresRestart}">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Atención:</strong> Este parámetro requiere reiniciar la aplicación para que los cambios tengan efecto.
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/configuracion" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i>
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration not found -->
+    <div class="row" th:if="${configuration == null}">
+        <div class="col-md-12">
+            <div class="alert alert-warning text-center">
+                <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                <h4>Configuración No Encontrada</h4>
+                <p class="mb-0">No se pudo cargar la configuración solicitada.</p>
+                <a href="/configuracion" class="btn btn-primary mt-3">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Volver a Lista
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<th:block layout:fragment="scripts">
+<script>
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const valueInput = document.querySelector('#value');
+    const dataType = /*[[${configuration?.dataType}]]*/ 'STRING';
+    
+    if (form && valueInput) {
+        form.addEventListener('submit', function(e) {
+            // Additional validation based on data type
+            if (dataType === 'INTEGER' || dataType === 'LONG') {
+                const value = parseInt(valueInput.value);
+                if (isNaN(value) || value < 0) {
+                    e.preventDefault();
+                    alert('Por favor, ingrese un número válido mayor o igual a 0.');
+                    valueInput.focus();
+                    return false;
+                }
+            }
+            
+            // Show loading state
+            const submitButton = form.querySelector('button[type="submit"]');
+            if (submitButton) {
+                const originalText = submitButton.innerHTML;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Guardando...';
+                submitButton.disabled = true;
+            }
+            
+            return true;
+        });
+    }
+});
+</script>
+</th:block>
+
+</body>
+</html>

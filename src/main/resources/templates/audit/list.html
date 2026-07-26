@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+
+<head>
+    <title>Auditoría - Drinkhouse Web UI</title>
+</head>
+
+<body>
+
+<!-- Main Content -->
+<div layout:fragment="content" class="container-fluid mt-4">
+    
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-0">
+                <i class="fas fa-search me-2"></i>
+                Registro de Auditoría
+            </h2>
+            <p class="text-muted mb-0">Consulta y seguimiento de cambios en el sistema</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a th:href="@{/auditoria/clear-filters}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-eraser me-1"></i>
+                Limpiar Filtros
+            </a>
+            <a th:href="@{/auditoria/export(entidad=${currentEntidad},accion=${currentAccion},fechaInicio=${currentFechaInicio},fechaFin=${currentFechaFin})}" 
+               class="btn btn-outline-primary">
+                <i class="fas fa-download me-1"></i>
+                Exportar CSV
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:replace="~{fragments/notification :: notifications}"></div>
+
+    <!-- Error Message -->
+    <div class="alert alert-danger" role="alert" th:if="${error}">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-filter me-2"></i>
+                Filtros de Búsqueda
+            </h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/auditoria}" method="get" class="row g-3">
+                
+                <!-- Entity Filter -->
+                <div class="col-md-3">
+                    <label for="entidad" class="form-label">Entidad</label>
+                    <select class="form-select" id="entidad" name="entidad" th:value="${currentEntidad}">
+                        <option value="">Todas las entidades</option>
+                        <option th:each="entidadOpt : ${distinctEntidades}" 
+                                th:value="${entidadOpt}" 
+                                th:text="${entidadOpt}"
+                                th:selected="${entidadOpt == currentEntidad}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Action Filter -->
+                <div class="col-md-3">
+                    <label for="accion" class="form-label">Acción</label>
+                    <select class="form-select" id="accion" name="accion" th:value="${currentAccion}">
+                        <option value="">Todas las acciones</option>
+                        <option th:each="accionOpt : ${distinctAcciones}" 
+                                th:value="${accionOpt}" 
+                                th:text="${accionOpt}"
+                                th:selected="${accionOpt == currentAccion}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Start Date Filter -->
+                <div class="col-md-3">
+                    <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                    <input type="datetime-local" 
+                           class="form-control" 
+                           id="fechaInicio" 
+                           name="fechaInicio" 
+                           th:value="${currentFechaInicio != null ? #temporals.format(currentFechaInicio, 'yyyy-MM-dd''T''HH:mm') : ''}">
+                </div>
+
+                <!-- End Date Filter -->
+                <div class="col-md-3">
+                    <label for="fechaFin" class="form-label">Fecha Fin</label>
+                    <input type="datetime-local" 
+                           class="form-control" 
+                           id="fechaFin" 
+                           name="fechaFin" 
+                           th:value="${currentFechaFin != null ? #temporals.format(currentFechaFin, 'yyyy-MM-dd''T''HH:mm') : ''}">
+                </div>
+
+                <!-- Filter Actions -->
+                <div class="col-md-12 text-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i>
+                        Buscar
+                    </button>
+                    <a href="/auditoria" class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-times me-1"></i>
+                        Limpiar
+                    </a>
+                </div>
+
+                <!-- Hidden fields for pagination -->
+                <input type="hidden" name="sort" th:value="${currentSort}">
+                <input type="hidden" name="size" th:value="${currentSize}">
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>
+                Registros de Auditoría
+                <span class="badge bg-primary ms-2" th:if="${page}" th:text="${page.totalElements + ' registros'}"></span>
+            </h5>
+            
+            <!-- Page Size Selector -->
+            <div class="btn-group" role="group">
+                <a th:href="@{/auditoria(entidad=${currentEntidad},accion=${currentAccion},fechaInicio=${currentFechaInicio},fechaFin=${currentFechaFin},sort=${currentSort},size=10)}" 
+                   class="btn btn-sm btn-outline-secondary" 
+                   th:classappend="${currentSize == 10 ? 'active' : ''}">10</a>
+                <a th:href="@{/auditoria(entidad=${currentEntidad},accion=${currentAccion},fechaInicio=${currentFechaInicio},fechaFin=${currentFechaFin},sort=${currentSort},size=25)}" 
+                   class="btn btn-sm btn-outline-secondary" 
+                   th:classappend="${currentSize == 25 ? 'active' : ''}">25</a>
+                <a th:href="@{/auditoria(entidad=${currentEntidad},accion=${currentAccion},fechaInicio=${currentFechaInicio},fechaFin=${currentFechaFin},sort=${currentSort},size=50)}" 
+                   class="btn btn-sm btn-outline-secondary" 
+                   th:classappend="${currentSize == 50 ? 'active' : ''}">50</a>
+            </div>
+        </div>
+        
+        <div class="card-body p-0" th:if="${auditLogs != null and not #lists.isEmpty(auditLogs)}">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>
+                                <a th:href="@{/auditoria(entidad=${currentEntidad},accion=${currentAccion},fechaInicio=${currentFechaInicio},fechaFin=${currentFechaFin},sort='fechaHora,desc',size=${currentSize})}"
+                                   class="text-decoration-none">
+                                    Fecha/Hora
+                                    <i class="fas fa-sort ms-1"></i>
+                                </a>
+                            </th>
+                            <th>
+                                <a th:href="@{/auditoria(entidad=${currentEntidad},accion=${currentAccion},fechaInicio=${currentFechaInicio},fechaFin=${currentFechaFin},sort='entidad,asc',size=${currentSize})}"
+                                   class="text-decoration-none">
+                                    Entidad
+                                    <i class="fas fa-sort ms-1"></i>
+                                </a>
+                            </th>
+                            <th>ID Entidad</th>
+                            <th>
+                                <a th:href="@{/auditoria(entidad=${currentEntidad},accion=${currentAccion},fechaInicio=${currentFechaInicio},fechaFin=${currentFechaFin},sort='accion,asc',size=${currentSize})}"
+                                   class="text-decoration-none">
+                                    Acción
+                                    <i class="fas fa-sort ms-1"></i>
+                                </a>
+                            </th>
+                            <th>
+                                <a th:href="@{/auditoria(entidad=${currentEntidad},accion=${currentAccion},fechaInicio=${currentFechaInicio},fechaFin=${currentFechaFin},sort='usuarioEmail,asc',size=${currentSize})}"
+                                   class="text-decoration-none">
+                                    Usuario
+                                    <i class="fas fa-sort ms-1"></i>
+                                </a>
+                            </th>
+                            <th>IP</th>
+                            <th>Cambios</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="audit : ${auditLogs}">
+                            <td>
+                                <small th:text="${#temporals.format(audit.fechaHora, 'dd/MM/yyyy HH:mm:ss')}"></small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark" th:text="${audit.entidad}"></span>
+                            </td>
+                            <td>
+                                <code th:text="${audit.entidadId}"></code>
+                            </td>
+                            <td>
+                                <span th:class="'badge ' + ${audit.accionCssClass}" th:text="${audit.accionDescripcion}">
+                                    <i th:class="${audit.accionIconClass} + ' me-1'"></i>
+                                </span>
+                            </td>
+                            <td>
+                                <div>
+                                    <strong th:text="${audit.usuarioNombre ?: audit.usuarioEmail}"></strong>
+                                    <br th:if="${audit.usuarioNombre and audit.usuarioEmail}">
+                                    <small class="text-muted" th:text="${audit.usuarioEmail}" th:if="${audit.usuarioNombre}"></small>
+                                </div>
+                            </td>
+                            <td>
+                                <small class="text-muted" th:text="${audit.direccionIp ?: 'N/A'}"></small>
+                            </td>
+                            <td class="text-center">
+                                <span th:if="${audit.hasChanges()}" class="badge bg-warning">
+                                    <i class="fas fa-edit me-1"></i>
+                                    Con cambios
+                                </span>
+                                <span th:unless="${audit.hasChanges()}" class="text-muted">
+                                    <i class="fas fa-minus"></i>
+                                </span>
+                            </td>
+                            <td>
+                                <a th:href="@{/auditoria/{id}(id=${audit.logId})}" 
+                                   class="btn btn-sm btn-outline-primary" 
+                                   title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="card-body text-center" th:if="${auditLogs == null or #lists.isEmpty(auditLogs)}">
+            <div class="py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No se encontraron registros</h4>
+                <p class="text-muted mb-0">
+                    No hay registros de auditoría que coincidan con los filtros seleccionados.
+                </p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="card-footer" th:if="${page != null and page.totalPages > 1}">
+            <nav aria-label="Audit logs pagination">
+                <ul class="pagination justify-content-center mb-0">
+                    <!-- First Page -->
+                    <li class="page-item" th:classappend="${page.first ? 'disabled' : ''}">
+                        <a class="page-link" 
+                           th:href="@{/auditoria(page=0,size=${currentSize}${queryParams})}"
+                           th:if="${not page.first}">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                        <span class="page-link" th:if="${page.first}">
+                            <i class="fas fa-angle-double-left"></i>
+                        </span>
+                    </li>
+
+                    <!-- Previous Page -->
+                    <li class="page-item" th:classappend="${page.first ? 'disabled' : ''}">
+                        <a class="page-link" 
+                           th:href="@{/auditoria(page=${page.number - 1},size=${currentSize}${queryParams})}"
+                           th:if="${not page.first}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                        <span class="page-link" th:if="${page.first}">
+                            <i class="fas fa-angle-left"></i>
+                        </span>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    <li class="page-item" 
+                        th:each="pageNum : ${#numbers.sequence(T(java.lang.Math).max(0, page.number - 2), T(java.lang.Math).min(page.totalPages - 1, page.number + 2))}"
+                        th:classappend="${pageNum == page.number ? 'active' : ''}">
+                        <a class="page-link" 
+                           th:href="@{/auditoria(page=${pageNum},size=${currentSize}${queryParams})}"
+                           th:text="${pageNum + 1}">1</a>
+                    </li>
+
+                    <!-- Next Page -->
+                    <li class="page-item" th:classappend="${page.last ? 'disabled' : ''}">
+                        <a class="page-link" 
+                           th:href="@{/auditoria(page=${page.number + 1},size=${currentSize}${queryParams})}"
+                           th:if="${not page.last}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                        <span class="page-link" th:if="${page.last}">
+                            <i class="fas fa-angle-right"></i>
+                        </span>
+                    </li>
+
+                    <!-- Last Page -->
+                    <li class="page-item" th:classappend="${page.last ? 'disabled' : ''}">
+                        <a class="page-link" 
+                           th:href="@{/auditoria(page=${page.totalPages - 1},size=${currentSize}${queryParams})}"
+                           th:if="${not page.last}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                        <span class="page-link" th:if="${page.last}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </span>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Pagination Info -->
+            <div class="text-center mt-2" th:if="${page != null}">
+                <small class="text-muted">
+                    Mostrando <span th:text="${page.numberOfElements}">0</span> de 
+                    <span th:text="${page.totalElements}">0</span> registros
+                    (Página <span th:text="${page.number + 1}">1</span> de 
+                    <span th:text="${page.totalPages}">1</span>)
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<th:block layout:fragment="scripts">
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit form when filters change
+    const filterForm = document.querySelector('form');
+    const selectElements = filterForm.querySelectorAll('select');
+    
+    selectElements.forEach(select => {
+        select.addEventListener('change', function() {
+            // Reset to first page when filtering
+            const pageInput = filterForm.querySelector('input[name="page"]');
+            if (pageInput) {
+                pageInput.value = '0';
+            }
+            
+            // Auto-submit form
+            filterForm.submit();
+        });
+    });
+
+    // Date range validation
+    const fechaInicio = document.getElementById('fechaInicio');
+    const fechaFin = document.getElementById('fechaFin');
+    
+    function validateDateRange() {
+        if (fechaInicio.value && fechaFin.value) {
+            const start = new Date(fechaInicio.value);
+            const end = new Date(fechaFin.value);
+            
+            if (start > end) {
+                fechaFin.setCustomValidity('La fecha de fin debe ser posterior a la fecha de inicio');
+            } else {
+                fechaFin.setCustomValidity('');
+            }
+        } else {
+            fechaFin.setCustomValidity('');
+        }
+    }
+    
+    fechaInicio.addEventListener('change', validateDateRange);
+    fechaFin.addEventListener('change', validateDateRange);
+});
+</script>
+</th:block>
+
+</body>
+</html>

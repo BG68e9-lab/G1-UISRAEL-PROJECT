@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Reusable Form Field Component -->
+    <div th:fragment="field" 
+         th:with="fieldType=${fieldType ?: 'text'},
+                  fieldName=${fieldName ?: 'field'},
+                  fieldLabel=${fieldLabel ?: 'Campo'},
+                  fieldValue=${fieldValue ?: ''},
+                  fieldPlaceholder=${fieldPlaceholder ?: ''},
+                  fieldRequired=${fieldRequired ?: false},
+                  fieldReadonly=${fieldReadonly ?: false},
+                  fieldDisabled=${fieldDisabled ?: false},
+                  fieldPattern=${fieldPattern},
+                  fieldMin=${fieldMin},
+                  fieldMax=${fieldMax},
+                  fieldStep=${fieldStep},
+                  fieldOptions=${fieldOptions},
+                  fieldHelp=${fieldHelp},
+                  fieldIcon=${fieldIcon},
+                  fieldSize=${fieldSize ?: ''},
+                  showValidation=${showValidation ?: true},
+                  fieldClass=${fieldClass ?: 'mb-3'},
+                  labelClass=${labelClass ?: 'form-label'},
+                  inputClass=${inputClass ?: ''}">
+        
+        <div th:class="${fieldClass}">
+            <!-- Field Label -->
+            <label th:for="${fieldName}" th:class="${labelClass}">
+                <span th:text="${fieldLabel}">Label</span>
+                <span th:if="${fieldRequired}" class="text-danger ms-1">*</span>
+                <span th:if="${fieldHelp != null}" class="text-muted ms-2">
+                    <i class="bi bi-question-circle-fill" 
+                       data-bs-toggle="tooltip" 
+                       data-bs-placement="top" 
+                       th:title="${fieldHelp}"
+                       style="cursor: help;"></i>
+                </span>
+            </label>
+            
+            <!-- Input Group for fields with icons -->
+            <div th:if="${fieldIcon != null}" class="input-group" th:classappend="${fieldSize != '' ? 'input-group-' + fieldSize : ''}">
+                <span class="input-group-text">
+                    <i th:class="'bi ' + ${fieldIcon}"></i>
+                </span>
+                <th:block th:replace="~{fragments/form-field :: input-field}"></th:block>
+            </div>
+            
+            <!-- Regular input without icon -->
+            <th:block th:if="${fieldIcon == null}" th:replace="~{fragments/form-field :: input-field}"></th:block>
+            
+            <!-- Validation Messages -->
+            <div th:if="${showValidation and #fields.hasErrors(fieldName)}" class="invalid-feedback d-block">
+                <small>
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    <span th:each="error, iterStat : ${#fields.errors(fieldName)}">
+                        <span th:text="${error}">Error message</span>
+                        <span th:if="${!iterStat.last}"> • </span>
+                    </span>
+                </small>
+            </div>
+            
+            <!-- Success validation -->
+            <div th:if="${showValidation}" class="valid-feedback">
+                <small>
+                    <i class="bi bi-check-circle me-1"></i>
+                    Campo válido
+                </small>
+            </div>
+            
+            <!-- Help Text (only for non-checkbox/radio fields) -->
+            <div th:if="${fieldHelp != null and fieldType != 'checkbox' and fieldType != 'radio'}" 
+                 th:id="${fieldName + '_help'}" 
+                 class="form-text">
+                <small th:text="${fieldHelp}">Help text</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Field Fragment (Internal) -->
+    <th:block th:fragment="input-field">
+        <!-- Text-based inputs -->
+        <input th:if="${fieldType == 'text' or fieldType == 'email' or fieldType == 'password' or fieldType == 'number' or fieldType == 'tel' or fieldType == 'url' or fieldType == 'search'}"
+               th:type="${fieldType}"
+               th:id="${fieldName}"
+               th:name="${fieldName}"
+               th:value="${fieldValue}"
+               th:placeholder="${fieldPlaceholder}"
+               th:required="${fieldRequired}"
+               th:readonly="${fieldReadonly}"
+               th:disabled="${fieldDisabled}"
+               th:pattern="${fieldPattern}"
+               th:min="${fieldMin}"
+               th:max="${fieldMax}"
+               th:step="${fieldStep}"
+               th:class="'form-control' + (${fieldSize != ''} ? ' form-control-' + ${fieldSize} : '') + (${inputClass != ''} ? ' ' + ${inputClass} : '') + (${showValidation and #fields.hasErrors(fieldName)} ? ' is-invalid' : '')"
+               th:aria-describedby="${fieldName + '_help'}"
+               data-field-validation="true">
+        
+        <!-- Date/Time inputs -->
+        <input th:if="${fieldType == 'date' or fieldType == 'datetime-local' or fieldType == 'time' or fieldType == 'month' or fieldType == 'week'}"
+               th:type="${fieldType}"
+               th:id="${fieldName}"
+               th:name="${fieldName}"
+               th:value="${fieldValue}"
+               th:required="${fieldRequired}"
+               th:readonly="${fieldReadonly}"
+               th:disabled="${fieldDisabled}"
+               th:min="${fieldMin}"
+               th:max="${fieldMax}"
+               th:class="'form-control' + (${fieldSize != ''} ? ' form-control-' + ${fieldSize} : '') + (${inputClass != ''} ? ' ' + ${inputClass} : '') + (${showValidation and #fields.hasErrors(fieldName)} ? ' is-invalid' : '')"
+               th:aria-describedby="${fieldName + '_help'}"
+               data-field-validation="true">
+        
+        <!-- Textarea -->
+        <textarea th:if="${fieldType == 'textarea'}"
+                  th:id="${fieldName}"
+                  th:name="${fieldName}"
+                  th:placeholder="${fieldPlaceholder}"
+                  th:required="${fieldRequired}"
+                  th:readonly="${fieldReadonly}"
+                  th:disabled="${fieldDisabled}"
+                  th:class="'form-control' + (${fieldSize != ''} ? ' form-control-' + ${fieldSize} : '') + (${inputClass != ''} ? ' ' + ${inputClass} : '') + (${showValidation and #fields.hasErrors(fieldName)} ? ' is-invalid' : '')"
+                  th:aria-describedby="${fieldName + '_help'}"
+                  th:rows="${fieldMin ?: 3}"
+                  data-field-validation="true"
+                  th:text="${fieldValue}"></textarea>
+        
+        <!-- Select dropdown -->
+        <select th:if="${fieldType == 'select'}"
+                th:id="${fieldName}"
+                th:name="${fieldName}"
+                th:required="${fieldRequired}"
+                th:disabled="${fieldReadonly or fieldDisabled}"
+                th:class="'form-select' + (${fieldSize != ''} ? ' form-select-' + ${fieldSize} : '') + (${inputClass != ''} ? ' ' + ${inputClass} : '') + (${showValidation and #fields.hasErrors(fieldName)} ? ' is-invalid' : '')"
+                th:aria-describedby="${fieldName + '_help'}"
+                data-field-validation="true">
+            <option value="" th:text="${fieldPlaceholder ?: 'Seleccione una opción'}">Choose option</option>
+            <option th:each="option : ${fieldOptions}"
+                    th:value="${option.value}"
+                    th:text="${option.label}"
+                    th:selected="${fieldValue != null and fieldValue.toString() == option.value.toString()}">
+                Option
+            </option>
+        </select>
+        
+        <!-- Multiple select -->
+        <select th:if="${fieldType == 'multiselect'}"
+                th:id="${fieldName}"
+                th:name="${fieldName}"
+                th:required="${fieldRequired}"
+                th:disabled="${fieldReadonly or fieldDisabled}"
+                multiple
+                th:class="'form-select' + (${fieldSize != ''} ? ' form-select-' + ${fieldSize} : '') + (${inputClass != ''} ? ' ' + ${inputClass} : '') + (${showValidation and #fields.hasErrors(fieldName)} ? ' is-invalid' : '')"
+                th:aria-describedby="${fieldName + '_help'}"
+                data-field-validation="true">
+            <option th:each="option : ${fieldOptions}"
+                    th:value="${option.value}"
+                    th:text="${option.label}"
+                    th:selected="${#lists.contains(fieldValue, option.value)}">
+                Option
+            </option>
+        </select>
+        
+        <!-- File input -->
+        <input th:if="${fieldType == 'file'}"
+               type="file"
+               th:id="${fieldName}"
+               th:name="${fieldName}"
+               th:required="${fieldRequired}"
+               th:disabled="${fieldReadonly or fieldDisabled}"
+               th:accept="${fieldPattern}"
+               th:multiple="${fieldMax != null and fieldMax > 1}"
+               th:class="'form-control' + (${fieldSize != ''} ? ' form-control-' + ${fieldSize} : '') + (${inputClass != ''} ? ' ' + ${inputClass} : '') + (${showValidation and #fields.hasErrors(fieldName)} ? ' is-invalid' : '')"
+               th:aria-describedby="${fieldName + '_help'}"
+               data-field-validation="true"
+               th:data-preview="${fieldName + '_preview'}">
+        
+        <!-- Range input -->
+        <input th:if="${fieldType == 'range'}"
+               type="range"
+               th:id="${fieldName}"
+               th:name="${fieldName}"
+               th:value="${fieldValue}"
+               th:disabled="${fieldReadonly or fieldDisabled}"
+               th:min="${fieldMin ?: 0}"
+               th:max="${fieldMax ?: 100}"
+               th:step="${fieldStep ?: 1}"
+               th:class="'form-range' + (${inputClass != ''} ? ' ' + ${inputClass} : '')"
+               th:aria-describedby="${fieldName + '_help'}"
+               oninput="updateRangeValue(this)"
+               data-field-validation="true">
+        
+        <!-- Color input -->
+        <input th:if="${fieldType == 'color'}"
+               type="color"
+               th:id="${fieldName}"
+               th:name="${fieldName}"
+               th:value="${fieldValue}"
+               th:disabled="${fieldReadonly or fieldDisabled}"
+               th:class="'form-control form-control-color' + (${fieldSize != ''} ? ' form-control-' + ${fieldSize} : '') + (${inputClass != ''} ? ' ' + ${inputClass} : '') + (${showValidation and #fields.hasErrors(fieldName)} ? ' is-invalid' : '')"
+               th:aria-describedby="${fieldName + '_help'}"
+               data-field-validation="true">
+        
+        <!-- Hidden input -->
+        <input th:if="${fieldType == 'hidden'}"
+               type="hidden"
+               th:id="${fieldName}"
+               th:name="${fieldName}"
+               th:value="${fieldValue}">
+    </th:block>
+
+    <!-- Checkbox Field -->
+    <div th:fragment="checkbox" 
+         th:with="fieldName=${fieldName ?: 'checkbox'},
+                  fieldLabel=${fieldLabel ?: 'Checkbox'},
+                  fieldValue=${fieldValue ?: false},
+                  fieldRequired=${fieldRequired ?: false},
+                  fieldDisabled=${fieldDisabled ?: false},
+                  fieldHelp=${fieldHelp},
+                  fieldClass=${fieldClass ?: 'mb-3'},
+                  showValidation=${showValidation ?: true}">
+        
+        <div th:class="${fieldClass}">
+            <div class="form-check">
+                <input type="checkbox"
+                       th:id="${fieldName}"
+                       th:name="${fieldName}"
+                       th:checked="${fieldValue == true or fieldValue == 'true' or fieldValue == 'on'}"
+                       th:disabled="${fieldDisabled}"
+                       th:required="${fieldRequired}"
+                       th:class="'form-check-input' + (${showValidation and #fields.hasErrors(fieldName)} ? ' is-invalid' : '')"
+                       th:aria-describedby="${fieldName + '_help'}"
+                       data-field-validation="true">
+                <label class="form-check-label" th:for="${fieldName}">
+                    <span th:text="${fieldLabel}">Checkbox Label</span>
+                    <span th:if="${fieldRequired}" class="text-danger ms-1">*</span>
+                </label>
+                
+                <!-- Validation Messages -->
+                <div th:if="${showValidation and #fields.hasErrors(fieldName)}" class="invalid-feedback">
+                    <small th:each="error : ${#fields.errors(fieldName)}" th:text="${error}">Error message</small>
+                </div>
+            </div>
+            
+            <!-- Help Text -->
+            <div th:if="${fieldHelp != null}" 
+                 th:id="${fieldName + '_help'}" 
+                 class="form-text">
+                <small th:text="${fieldHelp}">Help text</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Radio Button Group -->
+    <div th:fragment="radio-group" 
+         th:with="fieldName=${fieldName ?: 'radio'},
+                  fieldLabel=${fieldLabel ?: 'Radio Group'},
+                  fieldValue=${fieldValue},
+                  fieldOptions=${fieldOptions},
+                  fieldRequired=${fieldRequired ?: false},
+                  fieldDisabled=${fieldDisabled ?: false},
+                  fieldHelp=${fieldHelp},
+                  fieldClass=${fieldClass ?: 'mb-3'},
+                  showValidation=${showValidation ?: true}">
+        
+        <div th:class="${fieldClass}">
+            <fieldset>
+                <legend class="form-label">
+                    <span th:text="${fieldLabel}">Radio Group</span>
+                    <span th:if="${fieldRequired}" class="text-danger ms-1">*</span>
+                </legend>
+                
+                <div class="form-check-container">
+                    <div th:each="option : ${fieldOptions}" class="form-check">
+                        <input type="radio"
+                               th:id="${fieldName + '_' + option.value}"
+                               th:name="${fieldName}"
+                               th:value="${option.value}"
+                               th:checked="${fieldValue != null and fieldValue.toString() == option.value.toString()}"
+                               th:disabled="${fieldDisabled}"
+                               th:required="${fieldRequired}"
+                               th:class="'form-check-input' + (${showValidation and #fields.hasErrors(fieldName)} ? ' is-invalid' : '')"
+                               th:aria-describedby="${fieldName + '_help'}"
+                               data-field-validation="true">
+                        <label class="form-check-label" 
+                               th:for="${fieldName + '_' + option.value}" 
+                               th:text="${option.label}">
+                            Radio Label
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Validation Messages -->
+                <div th:if="${showValidation and #fields.hasErrors(fieldName)}" class="invalid-feedback d-block">
+                    <small th:each="error : ${#fields.errors(fieldName)}" th:text="${error}">Error message</small>
+                </div>
+            </fieldset>
+            
+            <!-- Help Text -->
+            <div th:if="${fieldHelp != null}" 
+                 th:id="${fieldName + '_help'}" 
+                 class="form-text">
+                <small th:text="${fieldHelp}">Help text</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Preview Container -->
+    <div th:fragment="file-preview" th:with="fieldName=${fieldName ?: 'file'}">
+        <div th:id="${fieldName + '_preview'}" class="mt-2 file-preview-container"></div>
+    </div>
+
+    <!-- Input Group with Button -->
+    <div th:fragment="input-with-button" 
+         th:with="fieldName=${fieldName ?: 'field'},
+                  fieldLabel=${fieldLabel ?: 'Campo'},
+                  fieldValue=${fieldValue ?: ''},
+                  fieldPlaceholder=${fieldPlaceholder ?: ''},
+                  buttonText=${buttonText ?: 'Acción'},
+                  buttonClass=${buttonClass ?: 'btn-outline-secondary'},
+                  buttonIcon=${buttonIcon},
+                  buttonOnclick=${buttonOnclick}">
+        
+        <div class="mb-3">
+            <label th:for="${fieldName}" class="form-label" th:text="${fieldLabel}">Label</label>
+            <div class="input-group">
+                <input type="text"
+                       th:id="${fieldName}"
+                       th:name="${fieldName}"
+                       th:value="${fieldValue}"
+                       th:placeholder="${fieldPlaceholder}"
+                       class="form-control"
+                       th:classappend="${#fields.hasErrors(fieldName) ? 'is-invalid' : ''}">
+                <button type="button" 
+                        th:class="'btn ' + ${buttonClass}"
+                        th:onclick="${buttonOnclick}">
+                    <i th:if="${buttonIcon != null}" th:class="'bi ' + ${buttonIcon} + ' me-1'"></i>
+                    <span th:text="${buttonText}">Action</span>
+                </button>
+                
+                <!-- Validation Messages -->
+                <div th:if="${#fields.hasErrors(fieldName)}" class="invalid-feedback">
+                    <span th:each="error : ${#fields.errors(fieldName)}" th:text="${error}">Error message</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

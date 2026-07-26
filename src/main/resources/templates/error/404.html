@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf?.token}" th:if="${_csrf}"/>
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}" th:if="${_csrf}"/>
+    <title>Página No Encontrada - Drinkhouse</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 1rem;
+        }
+        
+        .error-container {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .error-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3rem 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .error-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .error-icon {
+            font-size: 5rem;
+            color: #ffc107;
+            margin-bottom: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 60%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            80% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .error-code {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffc107, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .error-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 1rem;
+        }
+        
+        .error-description {
+            color: #6c757d;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-group-vertical {
+            gap: 0.75rem;
+        }
+        
+        .btn-custom {
+            border-radius: 0.75rem;
+            padding: 0.875rem 1.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+        
+        .btn-outline-custom {
+            background: rgba(255, 255, 255, 0.8);
+            color: #6c757d;
+            border: 2px solid rgba(108, 117, 125, 0.2);
+        }
+        
+        .btn-outline-custom:hover {
+            background: rgba(108, 117, 125, 0.1);
+            color: #495057;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-suggestions {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .version-info {
+            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 575.98px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            .error-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .error-icon {
+                font-size: 3.5rem;
+            }
+            
+            .error-code {
+                font-size: 3rem;
+            }
+            
+            .error-title {
+                font-size: 1.25rem;
+            }
+            
+            .error-description {
+                font-size: 1rem;
+            }
+            
+            .btn-custom {
+                min-height: 44px; /* Touch target size */
+                font-size: 0.9rem;
+            }
+            
+            .search-suggestions {
+                padding: 0.75rem;
+            }
+        }
+        
+        /* Tablet adjustments */
+        @media (min-width: 576px) and (max-width: 767.98px) {
+            .error-container {
+                max-width: 450px;
+            }
+        }
+        
+        /* Desktop enhancements */
+        @media (min-width: 768px) {
+            .btn-group-vertical {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .btn-custom {
+                flex: 0 0 auto;
+                min-width: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+<body>
+    <div class="error-container">
+        <div class="error-card">
+            <!-- Error Icon -->
+            <div class="error-icon">
+                <i class="bi bi-search"></i>
+            </div>
+            
+            <!-- Error Code -->
+            <h1 class="error-code">404</h1>
+            
+            <!-- Error Title -->
+            <h2 class="error-title">Página No Encontrada</h2>
+            
+            <!-- Error Description -->
+            <p class="error-description">
+                <i class="bi bi-info-circle me-2"></i>
+                La página que está buscando no existe o ha sido movida. 
+                Verifique la URL o use la navegación para encontrar lo que busca.
+            </p>
+            
+            <!-- Search Suggestions -->
+            <div class="search-suggestions">
+                <div class="fw-bold mb-2">
+                    <i class="bi bi-lightbulb me-2"></i>
+                    Sugerencias:
+                </div>
+                <ul class="text-start mb-0">
+                    <li>Revise que la URL esté escrita correctamente</li>
+                    <li>Use el menú de navegación para encontrar la página</li>
+                    <li>Vaya al dashboard para acceder a las funciones principales</li>
+                </ul>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="btn-group-vertical d-grid gap-2" role="group">
+                <a th:href="@{/dashboard}" class="btn btn-primary-custom btn-custom">
+                    <i class="bi bi-house me-2"></i>
+                    Ir al Dashboard
+                </a>
+                <button onclick="history.back()" class="btn btn-outline-custom btn-custom">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Volver Atrás
+                </button>
+                <a th:href="@{/productos}" class="btn btn-outline-custom btn-custom">
+                    <i class="bi bi-box me-2"></i>
+                    Ver Productos
+                </a>
+            </div>
+        </div>
+        
+        <!-- Version Info -->
+        <div class="version-info">
+            <i class="bi bi-info-circle me-1"></i>
+            Drinkhouse Web UI v1.0.0
+        </div>
+    </div>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-focus on primary action button for keyboard navigation
+            const primaryButton = document.querySelector('.btn-primary-custom');
+            if (primaryButton) {
+                primaryButton.focus();
+            }
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(event) {
+                switch(event.key) {
+                    case 'd':
+                    case 'D':
+                        // D for Dashboard
+                        const dashboardButton = document.querySelector('a[href*="dashboard"]');
+                        if (dashboardButton) dashboardButton.click();
+                        break;
+                    case 'b':
+                    case 'B':
+                        // B for Back
+                        history.back();
+                        break;
+                    case 'p':
+                    case 'P':
+                        // P for Products
+                        const productsButton = document.querySelector('a[href*="products"]');
+                        if (productsButton) productsButton.click();
+                        break;
+                }
+            });
+            
+            // Show current URL in console for debugging
+            console.log('404 Error - Requested URL:', window.location.href);
+            
+            // Show keyboard shortcuts hint
+            setTimeout(() => {
+                const hint = document.createElement('div');
+                hint.className = 'text-muted small mt-3';
+                hint.innerHTML = '<i class="bi bi-keyboard me-1"></i>Atajos: D (Dashboard), B (Atrás), P (Productos)';
+                document.querySelector('.error-card').appendChild(hint);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

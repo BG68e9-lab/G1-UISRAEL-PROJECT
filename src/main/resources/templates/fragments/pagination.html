@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Pagination Fragment -->
+    <div th:fragment="pagination" 
+         th:with="currentPage=${page?.number ?: currentPage ?: 0},
+                  totalPages=${page?.totalPages ?: totalPages ?: 0},
+                  totalElements=${page?.totalElements ?: totalElements ?: 0},
+                  size=${page?.size ?: size ?: 10},
+                  baseUrl=${baseUrl ?: ''}">
+        
+        <nav th:if="${totalPages > 1}" aria-label="Navegación de páginas">
+            <ul class="pagination justify-content-center">
+                <!-- Previous button -->
+                <li th:class="${currentPage == 0 ? 'page-item disabled' : 'page-item'}">
+                    <a th:if="${currentPage > 0}" 
+                       th:href="${baseUrl + '?page=' + (currentPage - 1) + '&size=' + size + (searchParams != null ? '&' + searchParams : '')}"
+                       class="page-link" 
+                       aria-label="Anterior">
+                        <i class="bi bi-chevron-left"></i>
+                        <span class="d-none d-sm-inline"> Anterior</span>
+                    </a>
+                    <span th:if="${currentPage == 0}" class="page-link text-muted">
+                        <i class="bi bi-chevron-left"></i>
+                        <span class="d-none d-sm-inline"> Anterior</span>
+                    </span>
+                </li>
+                
+                <!-- First page -->
+                <li th:if="${currentPage > 2}" class="page-item">
+                    <a th:href="${baseUrl + '?page=0&size=' + size + (searchParams != null ? '&' + searchParams : '')}"
+                       class="page-link">1</a>
+                </li>
+                
+                <!-- Ellipsis before current group -->
+                <li th:if="${currentPage > 3}" class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                
+                <!-- Page numbers around current page -->
+                <th:block th:with="startPage=${T(java.lang.Math).max(0, currentPage - 1)},
+                                   endPage=${T(java.lang.Math).min(totalPages - 1, currentPage + 1)}">
+                    <li th:each="i : ${#numbers.sequence(startPage, endPage)}" 
+                        th:class="${i == currentPage ? 'page-item active' : 'page-item'}">
+                        <a th:if="${i != currentPage}"
+                           th:href="${baseUrl + '?page=' + i + '&size=' + size + (searchParams != null ? '&' + searchParams : '')}"
+                           class="page-link" 
+                           th:text="${i + 1}">1</a>
+                        <span th:if="${i == currentPage}" 
+                              class="page-link" 
+                              th:text="${i + 1}"
+                              aria-current="page">1</span>
+                    </li>
+                </th:block>
+                
+                <!-- Ellipsis after current group -->
+                <li th:if="${currentPage < totalPages - 4}" class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                
+                <!-- Last page -->
+                <li th:if="${currentPage < totalPages - 3}" class="page-item">
+                    <a th:href="${baseUrl + '?page=' + (totalPages - 1) + '&size=' + size + (searchParams != null ? '&' + searchParams : '')}"
+                       class="page-link" 
+                       th:text="${totalPages}">Last</a>
+                </li>
+                
+                <!-- Next button -->
+                <li th:class="${currentPage >= totalPages - 1 ? 'page-item disabled' : 'page-item'}">
+                    <a th:if="${currentPage < totalPages - 1}" 
+                       th:href="${baseUrl + '?page=' + (currentPage + 1) + '&size=' + size + (searchParams != null ? '&' + searchParams : '')}"
+                       class="page-link" 
+                       aria-label="Siguiente">
+                        <span class="d-none d-sm-inline">Siguiente </span>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                    <span th:if="${currentPage >= totalPages - 1}" class="page-link text-muted">
+                        <span class="d-none d-sm-inline">Siguiente </span>
+                        <i class="bi bi-chevron-right"></i>
+                    </span>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- Page info -->
+        <div th:if="${totalElements > 0}" class="text-center mt-2">
+            <small class="text-muted">
+                Página <strong th:text="${currentPage + 1}">1</strong> de 
+                <strong th:text="${totalPages}">1</strong>
+                (<strong th:text="${totalElements}">0</strong> elementos en total)
+            </small>
+        </div>
+    </div>
+    
+    <!-- Simple pagination for mobile -->
+    <div th:fragment="simple-pagination" 
+         th:with="currentPage=${page?.number ?: currentPage ?: 0},
+                  totalPages=${page?.totalPages ?: totalPages ?: 0},
+                  size=${page?.size ?: size ?: 10},
+                  baseUrl=${baseUrl ?: ''}">
+        
+        <nav th:if="${totalPages > 1}" aria-label="Navegación de páginas" class="d-flex justify-content-between">
+            <!-- Previous button -->
+            <div>
+                <a th:if="${currentPage > 0}" 
+                   th:href="${baseUrl + '?page=' + (currentPage - 1) + '&size=' + size + (searchParams != null ? '&' + searchParams : '')}"
+                   class="btn btn-outline-primary">
+                    <i class="bi bi-chevron-left me-1"></i>Anterior
+                </a>
+                <span th:if="${currentPage == 0}" class="btn btn-outline-secondary disabled">
+                    <i class="bi bi-chevron-left me-1"></i>Anterior
+                </span>
+            </div>
+            
+            <!-- Page info -->
+            <div class="align-self-center">
+                <small class="text-muted">
+                    <span th:text="${currentPage + 1}">1</span> / <span th:text="${totalPages}">1</span>
+                </small>
+            </div>
+            
+            <!-- Next button -->
+            <div>
+                <a th:if="${currentPage < totalPages - 1}" 
+                   th:href="${baseUrl + '?page=' + (currentPage + 1) + '&size=' + size + (searchParams != null ? '&' + searchParams : '')}"
+                   class="btn btn-outline-primary">
+                    Siguiente<i class="bi bi-chevron-right ms-1"></i>
+                </a>
+                <span th:if="${currentPage >= totalPages - 1}" class="btn btn-outline-secondary disabled">
+                    Siguiente<i class="bi bi-chevron-right ms-1"></i>
+                </span>
+            </div>
+        </nav>
+    </div>
+    
+    <!-- Page size selector -->
+    <div th:fragment="page-size-selector" 
+         th:with="currentSize=${page?.size ?: size ?: 10},
+                  baseUrl=${baseUrl ?: ''}">
+        <div class="d-flex align-items-center gap-2">
+            <label for="pageSize" class="form-label mb-0">Mostrar:</label>
+            <select id="pageSize" 
+                    class="form-select form-select-sm" 
+                    style="width: auto;"
+                    onchange="changePageSize(this.value)">
+                <option value="10" th:selected="${currentSize == 10}">10</option>
+                <option value="25" th:selected="${currentSize == 25}">25</option>
+                <option value="50" th:selected="${currentSize == 50}">50</option>
+                <option value="100" th:selected="${currentSize == 100}">100</option>
+            </select>
+            <span class="text-muted">por página</span>
+        </div>
+    </div>
+    
+    <!-- JavaScript for pagination -->
+    <script th:fragment="pagination-scripts">
+        function changePageSize(newSize) {
+            const url = new URL(window.location);
+            url.searchParams.set('size', newSize);
+            url.searchParams.set('page', '0'); // Reset to first page when changing size
+            window.location.href = url.toString();
+        }
+        
+        // Keyboard navigation for pagination
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                const currentUrl = new URL(window.location);
+                const currentPage = parseInt(currentUrl.searchParams.get('page') || '0');
+                const size = currentUrl.searchParams.get('size') || '10';
+                
+                if (e.key === 'ArrowLeft' && currentPage > 0) {
+                    // Ctrl+Left Arrow: Previous page
+                    e.preventDefault();
+                    currentUrl.searchParams.set('page', (currentPage - 1).toString());
+                    window.location.href = currentUrl.toString();
+                } else if (e.key === 'ArrowRight') {
+                    // Ctrl+Right Arrow: Next page (check if there's a next page in the UI)
+                    const nextButton = document.querySelector('.pagination .page-item:last-child a:not(.disabled)');
+                    if (nextButton) {
+                        e.preventDefault();
+                        currentUrl.searchParams.set('page', (currentPage + 1).toString());
+                        window.location.href = currentUrl.toString();
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

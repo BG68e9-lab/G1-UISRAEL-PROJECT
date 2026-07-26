@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Search Fragment -->
+    <div th:fragment="search" 
+         th:with="searchAction=${searchAction ?: '/search'}, 
+                  searchMethod=${searchMethod ?: 'GET'}, 
+                  searchPlaceholder=${searchPlaceholder ?: 'Buscar...'},
+                  searchValue=${searchValue ?: ''},
+                  searchName=${searchName ?: 'search'}">
+        <div class="search-container">
+            <form th:action="@{${searchAction}}" th:method="${searchMethod}" class="search-form" role="search">
+                <div class="input-group search-input-group">
+                    <span class="input-group-text search-icon">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input class="form-control search-input" 
+                           type="search" 
+                           th:name="${searchName}"
+                           th:value="${searchValue}"
+                           th:placeholder="${searchPlaceholder}" 
+                           aria-label="Campo de búsqueda"
+                           autocomplete="off">
+                    <button class="btn btn-primary search-button" 
+                            type="submit" 
+                            aria-label="Ejecutar búsqueda"
+                            title="Buscar">
+                        <i class="bi bi-search me-1"></i>
+                        <span class="d-none d-md-inline">Buscar</span>
+                    </button>
+                    <button th:if="${searchValue != null and searchValue != ''}" 
+                            class="btn btn-outline-secondary clear-button" 
+                            type="button" 
+                            onclick="clearSearch(this.form)"
+                            aria-label="Limpiar búsqueda"
+                            title="Limpiar">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Search suggestions (if provided) -->
+        <div th:if="${searchSuggestions != null and not #lists.isEmpty(searchSuggestions)}" 
+             class="search-suggestions mt-2">
+            <small class="text-muted d-block mb-1">Sugerencias:</small>
+            <div class="d-flex flex-wrap gap-1">
+                <a th:each="suggestion : ${searchSuggestions}"
+                   th:href="@{${searchAction}(${searchName}=${suggestion})}"
+                   class="badge bg-light text-dark text-decoration-none suggestion-tag"
+                   th:text="${suggestion}">Sugerencia</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Advanced search with multiple fields -->
+    <div th:fragment="advanced-search" 
+         th:with="searchAction=${searchAction ?: '/search'}, 
+                  searchMethod=${searchMethod ?: 'GET'}">
+        <form th:action="@{${searchAction}}" th:method="${searchMethod}" class="row g-3" role="search">
+            <!-- Search by name -->
+            <div class="col-md-4" th:if="${showNameSearch == null or showNameSearch}">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="nombre" 
+                       name="nombre"
+                       th:value="${searchParams?.nombre}"
+                       placeholder="Buscar por nombre">
+            </div>
+            
+            <!-- Search by brand -->
+            <div class="col-md-4" th:if="${showBrandSearch}">
+                <label for="marca" class="form-label">Marca</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="marca" 
+                       name="marca"
+                       th:value="${searchParams?.marca}"
+                       placeholder="Buscar por marca">
+            </div>
+            
+            <!-- Search by type -->
+            <div class="col-md-4" th:if="${showTypeSearch}">
+                <label for="tipo" class="form-label">Tipo</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="tipo" 
+                       name="tipo"
+                       th:value="${searchParams?.tipo}"
+                       placeholder="Buscar por tipo">
+            </div>
+            
+            <!-- Category filter -->
+            <div class="col-md-4" th:if="${showCategoryFilter and categories != null}">
+                <label for="categoriaId" class="form-label">Categoría</label>
+                <select class="form-select" id="categoriaId" name="categoriaId">
+                    <option value="">Todas las categorías</option>
+                    <option th:each="categoria : ${categories}" 
+                            th:value="${categoria.categoriaId}"
+                            th:text="${categoria.nombre}"
+                            th:selected="${searchParams?.categoriaId != null and searchParams.categoriaId.toString() == categoria.categoriaId.toString()}">
+                        Categoría
+                    </option>
+                </select>
+            </div>
+            
+            <!-- Provider filter -->
+            <div class="col-md-4" th:if="${showProviderFilter and providers != null}">
+                <label for="proveedorId" class="form-label">Proveedor</label>
+                <select class="form-select" id="proveedorId" name="proveedorId">
+                    <option value="">Todos los proveedores</option>
+                    <option th:each="proveedor : ${providers}" 
+                            th:value="${proveedor.proveedorId}"
+                            th:text="${proveedor.razonSocial}"
+                            th:selected="${searchParams?.proveedorId != null and searchParams.proveedorId.toString() == proveedor.proveedorId.toString()}">
+                        Proveedor
+                    </option>
+                </select>
+            </div>
+            
+            <!-- Status filter -->
+            <div class="col-md-4" th:if="${showStatusFilter and statusOptions != null}">
+                <label for="estado" class="form-label">Estado</label>
+                <select class="form-select" id="estado" name="estado">
+                    <option value="">Todos los estados</option>
+                    <option th:each="status : ${statusOptions}" 
+                            th:value="${status.key}"
+                            th:text="${status.value}"
+                            th:selected="${searchParams?.estado != null and searchParams.estado == status.key}">
+                        Estado
+                    </option>
+                </select>
+            </div>
+            
+            <!-- Date range filter -->
+            <div class="col-md-3" th:if="${showDateFilter}">
+                <label for="fechaDesde" class="form-label">Fecha Desde</label>
+                <input type="date" 
+                       class="form-control" 
+                       id="fechaDesde" 
+                       name="fechaDesde"
+                       th:value="${searchParams?.fechaDesde}">
+            </div>
+            
+            <div class="col-md-3" th:if="${showDateFilter}">
+                <label for="fechaHasta" class="form-label">Fecha Hasta</label>
+                <input type="date" 
+                       class="form-control" 
+                       id="fechaHasta" 
+                       name="fechaHasta"
+                       th:value="${searchParams?.fechaHasta}">
+            </div>
+            
+            <!-- Search buttons -->
+            <div class="col-12">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i>
+                        Buscar
+                    </button>
+                    <a th:href="@{${searchAction}}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle me-1"></i>
+                        Limpiar
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Quick search bar with filters -->
+    <div th:fragment="quick-search" 
+         th:with="searchAction=${searchAction ?: '/search'}, 
+                  searchMethod=${searchMethod ?: 'GET'}, 
+                  searchPlaceholder=${searchPlaceholder ?: 'Buscar...'},
+                  searchValue=${searchValue ?: ''},
+                  searchName=${searchName ?: 'search'}">
+        <div class="d-flex flex-column flex-md-row gap-3 mb-3">
+            <!-- Search input -->
+            <div class="flex-grow-1">
+                <form th:action="@{${searchAction}}" th:method="${searchMethod}" class="d-flex" role="search">
+                    <div class="input-group">
+                        <input class="form-control" 
+                               type="search" 
+                               th:name="${searchName}"
+                               th:value="${searchValue}"
+                               th:placeholder="${searchPlaceholder}" 
+                               aria-label="Search">
+                        <button class="btn btn-primary" type="submit" aria-label="Buscar">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Quick filters -->
+            <div th:if="${quickFilters != null}" class="d-flex gap-2 flex-wrap">
+                <a th:each="filter : ${quickFilters}"
+                   th:href="@{${searchAction}(${filter.paramName}=${filter.paramValue})}"
+                   th:class="'btn btn-outline-secondary btn-sm' + (${filter.active} ? ' active' : '')"
+                   th:text="${filter.label}">
+                    Filtro
+                </a>
+            </div>
+        </div>
+        
+        <!-- Active filters display -->
+        <div th:if="${activeFilters != null and not #lists.isEmpty(activeFilters)}" 
+             class="mb-3">
+            <small class="text-muted">Filtros activos:</small>
+            <div class="d-flex gap-1 flex-wrap mt-1">
+                <span th:each="activeFilter : ${activeFilters}" 
+                      class="badge bg-primary">
+                    <span th:text="${activeFilter.label}">Filtro</span>
+                    <a th:href="@{${searchAction}}" 
+                       class="text-white text-decoration-none ms-1" 
+                       title="Eliminar filtro">
+                        <i class="bi bi-x"></i>
+                    </a>
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search results info -->
+    <div th:fragment="search-results-info" 
+         th:with="totalElements=${page?.totalElements ?: totalElements ?: 0},
+                  currentPage=${page?.number ?: currentPage ?: 0},
+                  totalPages=${page?.totalPages ?: totalPages ?: 0},
+                  pageSize=${page?.size ?: pageSize ?: 10}">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <small class="text-muted">
+                <span th:if="${totalElements > 0}">
+                    Mostrando 
+                    <strong th:text="${(currentPage * pageSize) + 1}">1</strong> - 
+                    <strong th:text="${#numbers.formatInteger(T(java.lang.Math).min((currentPage + 1) * pageSize, totalElements), 0)}">10</strong> 
+                    de <strong th:text="${totalElements}">100</strong> resultados
+                </span>
+                <span th:if="${totalElements == 0}">
+                    No se encontraron resultados
+                </span>
+            </small>
+            
+            <!-- Page size selector -->
+            <div th:if="${totalElements > 0}" class="d-flex align-items-center gap-2">
+                <small class="text-muted">Mostrar:</small>
+                <select class="form-select form-select-sm" 
+                        style="width: auto;" 
+                        onchange="changePageSize(this.value)">
+                    <option value="10" th:selected="${pageSize == 10}">10</option>
+                    <option value="25" th:selected="${pageSize == 25}">25</option>
+                    <option value="50" th:selected="${pageSize == 50}">50</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript for search functionality -->
+    <script th:fragment="search-scripts">
+        function changePageSize(newSize) {
+            const url = new URL(window.location);
+            url.searchParams.set('size', newSize);
+            url.searchParams.set('page', '0'); // Reset to first page
+            window.location.href = url.toString();
+        }
+        
+        // Auto-submit search form on Enter
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInputs = document.querySelectorAll('input[type="search"]');
+            searchInputs.forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        this.form.submit();
+                    }
+                });
+            });
+        });
+        
+        // Clear search form
+        function clearSearchForm(formSelector) {
+            const form = document.querySelector(formSelector || 'form[role="search"]');
+            if (form) {
+                form.reset();
+                // Redirect to base URL without parameters
+                const baseUrl = form.action;
+                window.location.href = baseUrl;
+            }
+        }
+    </script>
+</body>
+</html>
+        
+        <!-- Search styles -->
+        <style>
+            .search-container {
+                margin-bottom: 1rem;
+            }
+            
+            .search-form {
+                position: relative;
+            }
+            
+            .search-input-group {
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                border-radius: 10px;
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+            
+            .search-input-group:focus-within {
+                box-shadow: 0 4px 20px rgba(76, 132, 255, 0.3);
+                transform: translateY(-1px);
+            }
+            
+            .search-icon {
+                background-color: #f8f9fa;
+                border: none;
+                color: #6c757d;
+                padding: 0.75rem;
+            }
+            
+            .search-input {
+                border: none;
+                padding: 0.75rem;
+                font-size: 0.95rem;
+                background-color: white;
+            }
+            
+            .search-input:focus {
+                box-shadow: none;
+                border: none;
+            }
+            
+            .search-button {
+                border: none;
+                padding: 0.75rem 1.25rem;
+                font-weight: 500;
+                background: linear-gradient(135deg, var(--primary-color) 0%, #667eea 100%);
+            }
+            
+            .search-button:hover {
+                transform: translateY(-1px);
+            }
+            
+            .clear-button {
+                border: none;
+                padding: 0.75rem;
+                background-color: #6c757d;
+                color: white;
+            }
+            
+            .clear-button:hover {
+                background-color: #5a6268;
+            }
+            
+            .search-suggestions {
+                max-width: 100%;
+                overflow-x: auto;
+            }
+            
+            .suggestion-tag {
+                border: 1px solid #dee2e6;
+                padding: 0.25rem 0.5rem;
+                border-radius: 15px;
+                font-size: 0.8rem;
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+            
+            .suggestion-tag:hover {
+                background-color: var(--primary-color) !important;
+                color: white !important;
+                transform: translateY(-1px);
+            }
+            
+            /* Mobile adjustments */
+            @media (max-width: 767.98px) {
+                .search-input-group {
+                    border-radius: 8px;
+                }
+                
+                .search-input {
+                    font-size: 16px; /* Prevent zoom on iOS */
+                }
+                
+                .search-button span {
+                    display: none;
+                }
+                
+                .suggestion-tag {
+                    font-size: 0.75rem;
+                }
+            }
+        </style>
+        
+        <!-- Search JavaScript -->
+        <script>
+            function clearSearch(form) {
+                const searchInput = form.querySelector('input[type="search"]');
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchInput.focus();
+                    // Optionally submit the form to clear results
+                    form.submit();
+                }
+            }
+            
+            // Auto-complete functionality (if needed)
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInputs = document.querySelectorAll('.search-input');
+                
+                searchInputs.forEach(input => {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            this.form.submit();
+                        }
+                    });
+                    
+                    // Clear button toggle
+                    input.addEventListener('input', function() {
+                        const clearButton = this.form.querySelector('.clear-button');
+                        if (clearButton) {
+                            clearButton.style.display = this.value ? 'block' : 'none';
+                        }
+                    });
+                });
+            });
+        </script>
+    </div>
