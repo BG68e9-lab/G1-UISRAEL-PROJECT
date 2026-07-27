@@ -6,13 +6,17 @@ import java.util.Optional;
 import com.uisrael.drinkhouse.dominio.entidades.Categoria;
 
 public interface ICategoriaRepositorio {
-	
-	Categoria guardar(Categoria nuevoCategoria);
-	
-	Optional<Categoria> buscarPorId(Integer idCategoria);
-	
-	List<Categoria> listarTodos();
-	
-	void eliminar(Integer idCategoria);
+
+	Categoria guardar(Categoria categoria);
+
+	Optional<Categoria> buscarPorId(Long id);
+
+	List<Categoria> listarTodas();
+
+	void eliminar(Long id);
+
+	boolean existePorNombre(String nombre);
+
+	boolean tieneProductosAsociados(Long id);
 
 }

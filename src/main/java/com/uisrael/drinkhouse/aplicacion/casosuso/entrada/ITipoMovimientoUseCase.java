@@ -2,17 +2,13 @@ package com.uisrael.drinkhouse.aplicacion.casosuso.entrada;
 
 import java.util.List;
 
-
 import com.uisrael.drinkhouse.dominio.entidades.TipoMovimiento;
 
 public interface ITipoMovimientoUseCase {
 
-	
-	TipoMovimiento guardar(TipoMovimiento tipomovimiento);
+	TipoMovimiento crearTipoMovimiento(TipoMovimiento tipoMovimiento);
 
-	TipoMovimiento buscarPorId(int id);
+	TipoMovimiento buscarPorId(Integer id);
 
 	List<TipoMovimiento> listarTodos();
-
-	void eliminar(int id);
 }

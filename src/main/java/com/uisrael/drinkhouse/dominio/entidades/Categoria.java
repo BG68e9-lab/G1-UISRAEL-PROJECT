@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class Categoria {
 
-	private Integer categoriaId;
+	private Long categoriaId;
 	private String nombre;
 	private BigDecimal margenGananciaPct;
 	private Boolean activo;
@@ -12,18 +12,18 @@ public class Categoria {
 	public Categoria() {
 	}
 
-	public Categoria(Integer categoriaId, String nombre, BigDecimal margenGananciaPct, Boolean activo) {
+	public Categoria(Long categoriaId, String nombre, BigDecimal margenGananciaPct, Boolean activo) {
 		this.categoriaId = categoriaId;
 		this.nombre = nombre;
 		this.margenGananciaPct = margenGananciaPct;
 		this.activo = activo;
 	}
 
-	public Integer getCategoriaId() {
+	public Long getCategoriaId() {
 		return categoriaId;
 	}
 
-	public void setCategoriaId(Integer categoriaId) {
+	public void setCategoriaId(Long categoriaId) {
 		this.categoriaId = categoriaId;
 	}
 

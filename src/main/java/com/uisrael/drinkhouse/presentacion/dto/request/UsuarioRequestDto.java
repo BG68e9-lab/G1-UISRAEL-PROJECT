@@ -8,19 +8,18 @@ import lombok.Data;
 public class UsuarioRequestDto {
 
 	@NotBlank
-	private String nombres;
-
-	@NotBlank
-	private String apellidos;
+	private String nombreCompleto;
 
 	@NotBlank
 	@Email
 	private String email;
 
-	@NotBlank
+	// Opcional cuando se usa SSO
 	private String passwordHash;
 
 	private String proveedorSso;
 
 	private String ssoSubjectId;
+
+	private Integer rolId;
 }

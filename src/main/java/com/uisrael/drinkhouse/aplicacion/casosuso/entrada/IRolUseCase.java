@@ -1,17 +1,19 @@
 package com.uisrael.drinkhouse.aplicacion.casosuso.entrada;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.uisrael.drinkhouse.dominio.entidades.Rol;
 
 public interface IRolUseCase {
-	
-	Rol guardar(Rol nuevoRol);
-	
-	Rol buscarPorId(Integer idRol);
-	
-	List<Rol> listarTodos();
-	
-	void eliminar(Integer idRol);
 
+	Rol crearRol(Rol rol);
+
+	Rol actualizarRol(Integer id, Rol rol);
+
+	List<Rol> listarRoles();
+
+	void asignarRolAUsuario(UUID usuarioId, Integer rolId);
+
+	void revocarRolDeUsuario(UUID usuarioId, Integer rolId);
 }

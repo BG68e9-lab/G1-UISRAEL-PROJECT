@@ -8,6 +8,7 @@ import java.time.LocalDate;
 public class LoteProducto {
 
 	private Long loteId;
+	private Integer negocioId;
 	private String codigoEntrada;
 	private BigDecimal cantidadInicial;
 	private BigDecimal cantidadDisponible;
@@ -32,6 +33,8 @@ public class LoteProducto {
 
 	public Long getLoteId() { return loteId; }
 	public void setLoteId(Long loteId) { this.loteId = loteId; }
+	public Integer getNegocioId() { return negocioId; }
+	public void setNegocioId(Integer negocioId) { this.negocioId = negocioId; }
 
 	public String getCodigoEntrada() { return codigoEntrada; }
 	public void setCodigoEntrada(String codigoEntrada) { this.codigoEntrada = codigoEntrada; }

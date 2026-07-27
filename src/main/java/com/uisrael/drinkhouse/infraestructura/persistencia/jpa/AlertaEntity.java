@@ -30,13 +30,13 @@ public class AlertaEntity {
 	@Column(name = "tipo_alerta", nullable = false, length = 40)
 	private String tipoAlerta;
 
-	@Column(name = "referencia_tipo", nullable = false, length = 30)
+	@Column(name = "referencia_tipo", length = 50)
 	private String referenciaTipo;
 
 	@Column(name = "referencia_id")
 	private Long referenciaId;
 
-	@Column(name = "mensaje", nullable = false, length = 255)
+	@Column(name = "mensaje", nullable = false, length = 500)
 	private String mensaje;
 
 	@Column(name = "atendida", nullable = false)
@@ -45,12 +45,13 @@ public class AlertaEntity {
 	@Column(name = "creado_en", nullable = false, updatable = false)
 	private OffsetDateTime creadoEn;
 
-	@Column(name = "atendida_en")
-	private OffsetDateTime atendidaEn;
-
 	@PrePersist
 	protected void onCreate() {
-		this.creadoEn = OffsetDateTime.now();
-		if (this.atendida == null) this.atendida = false;
+		if (this.creadoEn == null) {
+			this.creadoEn = OffsetDateTime.now();
+		}
+		if (this.atendida == null) {
+			this.atendida = false;
+		}
 	}
 }

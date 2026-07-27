@@ -1,17 +1,17 @@
 package com.uisrael.drinkhouse.presentacion.controladores;
 
+import java.time.OffsetDateTime;
 import java.util.List;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ILogAuditoriaUseCase;
-import com.uisrael.drinkhouse.presentacion.dto.request.LogAuditoriaRequestDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.LogAuditoriaResponseDto;
 import com.uisrael.drinkhouse.presentacion.mapeadores.ILogAuditoriaDtoMapper;
-import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/logs-auditoria")
+@RequestMapping("/api/v1/auditoria")
 public class LogAuditoriaController {
 
 	private final ILogAuditoriaUseCase logAuditoriaUseCase;
@@ -22,20 +22,24 @@ public class LogAuditoriaController {
 		this.mapper = mapper;
 	}
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public LogAuditoriaResponseDto guardar(@Valid @RequestBody LogAuditoriaRequestDto requestDto) {
-		return mapper.toResponseDto(logAuditoriaUseCase.guardar(mapper.toDomain(requestDto)));
-	}
-
 	@GetMapping
-	public List<LogAuditoriaResponseDto> listarTodo() {
-		return logAuditoriaUseCase.listarTodos().stream().map(mapper::toResponseDto).toList();
+	public List<LogAuditoriaResponseDto> buscarConFiltros(
+			@RequestParam(required = false) String entidad,
+			@RequestParam(required = false) String accion,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime desde,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime hasta) {
+		return logAuditoriaUseCase.buscarConFiltros(entidad, accion, desde, hasta)
+				.stream()
+				.map(mapper::toResponseDto)
+				.toList();
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> eliminar(@PathVariable("id") Long idLog) {
-		logAuditoriaUseCase.eliminar(idLog);
-		return ResponseEntity.noContent().build();
+	@GetMapping("/entidad/{entidadId}")
+	public List<LogAuditoriaResponseDto> buscarPorEntidadId(@PathVariable String entidadId) {
+		return logAuditoriaUseCase.buscarPorEntidadId(entidadId)
+				.stream()
+				.map(mapper::toResponseDto)
+				.toList();
 	}
+
 }

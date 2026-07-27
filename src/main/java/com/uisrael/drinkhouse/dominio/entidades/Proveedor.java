@@ -2,7 +2,7 @@ package com.uisrael.drinkhouse.dominio.entidades;
 
 public class Proveedor {
 
-	private Integer proveedorId;
+	private Long proveedorId;
 	private String ruc;
 	private String razonSocial;
 	private String direccion;
@@ -12,7 +12,7 @@ public class Proveedor {
 	public Proveedor() {
 	}
 
-	public Proveedor(Integer proveedorId, String ruc, String razonSocial, String direccion,
+	public Proveedor(Long proveedorId, String ruc, String razonSocial, String direccion,
 			String telefono, String email) {
 		this.proveedorId = proveedorId;
 		this.ruc = ruc;
@@ -22,8 +22,8 @@ public class Proveedor {
 		this.email = email;
 	}
 
-	public Integer getProveedorId() { return proveedorId; }
-	public void setProveedorId(Integer proveedorId) { this.proveedorId = proveedorId; }
+	public Long getProveedorId() { return proveedorId; }
+	public void setProveedorId(Long proveedorId) { this.proveedorId = proveedorId; }
 
 	public String getRuc() { return ruc; }
 	public void setRuc(String ruc) { this.ruc = ruc; }

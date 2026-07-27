@@ -1,7 +1,9 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores;
 
+import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
+
+import org.springframework.stereotype.Repository;
 
 import com.uisrael.drinkhouse.dominio.entidades.LogAuditoria;
 import com.uisrael.drinkhouse.dominio.repositorios.ILogAuditoriaRepositorio;
@@ -10,7 +12,7 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ILogAudito
 import com.uisrael.drinkhouse.infraestructura.repositorio.ILogAuditoriaJpaRepositorio;
 
 public class LogAuditoriaRepositorioImpl implements ILogAuditoriaRepositorio {
-	
+
 	private final ILogAuditoriaJpaRepositorio jpaRepositorio;
 	private final ILogAuditoriaJpaMapper logAuditoriaMapper;
 
@@ -21,25 +23,27 @@ public class LogAuditoriaRepositorioImpl implements ILogAuditoriaRepositorio {
 	}
 
 	@Override
-	public LogAuditoria guardar(LogAuditoria nuevoLogAuditoria) {
-		LogAuditoriaEntity entity = logAuditoriaMapper.toEntity(nuevoLogAuditoria);
+	public LogAuditoria guardar(LogAuditoria log) {
+		LogAuditoriaEntity entity = logAuditoriaMapper.toEntity(log);
 		LogAuditoriaEntity guardado = jpaRepositorio.save(entity);
 		return logAuditoriaMapper.toDomain(guardado);
 	}
 
 	@Override
-	public Optional<LogAuditoria> buscarPorId(Long idLogAuditoria) {
-		return jpaRepositorio.findById(idLogAuditoria).map(logAuditoriaMapper::toDomain);
+	public List<LogAuditoria> buscarConFiltros(String entidad, String accion,
+			OffsetDateTime desde, OffsetDateTime hasta) {
+		return jpaRepositorio.buscarConFiltros(entidad, accion, desde, hasta)
+				.stream()
+				.map(logAuditoriaMapper::toDomain)
+				.toList();
 	}
 
 	@Override
-	public List<LogAuditoria> listarTodos() {
-		return jpaRepositorio.findAll().stream().map(logAuditoriaMapper::toDomain).toList();
-	}
-
-	@Override
-	public void eliminar(Long idLogAuditoria) {
-		jpaRepositorio.deleteById(idLogAuditoria);
+	public List<LogAuditoria> buscarPorEntidadId(String entidadId) {
+		return jpaRepositorio.findByEntidadId(entidadId)
+				.stream()
+				.map(logAuditoriaMapper::toDomain)
+				.toList();
 	}
 
 }

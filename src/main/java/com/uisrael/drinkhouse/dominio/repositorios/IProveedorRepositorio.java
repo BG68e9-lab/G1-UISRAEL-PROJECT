@@ -9,9 +9,13 @@ public interface IProveedorRepositorio {
 
 	Proveedor guardar(Proveedor proveedor);
 
-	Optional<Proveedor> buscarPorId(int id);
+	Optional<Proveedor> buscarPorId(Long id);
 
 	List<Proveedor> listarTodos();
 
-	void eliminar(int id);
+	boolean existePorRuc(String ruc);
+
+	void eliminar(Long id);
+
+	boolean tieneOrdenesAsociadas(Long id);
 }

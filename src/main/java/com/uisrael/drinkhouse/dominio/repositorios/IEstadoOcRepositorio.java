@@ -6,13 +6,14 @@ import java.util.Optional;
 import com.uisrael.drinkhouse.dominio.entidades.EstadoOc;
 
 public interface IEstadoOcRepositorio {
-	
-	EstadoOc guardar(EstadoOc nuevoEstadoOc);
-	
-	Optional<EstadoOc> buscarPorId(Integer idEstadoOc);
-	
-	List<EstadoOc> listarTodos();
-	
-	void eliminar(Integer idEstadoOc);
 
+	EstadoOc guardar(EstadoOc estadoOc);
+
+	Optional<EstadoOc> buscarPorNombre(String nombre);
+
+	Optional<EstadoOc> buscarPorId(Integer id);
+
+	List<EstadoOc> listarTodos();
+
+	void eliminar(Integer id);
 }

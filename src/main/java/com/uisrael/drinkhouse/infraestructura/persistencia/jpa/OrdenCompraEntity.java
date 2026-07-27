@@ -68,12 +68,13 @@ public class OrdenCompraEntity {
 	@OneToMany(mappedBy = "fkOrdenCompraEntity")
 	private List<LoteProductoEntity> lotes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "fkOrdenCompraEntity")
+	@OneToMany(mappedBy = "ordenCompraRelacionada")
 	private List<IdentificacionIaEntity> identificaciones = new ArrayList<>();
 
 	@PrePersist
 	protected void onCreate() {
 		this.creadoEn = OffsetDateTime.now();
 		if (this.extraidoPorIa == null) this.extraidoPorIa = false;
+		if (this.fechaOc == null) this.fechaOc = LocalDate.now();
 	}
 }

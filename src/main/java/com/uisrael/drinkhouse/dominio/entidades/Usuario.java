@@ -6,8 +6,9 @@ import java.util.UUID;
 public class Usuario {
 
 	private UUID usuarioId;
-	private String nombres;
-	private String apellidos;
+	private Integer negocioId;
+	private Integer rolId;
+	private String nombreCompleto;
 	private String email;
 	private String passwordHash;
 	private String proveedorSso;
@@ -17,15 +18,16 @@ public class Usuario {
 	private OffsetDateTime creadoEn;
 	private OffsetDateTime actualizadoEn;
 
-	public Usuario() {
-	}
+	public Usuario() {}
 
-	public Usuario(UUID usuarioId, String nombres, String apellidos, String email,
-			String passwordHash, String proveedorSso, String ssoSubjectId, String estadoCuenta,
-			OffsetDateTime activadoEn, OffsetDateTime creadoEn, OffsetDateTime actualizadoEn) {
+	public Usuario(UUID usuarioId, Integer negocioId, Integer rolId, String nombreCompleto,
+			String email, String passwordHash, String proveedorSso, String ssoSubjectId,
+			String estadoCuenta, OffsetDateTime activadoEn, OffsetDateTime creadoEn,
+			OffsetDateTime actualizadoEn) {
 		this.usuarioId = usuarioId;
-		this.nombres = nombres;
-		this.apellidos = apellidos;
+		this.negocioId = negocioId;
+		this.rolId = rolId;
+		this.nombreCompleto = nombreCompleto;
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.proveedorSso = proveedorSso;
@@ -38,34 +40,26 @@ public class Usuario {
 
 	public UUID getUsuarioId() { return usuarioId; }
 	public void setUsuarioId(UUID usuarioId) { this.usuarioId = usuarioId; }
-
-	public String getNombres() { return nombres; }
-	public void setNombres(String nombres) { this.nombres = nombres; }
-
-	public String getApellidos() { return apellidos; }
-	public void setApellidos(String apellidos) { this.apellidos = apellidos; }
-
+	public Integer getNegocioId() { return negocioId; }
+	public void setNegocioId(Integer negocioId) { this.negocioId = negocioId; }
+	public Integer getRolId() { return rolId; }
+	public void setRolId(Integer rolId) { this.rolId = rolId; }
+	public String getNombreCompleto() { return nombreCompleto; }
+	public void setNombreCompleto(String nombreCompleto) { this.nombreCompleto = nombreCompleto; }
 	public String getEmail() { return email; }
 	public void setEmail(String email) { this.email = email; }
-
 	public String getPasswordHash() { return passwordHash; }
 	public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
-
 	public String getProveedorSso() { return proveedorSso; }
 	public void setProveedorSso(String proveedorSso) { this.proveedorSso = proveedorSso; }
-
 	public String getSsoSubjectId() { return ssoSubjectId; }
 	public void setSsoSubjectId(String ssoSubjectId) { this.ssoSubjectId = ssoSubjectId; }
-
 	public String getEstadoCuenta() { return estadoCuenta; }
 	public void setEstadoCuenta(String estadoCuenta) { this.estadoCuenta = estadoCuenta; }
-
 	public OffsetDateTime getActivadoEn() { return activadoEn; }
 	public void setActivadoEn(OffsetDateTime activadoEn) { this.activadoEn = activadoEn; }
-
 	public OffsetDateTime getCreadoEn() { return creadoEn; }
 	public void setCreadoEn(OffsetDateTime creadoEn) { this.creadoEn = creadoEn; }
-
 	public OffsetDateTime getActualizadoEn() { return actualizadoEn; }
 	public void setActualizadoEn(OffsetDateTime actualizadoEn) { this.actualizadoEn = actualizadoEn; }
 }

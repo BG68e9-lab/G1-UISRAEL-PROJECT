@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 public class Producto {
 
 	private Long productoId;
+	private Integer negocioId;
+	private Long categoriaId;
+	private Boolean activo;
 	private String nombre;
 	private String marca;
 	private String tipo;
@@ -42,6 +45,14 @@ public class Producto {
 
 	public Long getProductoId() { return productoId; }
 	public void setProductoId(Long productoId) { this.productoId = productoId; }
+	public Integer getNegocioId() { return negocioId; }
+	public void setNegocioId(Integer negocioId) { this.negocioId = negocioId; }
+
+	public Long getCategoriaId() { return categoriaId; }
+	public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }
+
+	public Boolean getActivo() { return activo; }
+	public void setActivo(Boolean activo) { this.activo = activo; }
 
 	public String getNombre() { return nombre; }
 	public void setNombre(String nombre) { this.nombre = nombre; }

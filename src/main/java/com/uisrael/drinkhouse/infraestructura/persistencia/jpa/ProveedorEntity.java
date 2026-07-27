@@ -18,22 +18,22 @@ public class ProveedorEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "proveedor_id")
-	private Integer proveedorId;
+	private Long proveedorId;
 
 	@ManyToOne
 	@JoinColumn(name = "negocio_id")
 	private NegocioEntity fkNegocioEntity;
 
-	@Column(name = "ruc", nullable = false, length = 20)
+	@Column(name = "ruc", nullable = false, length = 13, unique = true)
 	private String ruc;
 
-	@Column(name = "razon_social", nullable = false, length = 100)
+	@Column(name = "razon_social", nullable = false, length = 150)
 	private String razonSocial;
 
-	@Column(name = "direccion", nullable = false, length = 150)
+	@Column(name = "direccion", length = 255)
 	private String direccion;
 
-	@Column(name = "telefono", nullable = false, length = 15)
+	@Column(name = "telefono", length = 20)
 	private String telefono;
 
 	@Column(name = "email", nullable = false, length = 150)

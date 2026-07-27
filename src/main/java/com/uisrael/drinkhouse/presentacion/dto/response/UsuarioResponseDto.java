@@ -9,12 +9,14 @@ import lombok.Data;
 public class UsuarioResponseDto {
 
 	private UUID usuarioId;
-	private String nombres;
-	private String apellidos;
+	private Integer negocioId;
+	private Integer rolId;
+	private String nombreCompleto;
 	private String email;
 	private String proveedorSso;
 	private String estadoCuenta;
 	private OffsetDateTime activadoEn;
 	private OffsetDateTime creadoEn;
 	private OffsetDateTime actualizadoEn;
+	// passwordHash nunca se expone
 }

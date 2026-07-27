@@ -12,57 +12,70 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+/**
+ * Entidad JPA que representa el resultado de una identificación de producto mediante IA.
+ */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "identificaciones_ia")
 public class IdentificacionIaEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "identificacion_id")
-	private Long identificacionId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "identificacion_id")
+    private Long identificacionId;
 
-	@ManyToOne
-	@JoinColumn(name = "negocio_id")
-	private NegocioEntity fkNegocioEntity;
+    @ManyToOne
+    @JoinColumn(name = "negocio_id")
+    private NegocioEntity negocio;
 
-	@ManyToOne
-	@JoinColumn(name = "producto_id")
-	private ProductoEntity fkProductoEntity;
+    @ManyToOne
+    @JoinColumn(name = "producto_id")
+    private ProductoEntity producto;
 
-	@Column(name = "archivo_url", nullable = false, length = 500)
-	private String archivoUrl;
+    @Column(name = "archivo_url", length = 500)
+    private String archivoUrl;
 
-	@Column(name = "modelo_ia_usado", nullable = false, length = 50)
-	private String modeloIaUsado;
+    @Column(name = "modelo_ia_usado", length = 100)
+    private String modeloIaUsado;
 
-	@Column(name = "nombre_sugerido", length = 150)
-	private String nombreSugerido;
+    @Column(name = "nombre_sugerido", length = 200)
+    private String nombreSugerido;
 
-	@Column(name = "marca_sugerida", length = 100)
-	private String marcaSugerida;
+    @Column(name = "marca_sugerida", length = 100)
+    private String marcaSugerida;
 
-	@Column(name = "tipo_sugerido", length = 100)
-	private String tipoSugerido;
+    @Column(name = "tipo_sugerido", length = 100)
+    private String tipoSugerido;
 
-	@Column(name = "reconocido", nullable = false)
-	private Boolean reconocido;
+    @Column(name = "reconocido", nullable = false)
+    private Boolean reconocido;
 
-	@ManyToOne
-	@JoinColumn(name = "orden_compra_relacionada")
-	private OrdenCompraEntity fkOrdenCompraEntity;
+    @ManyToOne
+    @JoinColumn(name = "orden_compra_relacionada")
+    private OrdenCompraEntity ordenCompraRelacionada;
 
-	@Column(name = "confirmado_por")
-	private UUID confirmadoPor;
+    @Column(name = "confirmado_por")
+    private UUID confirmadoPor;
 
-	@Column(name = "creado_en", nullable = false, updatable = false)
-	private OffsetDateTime creadoEn;
+    @Column(name = "creado_en", nullable = false, updatable = false)
+    private OffsetDateTime creadoEn;
 
-	@PrePersist
-	protected void onCreate() {
-		this.creadoEn = OffsetDateTime.now();
-		if (this.reconocido == null) this.reconocido = false;
-	}
+    @PrePersist
+    protected void onCreate() {
+        if (this.creadoEn == null) {
+            this.creadoEn = OffsetDateTime.now();
+        }
+        if (this.reconocido == null) {
+            this.reconocido = false;
+        }
+    }
 }

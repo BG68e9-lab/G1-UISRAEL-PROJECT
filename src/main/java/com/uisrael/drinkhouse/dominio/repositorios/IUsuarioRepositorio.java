@@ -7,13 +7,17 @@ import java.util.UUID;
 import com.uisrael.drinkhouse.dominio.entidades.Usuario;
 
 public interface IUsuarioRepositorio {
-	
-	Usuario guardar(Usuario nuevoUsuario);
-	
-	Optional<Usuario> buscarPorId(UUID idUsuario);
-	
-	List<Usuario> listarTodos();
-	
-	void eliminar(UUID idUsuario);
+
+	Usuario guardar(Usuario usuario);
+
+	Optional<Usuario> buscarPorId(UUID id);
+
+	List<Usuario> listarConFiltro(String estadoCuenta);
+
+	boolean existePorEmail(String email);
+
+	void asignarRol(UUID usuarioId, Integer rolId);
+
+	void revocarRol(UUID usuarioId, Integer rolId);
 
 }

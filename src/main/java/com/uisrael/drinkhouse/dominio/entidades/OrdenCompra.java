@@ -5,6 +5,7 @@ import java.time.OffsetDateTime;
 public class OrdenCompra {
 	
 	private Long ordenCompraId;
+	private Integer negocioId;
 	private String codigoReferencia;
 	private String estado;
 	private Double total;
@@ -12,8 +13,9 @@ public class OrdenCompra {
 	
 	public OrdenCompra() {}
 
-	public OrdenCompra(Long ordenCompraId, String codigoReferencia, String estado, Double total, OffsetDateTime creadoEn) {
+	public OrdenCompra(Long ordenCompraId, Integer negocioId, String codigoReferencia, String estado, Double total, OffsetDateTime creadoEn) {
 		this.ordenCompraId = ordenCompraId;
+		this.negocioId = negocioId;
 		this.codigoReferencia = codigoReferencia;
 		this.estado = estado;
 		this.total = total;
@@ -22,6 +24,8 @@ public class OrdenCompra {
 
 	public Long getOrdenCompraId() { return ordenCompraId; }
 	public void setOrdenCompraId(Long ordenCompraId) { this.ordenCompraId = ordenCompraId; }
+	public Integer getNegocioId() { return negocioId; }
+	public void setNegocioId(Integer negocioId) { this.negocioId = negocioId; }
 	public String getCodigoReferencia() { return codigoReferencia; }
 	public void setCodigoReferencia(String codigoReferencia) { this.codigoReferencia = codigoReferencia; }
 	public String getEstado() { return estado; }

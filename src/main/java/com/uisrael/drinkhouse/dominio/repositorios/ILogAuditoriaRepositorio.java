@@ -1,18 +1,16 @@
 package com.uisrael.drinkhouse.dominio.repositorios;
 
+import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import com.uisrael.drinkhouse.dominio.entidades.LogAuditoria;
 
 public interface ILogAuditoriaRepositorio {
-	
-	LogAuditoria guardar(LogAuditoria nuevoLogAuditoria);
-	
-	Optional<LogAuditoria> buscarPorId(Long idLogAuditoria);
-	
-	List<LogAuditoria> listarTodos();
-	
-	void eliminar(Long idLogAuditoria);
+
+	LogAuditoria guardar(LogAuditoria log);
+
+	List<LogAuditoria> buscarConFiltros(String entidad, String accion, OffsetDateTime desde, OffsetDateTime hasta);
+
+	List<LogAuditoria> buscarPorEntidadId(String entidadId);
 
 }

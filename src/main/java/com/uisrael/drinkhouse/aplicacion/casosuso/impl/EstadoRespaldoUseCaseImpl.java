@@ -3,6 +3,7 @@ package com.uisrael.drinkhouse.aplicacion.casosuso.impl;
 import java.util.List;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IEstadoRespaldoUseCase;
+import com.uisrael.drinkhouse.aplicacion.excepciones.RecursoNoEncontradoException;
 import com.uisrael.drinkhouse.dominio.entidades.EstadoRespaldo;
 import com.uisrael.drinkhouse.dominio.repositorios.IEstadoRespaldoRepositorio;
 
@@ -24,7 +25,7 @@ public class EstadoRespaldoUseCaseImpl implements IEstadoRespaldoUseCase {
 	@Override
 	public EstadoRespaldo buscarPorId(int id) {
 
-		return repositorio.buscarPorId(id).orElseThrow(() -> new RuntimeException("Estado de Respaldo no encontrado"));
+		return repositorio.buscarPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("Estado de Respaldo no encontrado con id: " + id));
 	}
 
 	@Override

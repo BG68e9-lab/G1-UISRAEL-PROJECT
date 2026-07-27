@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ITipoMovimientoUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.TipoMovimiento;
+import com.uisrael.drinkhouse.aplicacion.excepciones.ConflictoUnicoException;
+import com.uisrael.drinkhouse.aplicacion.excepciones.RecursoNoEncontradoException;
 import com.uisrael.drinkhouse.dominio.repositorios.ITipoMovimientoRepositorio;
 
 public class TipoMovimientoUseCaseImpl implements ITipoMovimientoUseCase {
@@ -15,28 +17,23 @@ public class TipoMovimientoUseCaseImpl implements ITipoMovimientoUseCase {
 	}
 
 	@Override
-	public TipoMovimiento guardar(TipoMovimiento tipomovimiento) {
-
-		return repositorio.guardar(tipomovimiento);
+	public TipoMovimiento crearTipoMovimiento(TipoMovimiento tipoMovimiento) {
+		if (repositorio.existePorCodigo(tipoMovimiento.getCodigo())) {
+			throw new ConflictoUnicoException("Ya existe un tipo de movimiento con código: "
+					+ tipoMovimiento.getCodigo());
+		}
+		return repositorio.guardar(tipoMovimiento);
 	}
 
 	@Override
-	public TipoMovimiento buscarPorId(int id) {
-
-		return repositorio.buscarPorId(id).orElseThrow(() -> new RuntimeException("Tipo de Movimiento no encontrado"));
+	public TipoMovimiento buscarPorId(Integer id) {
+		return repositorio.buscarPorId(id)
+				.orElseThrow(() -> new RecursoNoEncontradoException(
+						"Tipo de movimiento no encontrado con id: " + id));
 	}
 
 	@Override
 	public List<TipoMovimiento> listarTodos() {
-
 		return repositorio.listarTodos();
 	}
-
-	@Override
-	public void eliminar(int id) {
-
-		repositorio.eliminar(id);
-
-	}
-
 }

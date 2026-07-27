@@ -1,6 +1,7 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import com.uisrael.drinkhouse.dominio.entidades.Categoria;
 import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.CategoriaEntity;
@@ -10,5 +11,7 @@ public interface ICategoriaJpaMapper {
 
 	Categoria toDomain(CategoriaEntity categoriaEntity);
 
+	@Mapping(target = "fkNegocioEntity", ignore = true)
+	@Mapping(target = "productos", ignore = true)
 	CategoriaEntity toEntity(Categoria categoriaDomain);
 }

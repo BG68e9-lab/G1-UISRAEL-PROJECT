@@ -7,11 +7,15 @@ import com.uisrael.drinkhouse.dominio.entidades.Usuario;
 
 public interface IUsuarioUseCase {
 
-	Usuario guardar(Usuario nuevoUsuario);
-	
-	Usuario buscarPorId(UUID idUsuario);
-	
-	List<Usuario> listarTodos();
-	
-	void eliminar(UUID idUsuario);
+	Usuario crearUsuario(Usuario usuario);
+
+	Usuario activarUsuario(UUID id);
+
+	Usuario desactivarUsuario(UUID id);
+
+	Usuario buscarPorId(UUID id);
+
+	List<Usuario> listarConFiltro(String estadoCuenta);
+
+	Usuario actualizarUsuario(UUID id, Usuario usuario);
 }

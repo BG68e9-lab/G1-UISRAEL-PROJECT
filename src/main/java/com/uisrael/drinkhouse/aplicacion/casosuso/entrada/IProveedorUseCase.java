@@ -5,9 +5,14 @@ import java.util.List;
 import com.uisrael.drinkhouse.dominio.entidades.Proveedor;
 
 public interface IProveedorUseCase {
+
+	Proveedor crearProveedor(Proveedor proveedor);
+
+	Proveedor actualizarProveedor(Long id, Proveedor proveedor);
+
+	Proveedor buscarPorId(Long id);
+
+	List<Proveedor> listarProveedores();
 	
-	Proveedor crear(Proveedor proveedor);
-	Proveedor buscarPorId(int id);
-	List<Proveedor> listar();
-	void eliminar(int id);
+	void eliminarProveedor(Long id);
 }

@@ -3,14 +3,16 @@ package com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+
 import com.uisrael.drinkhouse.dominio.entidades.Rol;
 import com.uisrael.drinkhouse.dominio.repositorios.IRolRepositorio;
 import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.RolEntity;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IRolJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IRolJpaRepositorio;
 
-public class RolRepositorioImpl implements IRolRepositorio{
-	
+public class RolRepositorioImpl implements IRolRepositorio {
+
 	private final IRolJpaRepositorio jpaRepositorio;
 	private final IRolJpaMapper rolMapper;
 
@@ -20,15 +22,15 @@ public class RolRepositorioImpl implements IRolRepositorio{
 	}
 
 	@Override
-	public Rol guardar(Rol nuevoRol) {
-		RolEntity entity = rolMapper.toEntity(nuevoRol);
-		RolEntity guardar = jpaRepositorio.save(entity);
-		return rolMapper.toDomain(guardar);
+	public Rol guardar(Rol rol) {
+		RolEntity entity = rolMapper.toEntity(rol);
+		RolEntity guardado = jpaRepositorio.save(entity);
+		return rolMapper.toDomain(guardado);
 	}
 
 	@Override
-	public Optional<Rol> buscarPorId(Integer idRol) {
-		return jpaRepositorio.findById(idRol).map(rolMapper::toDomain);
+	public Optional<Rol> buscarPorId(Integer id) {
+		return jpaRepositorio.findById(id).map(rolMapper::toDomain);
 	}
 
 	@Override
@@ -37,8 +39,7 @@ public class RolRepositorioImpl implements IRolRepositorio{
 	}
 
 	@Override
-	public void eliminar(Integer idRol) {
-		jpaRepositorio.deleteById(idRol);
-	} 
-
+	public boolean existePorNombre(String nombre) {
+		return jpaRepositorio.existsByNombre(nombre);
+	}
 }

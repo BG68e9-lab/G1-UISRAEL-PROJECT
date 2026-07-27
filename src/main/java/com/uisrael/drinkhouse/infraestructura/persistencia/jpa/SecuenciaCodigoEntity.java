@@ -7,38 +7,32 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Data;
 
-import java.io.Serializable;
-
+/**
+ * Entidad JPA para la generación de secuencias de código únicas por negocio y tipo de movimiento.
+ * Clave primaria compuesta: (negocioId, tipoMovimientoId).
+ */
 @Data
 @Entity
 @Table(name = "secuencias_codigo")
-@IdClass(SecuenciaCodigoEntity.SecuenciaCodigoId.class)
+@IdClass(SecuenciaCodigoId.class)
 public class SecuenciaCodigoEntity {
 
 	@Id
-	@Column(name = "negocio_id")
-	private Integer negocioId;
+	@ManyToOne
+	@JoinColumn(name = "negocio_id", nullable = false)
+	private NegocioEntity negocio;
 
 	@Id
-	@Column(name = "tipo_movimiento_id")
-	private Integer tipoMovimientoId;
-
 	@ManyToOne
-	@JoinColumn(name = "negocio_id", insertable = false, updatable = false)
-	private NegocioEntity fkNegocioEntity;
-
-	@ManyToOne
-	@JoinColumn(name = "tipo_movimiento_id", insertable = false, updatable = false)
-	private TipoMovimientoEntity fkTipoMovimientoEntity;
+	@JoinColumn(name = "tipo_movimiento_id", nullable = false)
+	private TipoMovimientoEntity tipoMovimiento;
 
 	@Column(name = "ultimo_numero", nullable = false)
 	private Long ultimoNumero;
 
-	@Data
-	public static class SecuenciaCodigoId implements Serializable {
-		private Integer negocioId;
-		private Integer tipoMovimientoId;
-	}
+	@Version
+	private Long version;
 }

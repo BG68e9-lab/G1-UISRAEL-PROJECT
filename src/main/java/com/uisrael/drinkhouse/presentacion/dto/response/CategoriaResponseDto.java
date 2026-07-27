@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class CategoriaResponseDto {
 
-	private Integer categoriaId;
+	private Long categoriaId;
 	private String nombre;
 	private BigDecimal margenGananciaPct;
 	private Boolean activo;

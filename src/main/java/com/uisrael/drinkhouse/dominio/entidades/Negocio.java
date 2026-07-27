@@ -16,13 +16,13 @@ public class Negocio {
 	}
 
 
-	public Negocio(Integer negocioId, String nombre, String ruc, Boolean activo, LocalDateTime creandoEn) {
+	public Negocio(Integer negocioId, String nombre, String ruc, Boolean activo, LocalDateTime creadoEn) {
 
 		this.negocioId = negocioId;
 		this.nombre = nombre;
 		this.ruc = ruc;
 		this.activo = activo;
-		this.creadoEn = creandoEn;
+		this.creadoEn = creadoEn;
 	}
 
 
@@ -66,13 +66,13 @@ public class Negocio {
 	}
 
 
-	public LocalDateTime getCreandoEn() {
+	public LocalDateTime getCreadoEn() {
 		return creadoEn;
 	}
 
 
-	public void setCreandoEn(LocalDateTime creandoEn) {
-		this.creadoEn = creandoEn;
+	public void setCreadoEn(LocalDateTime creadoEn) {
+		this.creadoEn = creadoEn;
 	}
 	
 

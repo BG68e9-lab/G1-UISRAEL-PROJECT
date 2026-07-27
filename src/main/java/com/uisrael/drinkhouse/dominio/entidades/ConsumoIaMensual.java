@@ -1,33 +1,27 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
-import java.time.OffsetDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Entidad de dominio que registra el consumo mensual de tokens de IA por negocio.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ConsumoIaMensual {
-	
-	private Long consumoIaMensualId;
-	private String mesAnio;
-	private Long tokensConsumidos;
-	private Double costoEstimado;
-	private OffsetDateTime actualizadoEn;
-	
-	public ConsumoIaMensual() {}
 
-	public ConsumoIaMensual(Long consumoIaMensualId, String mesAnio, Long tokensConsumidos, Double costoEstimado, OffsetDateTime actualizadoEn) {
-		this.consumoIaMensualId = consumoIaMensualId;
-		this.mesAnio = mesAnio;
-		this.tokensConsumidos = tokensConsumidos;
-		this.costoEstimado = costoEstimado;
-		this.actualizadoEn = actualizadoEn;
-	}
-
-	public Long getConsumoIaMensualId() { return consumoIaMensualId; }
-	public void setConsumoIaMensualId(Long consumoIaMensualId) { this.consumoIaMensualId = consumoIaMensualId; }
-	public String getMesAnio() { return mesAnio; }
-	public void setMesAnio(String mesAnio) { this.mesAnio = mesAnio; }
-	public Long getTokensConsumidos() { return tokensConsumidos; }
-	public void setTokensConsumidos(Long tokensConsumidos) { this.tokensConsumidos = tokensConsumidos; }
-	public Double getCostoEstimado() { return costoEstimado; }
-	public void setCostoEstimado(Double costoEstimado) { this.costoEstimado = costoEstimado; }
-	public OffsetDateTime getActualizadoEn() { return actualizadoEn; }
-	public void setActualizadoEn(OffsetDateTime actualizadoEn) { this.actualizadoEn = actualizadoEn; }
+    private Long consumoIaId;
+    private Integer negocioId;
+    /** Período: primer día del mes (ej: 2026-07-01) */
+    private LocalDate periodo;
+    private Long totalTokensInput;
+    private Long totalTokensOutput;
+    private BigDecimal costoEstimadoUsd;
 }

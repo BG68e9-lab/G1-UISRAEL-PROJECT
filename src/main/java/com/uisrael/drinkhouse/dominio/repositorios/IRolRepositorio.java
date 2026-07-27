@@ -6,13 +6,13 @@ import java.util.Optional;
 import com.uisrael.drinkhouse.dominio.entidades.Rol;
 
 public interface IRolRepositorio {
-	
-	Rol guardar(Rol nuevoRol);
-	
-	Optional<Rol> buscarPorId(Integer idRol);
-	
+
+	Rol guardar(Rol rol);
+
+	Optional<Rol> buscarPorId(Integer id);
+
 	List<Rol> listarTodos();
-	
-	void eliminar(Integer idRol);
+
+	boolean existePorNombre(String nombre);
 
 }

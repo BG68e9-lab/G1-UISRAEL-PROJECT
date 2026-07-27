@@ -9,9 +9,13 @@ public interface IProductoRepositorio {
 
 	Producto guardar(Producto producto);
 
-	Optional<Producto> buscarPorId(int id);
+	Optional<Producto> buscarPorId(Long id);
 
 	List<Producto> listarTodos();
 
-	void eliminar(int id);
+	void eliminar(Long id);
+
+	boolean existePorNombre(String nombre);
+
+	List<Producto> buscarConFiltros(String nombre, String marca, String tipo, Long categoriaId);
 }

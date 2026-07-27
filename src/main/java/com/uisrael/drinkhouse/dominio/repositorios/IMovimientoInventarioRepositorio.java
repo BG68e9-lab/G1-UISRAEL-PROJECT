@@ -1,18 +1,14 @@
 package com.uisrael.drinkhouse.dominio.repositorios;
 
+import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import com.uisrael.drinkhouse.dominio.entidades.MovimientoInventario;
 
 public interface IMovimientoInventarioRepositorio {
 
-	MovimientoInventario guardar(MovimientoInventario movimientoinventario);
+	MovimientoInventario guardar(MovimientoInventario movimiento);
 
-	Optional<MovimientoInventario> buscarPorId(int id);
-
-	List<MovimientoInventario> listarTodo();
-
-	void eliminar(int id);
-
+	List<MovimientoInventario> buscarPorProductoConFiltros(Long productoId, String tipo,
+			OffsetDateTime desde, OffsetDateTime hasta);
 }

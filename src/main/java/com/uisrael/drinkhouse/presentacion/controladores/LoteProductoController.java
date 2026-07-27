@@ -2,57 +2,113 @@ package com.uisrael.drinkhouse.presentacion.controladores;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ILoteProductoUseCase;
+import com.uisrael.drinkhouse.dominio.entidades.LoteProducto;
 import com.uisrael.drinkhouse.presentacion.dto.request.LoteProductoRequestDto;
-
 import com.uisrael.drinkhouse.presentacion.dto.response.LoteProductoResponseDto;
-
 import com.uisrael.drinkhouse.presentacion.mapeadores.ILoteProductoDtoMapper;
 
 import jakarta.validation.Valid;
 
+/**
+ * Controlador REST para el módulo de Lotes de Producto.
+ * Base path: /api/v1/lotes
+ * Requisitos: 5.1 al 5.4
+ */
 @RestController
-@RequestMapping("/api/loteproductos")
+@RequestMapping("/api/v1/lotes")
 public class LoteProductoController {
 
-	private final ILoteProductoUseCase loteproductoUseCase;
+	private final ILoteProductoUseCase loteProductoUseCase;
 	private final ILoteProductoDtoMapper mapper;
 
-	public LoteProductoController(ILoteProductoUseCase loteproductoUseCase, ILoteProductoDtoMapper mapper) {
-		super();
-		this.loteproductoUseCase = loteproductoUseCase;
+	public LoteProductoController(ILoteProductoUseCase loteProductoUseCase,
+			ILoteProductoDtoMapper mapper) {
+		this.loteProductoUseCase = loteProductoUseCase;
 		this.mapper = mapper;
 	}
 
+	/**
+	 * GET /api/v1/lotes
+	 * Lista todos los lotes con paginación.
+	 * Parámetros opcionales: page (default 0), size (default 20), sort (default fechaIngreso,desc)
+	 */
+	@GetMapping
+	public Page<LoteProductoResponseDto> listar(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "20") int size,
+			@RequestParam(defaultValue = "fechaIngreso") String sortBy,
+			@RequestParam(defaultValue = "desc") String sortDir) {
+		Sort sort = sortDir.equalsIgnoreCase("asc")
+				? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(page, size, sort);
+		return loteProductoUseCase.listarPaginado(pageable)
+				.map(mapper::aResponseDto);
+	}
+
+	/**
+	 * POST /api/v1/lotes
+	 * Crea un nuevo lote de producto.
+	 * Retorna 201 Created con el lote creado.
+	 * Requisito 5.1
+	 */
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public LoteProductoResponseDto guardar(@Valid @RequestBody LoteProductoRequestDto loteProductoRequestDto) {
-
-		return mapper.toResponseDto(loteproductoUseCase.guardar(mapper.toDomain(loteProductoRequestDto)));
+	public LoteProductoResponseDto crearLote(@Valid @RequestBody LoteProductoRequestDto dto) {
+		LoteProducto lote = mapper.aDominio(dto);
+		LoteProducto creado = loteProductoUseCase.crearLote(lote, dto.getProductoId());
+		return mapper.aResponseDto(creado);
 	}
 
-	@GetMapping
-	public List<LoteProductoResponseDto> listarTodo() {
-
-		return loteproductoUseCase.listarTodos().stream().map(mapper::toResponseDto).toList();
+	/**
+	 * GET /api/v1/lotes/producto/{productoId}
+	 * Retorna todos los lotes de un producto, ordenados por fechaIngreso ASC (FIFO).
+	 * Requisito 5.2
+	 */
+	@GetMapping("/producto/{productoId}")
+	public List<LoteProductoResponseDto> buscarPorProducto(@PathVariable Long productoId) {
+		return loteProductoUseCase.buscarPorProducto(productoId)
+				.stream()
+				.map(mapper::aResponseDto)
+				.toList();
 	}
 
-	@DeleteMapping
-	public ResponseEntity<Void> eliminar(@PathVariable int idLoteProducto) {
-
-		loteproductoUseCase.eliminar(idLoteProducto);
-		return ResponseEntity.noContent().build();
+	/**
+	 * GET /api/v1/lotes/{id}
+	 * Retorna un lote por su identificador.
+	 * Requisito 5.3
+	 */
+	@GetMapping("/{id}")
+	public LoteProductoResponseDto buscarPorId(@PathVariable Long id) {
+		return mapper.aResponseDto(loteProductoUseCase.buscarPorId(id));
 	}
 
+	/**
+	 * GET /api/v1/lotes/proximos-vencer?dias=7
+	 * Retorna lotes cuya fechaVencimiento <= hoy+N días y cantidadDisponible > 0.
+	 * Requisito 5.4
+	 */
+	@GetMapping("/proximos-vencer")
+	public List<LoteProductoResponseDto> buscarProximosAVencer(
+			@RequestParam(defaultValue = "7") int dias) {
+		return loteProductoUseCase.buscarProximosAVencer(dias)
+				.stream()
+				.map(mapper::aResponseDto)
+				.toList();
+	}
 }

@@ -6,4 +6,5 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.RolEntity;
 
 public interface IRolJpaRepositorio extends JpaRepository<RolEntity, Integer> {
 
+	boolean existsByNombre(String nombre);
 }

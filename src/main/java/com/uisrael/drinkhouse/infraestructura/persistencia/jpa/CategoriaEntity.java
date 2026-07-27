@@ -23,7 +23,7 @@ public class CategoriaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "categoria_id")
-	private Integer categoriaId;
+	private Long categoriaId;
 
 	@ManyToOne
 	@JoinColumn(name = "negocio_id")

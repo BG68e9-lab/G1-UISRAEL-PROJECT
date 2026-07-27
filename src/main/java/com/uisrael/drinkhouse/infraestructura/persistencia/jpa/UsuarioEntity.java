@@ -36,11 +36,8 @@ public class UsuarioEntity {
 	@JoinColumn(name = "rol_id")
 	private RolEntity fkRolEntity;
 
-	@Column(name = "nombres", nullable = false, length = 80)
-	private String nombres;
-
-	@Column(name = "apellidos", nullable = false, length = 80)
-	private String apellidos;
+	@Column(name = "nombre_completo", nullable = false, length = 160)
+	private String nombreCompleto;
 
 	@Column(name = "email", nullable = false, length = 150)
 	private String email;
@@ -71,9 +68,6 @@ public class UsuarioEntity {
 
 	@OneToMany(mappedBy = "fkUsuarioEntity")
 	private List<LogAuditoriaEntity> logsAuditoria = new ArrayList<>();
-
-	@OneToMany(mappedBy = "fkUsuarioEntity")
-	private List<MovimientoInventarioEntity> movimientos = new ArrayList<>();
 
 	@PrePersist
 	protected void onCreate() {

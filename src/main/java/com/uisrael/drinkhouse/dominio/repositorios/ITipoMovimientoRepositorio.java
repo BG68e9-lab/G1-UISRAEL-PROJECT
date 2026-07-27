@@ -6,12 +6,14 @@ import java.util.Optional;
 import com.uisrael.drinkhouse.dominio.entidades.TipoMovimiento;
 
 public interface ITipoMovimientoRepositorio {
-	TipoMovimiento guardar(TipoMovimiento tipomovimiento);
 
-	Optional<TipoMovimiento> buscarPorId(int id);
+	TipoMovimiento guardar(TipoMovimiento tipoMovimiento);
+
+	Optional<TipoMovimiento> buscarPorId(Integer id);
 
 	List<TipoMovimiento> listarTodos();
 
-	void eliminar(int id);
+	boolean existePorCodigo(String codigo);
 
+	Optional<TipoMovimiento> buscarPorCodigo(String codigo);
 }
