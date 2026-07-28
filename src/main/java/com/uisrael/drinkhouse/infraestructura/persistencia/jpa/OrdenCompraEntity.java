@@ -1,11 +1,11 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.jpa;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Data;
 
 @Data
@@ -40,39 +41,35 @@ public class OrdenCompraEntity {
 	@JoinColumn(name = "estado_oc_id")
 	private EstadoOcEntity fkEstadoOcEntity;
 
-	@Column(name = "numero_oc", nullable = false, length = 50)
-	private String numeroOc;
+	@Column(name = "codigo_referencia", nullable = false, length = 50)
+	private String codigoReferencia;
 
-	@Column(name = "fecha_oc", nullable = false)
-	private LocalDate fechaOc;
+	@Column(name = "total", nullable = false, precision = 12, scale = 2)
+	private BigDecimal total;
 
-	@Column(name = "total_oc", nullable = false, precision = 12, scale = 2)
-	private BigDecimal totalOc;
+	@Column(name = "fecha_creacion", nullable = false, updatable = false)
+	private LocalDateTime fechaCreacion;
 
-	@Column(name = "documento_url", length = 500)
-	private String documentoUrl;
+	@Column(name = "usuario_creacion", length = 100)
+	private String usuarioCreacion;
 
-	@Column(name = "extraido_por_ia", nullable = false)
-	private Boolean extraidoPorIa;
+	@Column(name = "observaciones", length = 500)
+	private String observaciones;
 
-	@Column(name = "confirmado_por")
-	private UUID confirmadoPor;
+	@Version
+	@Column(name = "version")
+	private Long version;
 
-	@Column(name = "confirmado_en")
-	private OffsetDateTime confirmadoEn;
-
-	@Column(name = "creado_en", nullable = false, updatable = false)
-	private OffsetDateTime creadoEn;
+	@OneToMany(mappedBy = "fkOrdenCompraEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<DetalleOrdenCompraEntity> detalles = new ArrayList<>();
 
 	@OneToMany(mappedBy = "fkOrdenCompraEntity")
 	private List<LoteProductoEntity> lotes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "fkOrdenCompraEntity")
-	private List<IdentificacionIaEntity> identificaciones = new ArrayList<>();
-
 	@PrePersist
 	protected void onCreate() {
-		this.creadoEn = OffsetDateTime.now();
-		if (this.extraidoPorIa == null) this.extraidoPorIa = false;
+		if (this.fechaCreacion == null) {
+			this.fechaCreacion = LocalDateTime.now();
+		}
 	}
 }

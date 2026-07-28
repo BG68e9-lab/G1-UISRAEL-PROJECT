@@ -7,12 +7,11 @@ import com.uisrael.drinkhouse.dominio.entidades.MovimientoInventario;
 
 public interface IMovimientoInventarioRepositorio {
 
-	MovimientoInventario guardar(MovimientoInventario movimientoinventario);
+	MovimientoInventario guardar(MovimientoInventario movimientoInventario);
 
-	Optional<MovimientoInventario> buscarPorId(int id);
+	Optional<MovimientoInventario> buscarPorId(Long id);
 
-	List<MovimientoInventario> listarTodo();
+	List<MovimientoInventario> listarTodo(String tipo);
 
-	void eliminar(int id);
-
+	void eliminar(Long id);
 }

@@ -1,32 +1,28 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class LoteProducto {
 
 	private Long loteId;
 	private String codigoEntrada;
-	private BigDecimal cantidadInicial;
-	private BigDecimal cantidadDisponible;
+	private Long productoId;
+	private String productoNombre;
+	private String productoMarca;
+	private String productoTipo;
+	private Integer cantidadInicial;
+	private Integer cantidadDisponible;
 	private BigDecimal precioCosto;
-	private OffsetDateTime fechaIngreso;
+	private LocalDate fechaIngreso;
 	private LocalDate fechaVencimiento;
+	private LocalDateTime fechaCreacion;
+	private String usuarioCreacion;
+	private Boolean activo;
+	private Long ordenCompraId;
 
 	public LoteProducto() {
-	}
-
-	public LoteProducto(Long loteId, String codigoEntrada, BigDecimal cantidadInicial, BigDecimal cantidadDisponible,
-			BigDecimal precioCosto, OffsetDateTime fechaIngreso, LocalDate fechaVencimiento) {
-		this.loteId = loteId;
-		this.codigoEntrada = codigoEntrada;
-		this.cantidadInicial = cantidadInicial;
-		this.cantidadDisponible = cantidadDisponible;
-		this.precioCosto = precioCosto;
-		this.fechaIngreso = fechaIngreso;
-		this.fechaVencimiento = fechaVencimiento;
 	}
 
 	public Long getLoteId() {
@@ -45,19 +41,51 @@ public class LoteProducto {
 		this.codigoEntrada = codigoEntrada;
 	}
 
-	public BigDecimal getCantidadInicial() {
+	public Long getProductoId() {
+		return productoId;
+	}
+
+	public void setProductoId(Long productoId) {
+		this.productoId = productoId;
+	}
+
+	public String getProductoNombre() {
+		return productoNombre;
+	}
+
+	public void setProductoNombre(String productoNombre) {
+		this.productoNombre = productoNombre;
+	}
+
+	public String getProductoMarca() {
+		return productoMarca;
+	}
+
+	public void setProductoMarca(String productoMarca) {
+		this.productoMarca = productoMarca;
+	}
+
+	public String getProductoTipo() {
+		return productoTipo;
+	}
+
+	public void setProductoTipo(String productoTipo) {
+		this.productoTipo = productoTipo;
+	}
+
+	public Integer getCantidadInicial() {
 		return cantidadInicial;
 	}
 
-	public void setCantidadInicial(BigDecimal cantidadInicial) {
+	public void setCantidadInicial(Integer cantidadInicial) {
 		this.cantidadInicial = cantidadInicial;
 	}
 
-	public BigDecimal getCantidadDisponible() {
+	public Integer getCantidadDisponible() {
 		return cantidadDisponible;
 	}
 
-	public void setCantidadDisponible(BigDecimal cantidadDisponible) {
+	public void setCantidadDisponible(Integer cantidadDisponible) {
 		this.cantidadDisponible = cantidadDisponible;
 	}
 
@@ -69,11 +97,11 @@ public class LoteProducto {
 		this.precioCosto = precioCosto;
 	}
 
-	public OffsetDateTime getFechaIngreso() {
+	public LocalDate getFechaIngreso() {
 		return fechaIngreso;
 	}
 
-	public void setFechaIngreso(OffsetDateTime fechaIngreso) {
+	public void setFechaIngreso(LocalDate fechaIngreso) {
 		this.fechaIngreso = fechaIngreso;
 	}
 
@@ -83,5 +111,37 @@ public class LoteProducto {
 
 	public void setFechaVencimiento(LocalDate fechaVencimiento) {
 		this.fechaVencimiento = fechaVencimiento;
+	}
+
+	public LocalDateTime getFechaCreacion() {
+		return fechaCreacion;
+	}
+
+	public void setFechaCreacion(LocalDateTime fechaCreacion) {
+		this.fechaCreacion = fechaCreacion;
+	}
+
+	public String getUsuarioCreacion() {
+		return usuarioCreacion;
+	}
+
+	public void setUsuarioCreacion(String usuarioCreacion) {
+		this.usuarioCreacion = usuarioCreacion;
+	}
+
+	public Boolean getActivo() {
+		return activo;
+	}
+
+	public void setActivo(Boolean activo) {
+		this.activo = activo;
+	}
+
+	public Long getOrdenCompraId() {
+		return ordenCompraId;
+	}
+
+	public void setOrdenCompraId(Long ordenCompraId) {
+		this.ordenCompraId = ordenCompraId;
 	}
 }

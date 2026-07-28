@@ -2,7 +2,7 @@ package com.uisrael.drinkhouse.presentacion.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import lombok.Data;
 
@@ -11,10 +11,17 @@ public class LoteProductoResponseDto {
 
 	private Long loteId;
 	private String codigoEntrada;
-	private BigDecimal cantidadInicial;
-	private BigDecimal cantidadDisponible;
+	private Long productoId;
+	private String productoNombre;
+	private String productoMarca;
+	private String productoTipo;
+	private Integer cantidadInicial;
+	private Integer cantidadDisponible;
 	private BigDecimal precioCosto;
-	private OffsetDateTime fechaIngreso;
+	private LocalDate fechaIngreso;
 	private LocalDate fechaVencimiento;
-	private OffsetDateTime creadoEn;
+	private LocalDateTime fechaCreacion;
+	private String usuarioCreacion;
+	private Boolean activo;
+	private Long ordenCompraId;
 }

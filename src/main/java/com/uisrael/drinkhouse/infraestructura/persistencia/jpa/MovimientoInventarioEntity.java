@@ -52,6 +52,9 @@ public class MovimientoInventarioEntity {
 	@Column(name = "precio_unitario", precision = 12, scale = 4)
 	private BigDecimal precioUnitario;
 
+	@Column(name = "descripcion", length = 255)
+	private String descripcion;
+
 	@Column(name = "creado_en", nullable = false, updatable = false)
 	private OffsetDateTime creadoEn;
 
