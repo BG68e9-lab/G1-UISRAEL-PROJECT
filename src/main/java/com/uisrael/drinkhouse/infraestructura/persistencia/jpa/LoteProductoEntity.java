@@ -68,12 +68,23 @@ public class LoteProductoEntity {
 	@Column(name = "creado_en", nullable = false, updatable = false)
 	private OffsetDateTime creadoEn;
 
+	@Column(name = "usuario_creacion", length = 100)
+	private String usuarioCreacion;
+
+	@Column(name = "activo", nullable = false)
+	private Boolean activo;
+
 	@OneToMany(mappedBy = "fkLoteEntity")
 	private List<MovimientoInventarioEntity> movimientos = new ArrayList<>();
 
 	@PrePersist
 	protected void onCreate() {
-		this.fechaIngreso = OffsetDateTime.now();
+		if (this.fechaIngreso == null) {
+			this.fechaIngreso = OffsetDateTime.now();
+		}
 		this.creadoEn = OffsetDateTime.now();
+		if (this.activo == null) {
+			this.activo = true;
+		}
 	}
 }

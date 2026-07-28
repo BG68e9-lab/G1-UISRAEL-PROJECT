@@ -1,6 +1,7 @@
 package com.uisrael.drinkhouse.aplicacion.casosuso.impl;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IMovimientoInventarioUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.MovimientoInventario;
@@ -11,34 +12,27 @@ public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUse
 	private final IMovimientoInventarioRepositorio repositorio;
 
 	public MovimientoInventarioUseCaseImpl(IMovimientoInventarioRepositorio repositorio) {
-
 		this.repositorio = repositorio;
 	}
 
 	@Override
-	public MovimientoInventario guardar(MovimientoInventario movimientoinventario) {
-
-		return repositorio.guardar(movimientoinventario);
+	public MovimientoInventario guardar(MovimientoInventario movimientoInventario) {
+		return repositorio.guardar(movimientoInventario);
 	}
 
 	@Override
-	public MovimientoInventario buscarPorId(int id) {
-
+	public MovimientoInventario buscarPorId(Long id) {
 		return repositorio.buscarPorId(id)
-				.orElseThrow(() -> new RuntimeException("Movimiento por Inventario no encontrado"));
+				.orElseThrow(() -> new NoSuchElementException("Movimiento de inventario no encontrado: " + id));
 	}
 
 	@Override
-	public List<MovimientoInventario> listarTodo() {
-
-		return repositorio.listarTodo();
+	public List<MovimientoInventario> listarTodo(String tipo) {
+		return repositorio.listarTodo(tipo);
 	}
 
 	@Override
-	public void eliminar(int id) {
-
+	public void eliminar(Long id) {
 		repositorio.eliminar(id);
-
 	}
-
 }

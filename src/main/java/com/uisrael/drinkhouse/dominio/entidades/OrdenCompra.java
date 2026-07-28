@@ -1,25 +1,39 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
-import java.time.OffsetDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrdenCompra {
 
 	private Long ordenCompraId;
 	private String codigoReferencia;
+	private Long proveedorId;
+	private String proveedorRazonSocial;
+	private Integer negocioId;
 	private String estado;
-	private Double total;
-	private OffsetDateTime creadoEn;
+	private BigDecimal total;
+	private LocalDateTime fechaCreacion;
+	private String usuarioCreacion;
+	private String observaciones;
+	private Long version;
+	private List<DetalleOrdenCompra> detalles = new ArrayList<>();
 
 	public OrdenCompra() {
 	}
 
-	public OrdenCompra(Long ordenCompraId, String codigoReferencia, String estado, Double total,
-			OffsetDateTime creadoEn) {
-		this.ordenCompraId = ordenCompraId;
-		this.codigoReferencia = codigoReferencia;
-		this.estado = estado;
-		this.total = total;
-		this.creadoEn = creadoEn;
+	public void calcularTotal() {
+		BigDecimal suma = BigDecimal.ZERO;
+		if (detalles != null) {
+			for (DetalleOrdenCompra detalle : detalles) {
+				detalle.calcularSubtotal();
+				if (detalle.getSubtotal() != null) {
+					suma = suma.add(detalle.getSubtotal());
+				}
+			}
+		}
+		this.total = suma;
 	}
 
 	public Long getOrdenCompraId() {
@@ -38,6 +52,30 @@ public class OrdenCompra {
 		this.codigoReferencia = codigoReferencia;
 	}
 
+	public Long getProveedorId() {
+		return proveedorId;
+	}
+
+	public void setProveedorId(Long proveedorId) {
+		this.proveedorId = proveedorId;
+	}
+
+	public String getProveedorRazonSocial() {
+		return proveedorRazonSocial;
+	}
+
+	public void setProveedorRazonSocial(String proveedorRazonSocial) {
+		this.proveedorRazonSocial = proveedorRazonSocial;
+	}
+
+	public Integer getNegocioId() {
+		return negocioId;
+	}
+
+	public void setNegocioId(Integer negocioId) {
+		this.negocioId = negocioId;
+	}
+
 	public String getEstado() {
 		return estado;
 	}
@@ -46,19 +84,51 @@ public class OrdenCompra {
 		this.estado = estado;
 	}
 
-	public Double getTotal() {
+	public BigDecimal getTotal() {
 		return total;
 	}
 
-	public void setTotal(Double total) {
+	public void setTotal(BigDecimal total) {
 		this.total = total;
 	}
 
-	public OffsetDateTime getCreadoEn() {
-		return creadoEn;
+	public LocalDateTime getFechaCreacion() {
+		return fechaCreacion;
 	}
 
-	public void setCreadoEn(OffsetDateTime creadoEn) {
-		this.creadoEn = creadoEn;
+	public void setFechaCreacion(LocalDateTime fechaCreacion) {
+		this.fechaCreacion = fechaCreacion;
+	}
+
+	public String getUsuarioCreacion() {
+		return usuarioCreacion;
+	}
+
+	public void setUsuarioCreacion(String usuarioCreacion) {
+		this.usuarioCreacion = usuarioCreacion;
+	}
+
+	public String getObservaciones() {
+		return observaciones;
+	}
+
+	public void setObservaciones(String observaciones) {
+		this.observaciones = observaciones;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
+	}
+
+	public List<DetalleOrdenCompra> getDetalles() {
+		return detalles;
+	}
+
+	public void setDetalles(List<DetalleOrdenCompra> detalles) {
+		this.detalles = detalles;
 	}
 }

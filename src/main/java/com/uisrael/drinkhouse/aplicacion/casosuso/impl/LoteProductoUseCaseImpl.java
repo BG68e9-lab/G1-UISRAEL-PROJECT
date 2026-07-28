@@ -1,6 +1,7 @@
 package com.uisrael.drinkhouse.aplicacion.casosuso.impl;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ILoteProductoUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.LoteProducto;
@@ -11,33 +12,55 @@ public class LoteProductoUseCaseImpl implements ILoteProductoUseCase {
 	private final ILoteProductoRepositorio repositorio;
 
 	public LoteProductoUseCaseImpl(ILoteProductoRepositorio repositorio) {
-		super();
 		this.repositorio = repositorio;
 	}
 
 	@Override
-	public LoteProducto guardar(LoteProducto loteProducto) {
-		// TODO Auto-generated method stub
+	public LoteProducto crear(LoteProducto loteProducto) {
+		loteProducto.setLoteId(null);
 		return repositorio.guardar(loteProducto);
 	}
 
 	@Override
-	public LoteProducto buscarPorId(int id) {
-		// TODO Auto-generated method stub
-		return repositorio.buscarPorId(id).orElseThrow(() -> new RuntimeException("Lote Producto no encontrado"));
+	public LoteProducto actualizar(Long id, LoteProducto loteProducto) {
+		buscarPorId(id);
+		loteProducto.setLoteId(id);
+		return repositorio.guardar(loteProducto);
 	}
 
 	@Override
-	public List<LoteProducto> listarTodos() {
-		// TODO Auto-generated method stub
-		return repositorio.listarTodos();
+	public LoteProducto buscarPorId(Long id) {
+		return repositorio.buscarPorId(id)
+				.orElseThrow(() -> new NoSuchElementException("Lote de producto no encontrado: " + id));
 	}
 
 	@Override
-	public void eliminar(int id) {
+	public List<LoteProducto> listar(Long productoId) {
+		return productoId != null ? repositorio.listarPorProducto(productoId) : repositorio.listarTodos();
+	}
 
+	@Override
+	public List<LoteProducto> listarProximosAVencer(int dias) {
+		return repositorio.listarProximosAVencer(dias);
+	}
+
+	@Override
+	public LoteProducto actualizarCantidad(Long id, Integer cantidadDisponible) {
+		return repositorio.actualizarCantidad(id, cantidadDisponible);
+	}
+
+	@Override
+	public LoteProducto activar(Long id) {
+		return repositorio.activar(id);
+	}
+
+	@Override
+	public LoteProducto desactivar(Long id) {
+		return repositorio.desactivar(id);
+	}
+
+	@Override
+	public void eliminar(Long id) {
 		repositorio.eliminar(id);
-
 	}
-
 }

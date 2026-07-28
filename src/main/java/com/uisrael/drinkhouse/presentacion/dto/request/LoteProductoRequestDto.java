@@ -3,24 +3,31 @@ package com.uisrael.drinkhouse.presentacion.dto.request;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
 public class LoteProductoRequestDto {
 
-	@NotBlank
-	private String codigoEntrada;
+	@NotNull
+	private Long productoId;
 
 	@NotNull
-	private BigDecimal cantidadInicial;
+	@Positive
+	private Integer cantidadInicial;
 
-	@NotNull
-	private BigDecimal cantidadDisponible;
+	private Integer cantidadDisponible;
 
 	@NotNull
 	private BigDecimal precioCosto;
 
+	private LocalDate fechaIngreso;
+
+	@NotNull
 	private LocalDate fechaVencimiento;
+
+	private String usuarioCreacion;
+
+	private Long ordenCompraId;
 }

@@ -12,6 +12,7 @@ import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ILogAuditoriaUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ILoteProductoUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IMovimientoInventarioUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.INegocioUseCase;
+import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IOrdenCompraUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IProductoUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IProveedorUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IRolUseCase;
@@ -26,6 +27,7 @@ import com.uisrael.drinkhouse.aplicacion.casosuso.impl.LogAuditoriaUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.LoteProductoUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.MovimientoInventarioUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.NegocioUseCaseImpl;
+import com.uisrael.drinkhouse.aplicacion.casosuso.impl.OrdenCompraUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.ProductoUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.ProveedorUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.RolUseCaseImpl;
@@ -41,6 +43,7 @@ import com.uisrael.drinkhouse.dominio.repositorios.ILogAuditoriaRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ILoteProductoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IMovimientoInventarioRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.INegocioRepositorio;
+import com.uisrael.drinkhouse.dominio.repositorios.IOrdenCompraRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IProductoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IProveedorRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IRolRepositorio;
@@ -55,6 +58,7 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.LogAudito
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.LoteProductoRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.MovimientoInventarioRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.NegocioRepositorioImpl;
+import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.OrdenCompraRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.ProductoRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.ProveedorRepositoriImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.RolRepositorioImpl;
@@ -67,8 +71,6 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IEstadoOcJ
 // --- Imports de Mappers y JPA Repositorios ---
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IEstadoRespaldoJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ILogAuditoriaJpaMapper;
-import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ILoteProductoJpaMapper;
-import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IMovimientoInventarioJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.INegocioJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IProductoJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IProveedorJpaMapper;
@@ -84,6 +86,7 @@ import com.uisrael.drinkhouse.infraestructura.repositorio.ILogAuditoriaJpaReposi
 import com.uisrael.drinkhouse.infraestructura.repositorio.ILoteProductoJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IMovimientoInventarioJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.INegocioJpaRepositorio;
+import com.uisrael.drinkhouse.infraestructura.repositorio.IOrdenCompraJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IProductoJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IProveedorJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IRolJpaRepositorio;
@@ -118,21 +121,39 @@ public class DrinkHouseConfig {
 
 	// ==================== LOTE PRODUCTO ====================
 	@Bean
-	ILoteProductoRepositorio loteProductoRepositorio(ILoteProductoJpaRepositorio jpaRepositorio, ILoteProductoJpaMapper mapper) {
-		return new LoteProductoRepositorioImpl(jpaRepositorio, mapper);
+	ILoteProductoRepositorio loteProductoRepositorio(ILoteProductoJpaRepositorio jpaRepositorio, IProductoJpaRepositorio productoJpaRepositorio) {
+		return new LoteProductoRepositorioImpl(jpaRepositorio, productoJpaRepositorio);
 	}
-	
+
 	@Bean
 	ILoteProductoUseCase loteProductoUseCase(ILoteProductoRepositorio repoUseCase) {
 		return new LoteProductoUseCaseImpl(repoUseCase);
 	}
+
+	// ==================== ORDEN COMPRA ====================
+	@Bean
+	IOrdenCompraRepositorio ordenCompraRepositorio(IOrdenCompraJpaRepositorio jpaRepositorio,
+			IProveedorJpaRepositorio proveedorJpaRepositorio, INegocioJpaRepositorio negocioJpaRepositorio,
+			IEstadoOcJpaRepositorio estadoOcJpaRepositorio, IProductoJpaRepositorio productoJpaRepositorio,
+			ILoteProductoJpaRepositorio loteProductoJpaRepositorio) {
+		return new OrdenCompraRepositorioImpl(jpaRepositorio, proveedorJpaRepositorio, negocioJpaRepositorio,
+				estadoOcJpaRepositorio, productoJpaRepositorio, loteProductoJpaRepositorio);
+	}
+
+	@Bean
+	IOrdenCompraUseCase ordenCompraUseCase(IOrdenCompraRepositorio repoUseCase) {
+		return new OrdenCompraUseCaseImpl(repoUseCase);
+	}
 	
 	// ==================== MOVIMIENTO INVENTARIO ====================
 	@Bean
-	IMovimientoInventarioRepositorio movimientoInventarioRepositorio(IMovimientoInventarioJpaRepositorio jpaRepositorio, IMovimientoInventarioJpaMapper mapper) {
-		return new MovimientoInventarioRepositorioImpl(jpaRepositorio, mapper);
+	IMovimientoInventarioRepositorio movimientoInventarioRepositorio(IMovimientoInventarioJpaRepositorio jpaRepositorio,
+			ITipoMovimientoJpaRepositorio tipoMovimientoJpaRepositorio, IProductoJpaRepositorio productoJpaRepositorio,
+			ILoteProductoJpaRepositorio loteProductoJpaRepositorio) {
+		return new MovimientoInventarioRepositorioImpl(jpaRepositorio, tipoMovimientoJpaRepositorio,
+				productoJpaRepositorio, loteProductoJpaRepositorio);
 	}
-	
+
 	@Bean
 	IMovimientoInventarioUseCase movimientoInventarioUseCase(IMovimientoInventarioRepositorio repoUseCase) {
 		return new MovimientoInventarioUseCaseImpl(repoUseCase);

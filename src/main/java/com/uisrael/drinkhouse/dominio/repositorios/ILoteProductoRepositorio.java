@@ -9,10 +9,20 @@ public interface ILoteProductoRepositorio {
 
 	LoteProducto guardar(LoteProducto loteProducto);
 
-	Optional<LoteProducto> buscarPorId(int id);
+	Optional<LoteProducto> buscarPorId(Long id);
 
 	List<LoteProducto> listarTodos();
 
-	void eliminar(int id);
+	List<LoteProducto> listarPorProducto(Long productoId);
+
+	List<LoteProducto> listarProximosAVencer(int dias);
+
+	LoteProducto actualizarCantidad(Long id, Integer nuevaCantidadDisponible);
+
+	LoteProducto activar(Long id);
+
+	LoteProducto desactivar(Long id);
+
+	void eliminar(Long id);
 
 }
