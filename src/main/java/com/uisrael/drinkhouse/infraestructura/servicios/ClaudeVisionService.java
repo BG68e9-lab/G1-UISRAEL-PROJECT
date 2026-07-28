@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uisrael.drinkhouse.aplicacion.excepciones.ServicioNoDisponibleException;
 import com.uisrael.drinkhouse.infraestructura.utils.ImageOptimizer;
+import com.uisrael.drinkhouse.presentacion.dto.response.RespuestaClaudeDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoBotellaDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoFacturaDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoProductoDto;
@@ -88,13 +89,20 @@ public class ClaudeVisionService {
      *
      * @param imagenBase64   imagen codificada en base64
      * @param formatoImagen  formato de la imagen (JPEG, PNG, WEBP)
-     * @return resultado estructurado con los datos identificados de la botella
+     * @return respuesta con resultado y tokens consumidos
      * @throws ServicioNoDisponibleException si Claude no responde o retorna JSON inválido
      */
-    public ResultadoBotellaDto identificarBotella(String imagenBase64, String formatoImagen) {
-        String respuestaJson = llamarClaudeConImagen(imagenBase64, formatoImagen, PROMPT_BOTELLA, "identificar_producto");
+    public RespuestaClaudeDto<ResultadoBotellaDto> identificarBotella(String imagenBase64, String formatoImagen) {
+        RespuestaClaudeDto<String> respuesta = llamarClaudeConImagen(imagenBase64, formatoImagen, PROMPT_BOTELLA, "identificar_producto");
         try {
-            return objectMapper.readValue(respuestaJson, ResultadoBotellaDto.class);
+            ResultadoBotellaDto resultado = objectMapper.readValue(respuesta.getResultado(), ResultadoBotellaDto.class);
+            return RespuestaClaudeDto.<ResultadoBotellaDto>builder()
+                    .resultado(resultado)
+                    .tokensInput(respuesta.getTokensInput())
+                    .tokensOutput(respuesta.getTokensOutput())
+                    .tokensCacheRead(respuesta.getTokensCacheRead())
+                    .tokensCacheWrite(respuesta.getTokensCacheWrite())
+                    .build();
         } catch (JsonProcessingException e) {
             throw new ServicioNoDisponibleException(
                     "La respuesta de Claude para identificación de botella no es un JSON válido: " + e.getMessage());
@@ -106,13 +114,20 @@ public class ClaudeVisionService {
      *
      * @param imagenBase64   imagen codificada en base64
      * @param formatoImagen  formato de la imagen (JPEG, PNG, WEBP)
-     * @return resultado estructurado con los datos extraídos de la factura
+     * @return respuesta con resultado y tokens consumidos
      * @throws ServicioNoDisponibleException si Claude no responde o retorna JSON inválido
      */
-    public ResultadoFacturaDto extraerFactura(String imagenBase64, String formatoImagen) {
-        String respuestaJson = llamarClaudeConImagen(imagenBase64, formatoImagen, PROMPT_FACTURA, "extraer_factura");
+    public RespuestaClaudeDto<ResultadoFacturaDto> extraerFactura(String imagenBase64, String formatoImagen) {
+        RespuestaClaudeDto<String> respuesta = llamarClaudeConImagen(imagenBase64, formatoImagen, PROMPT_FACTURA, "extraer_factura");
         try {
-            return objectMapper.readValue(respuestaJson, ResultadoFacturaDto.class);
+            ResultadoFacturaDto resultado = objectMapper.readValue(respuesta.getResultado(), ResultadoFacturaDto.class);
+            return RespuestaClaudeDto.<ResultadoFacturaDto>builder()
+                    .resultado(resultado)
+                    .tokensInput(respuesta.getTokensInput())
+                    .tokensOutput(respuesta.getTokensOutput())
+                    .tokensCacheRead(respuesta.getTokensCacheRead())
+                    .tokensCacheWrite(respuesta.getTokensCacheWrite())
+                    .build();
         } catch (JsonProcessingException e) {
             throw new ServicioNoDisponibleException(
                     "La respuesta de Claude para extracción de factura no es un JSON válido: " + e.getMessage());
@@ -124,13 +139,20 @@ public class ClaudeVisionService {
      *
      * @param imagenBase64   imagen codificada en base64
      * @param formatoImagen  formato de la imagen (JPEG, PNG, WEBP)
-     * @return resultado estructurado con los datos identificados del producto
+     * @return respuesta con resultado y tokens consumidos
      * @throws ServicioNoDisponibleException si Claude no responde o retorna JSON inválido
      */
-    public ResultadoProductoDto identificarProductoGenerico(String imagenBase64, String formatoImagen) {
-        String respuestaJson = llamarClaudeConImagen(imagenBase64, formatoImagen, PROMPT_PRODUCTO, "identificar_producto_generico");
+    public RespuestaClaudeDto<ResultadoProductoDto> identificarProductoGenerico(String imagenBase64, String formatoImagen) {
+        RespuestaClaudeDto<String> respuesta = llamarClaudeConImagen(imagenBase64, formatoImagen, PROMPT_PRODUCTO, "identificar_producto_generico");
         try {
-            return objectMapper.readValue(respuestaJson, ResultadoProductoDto.class);
+            ResultadoProductoDto resultado = objectMapper.readValue(respuesta.getResultado(), ResultadoProductoDto.class);
+            return RespuestaClaudeDto.<ResultadoProductoDto>builder()
+                    .resultado(resultado)
+                    .tokensInput(respuesta.getTokensInput())
+                    .tokensOutput(respuesta.getTokensOutput())
+                    .tokensCacheRead(respuesta.getTokensCacheRead())
+                    .tokensCacheWrite(respuesta.getTokensCacheWrite())
+                    .build();
         } catch (JsonProcessingException e) {
             throw new ServicioNoDisponibleException(
                     "La respuesta de Claude para identificación de producto no es un JSON válido: " + e.getMessage());
@@ -151,9 +173,9 @@ public class ClaudeVisionService {
      * @param formatoImagen formato de la imagen original
      * @param prompt        instrucción de texto para Claude
      * @param toolName      nombre de la herramienta a usar para estructurar la respuesta
-     * @return texto plano devuelto por Claude (se espera que sea JSON)
+     * @return respuesta con el JSON y los tokens consumidos
      */
-    private String llamarClaudeConImagen(String imagenBase64, String formatoImagen, String prompt, String toolName) {
+    private RespuestaClaudeDto<String> llamarClaudeConImagen(String imagenBase64, String formatoImagen, String prompt, String toolName) {
         // OPTIMIZACIÓN 1: Redimensionar y comprimir imagen antes de enviarla
         String imagenOptimizada = imagenBase64;
         try {
@@ -227,7 +249,7 @@ public class ClaudeVisionService {
                     .bodyToMono(String.class)
                     .block();
 
-            return extraerTextoDeRespuesta(respuestaRaw);
+            return extraerTextoYTokensDeRespuesta(respuestaRaw);
 
         } catch (WebClientResponseException e) {
             throw new ServicioNoDisponibleException(
@@ -406,44 +428,63 @@ public class ClaudeVisionService {
     }
 
     /**
-     * Extrae el texto del primer bloque de contenido de la respuesta de Claude.
-     * Maneja respuestas con tool_use (tool calling).
+     * Extrae el texto y tokens del primer bloque de contenido de la respuesta de Claude.
+     * Maneja respuestas con tool_use (tool calling) y captura usage information.
      *
      * @param respuestaRaw JSON completo devuelto por la API de Claude
-     * @return texto del primer bloque content[0].text o tool_use.input, limpio de markdown
+     * @return respuesta con el texto/JSON y los tokens consumidos
      */
-    private String extraerTextoDeRespuesta(String respuestaRaw) {
+    private RespuestaClaudeDto<String> extraerTextoYTokensDeRespuesta(String respuestaRaw) {
         try {
             JsonNode raiz = objectMapper.readTree(respuestaRaw);
             JsonNode contenido = raiz.path("content");
             
+            String texto = null;
             if (contenido.isArray() && !contenido.isEmpty()) {
                 JsonNode primerBloque = contenido.get(0);
                 
                 // Si es una respuesta de tool_use, extraer el input (ya es JSON estructurado)
                 if ("tool_use".equals(primerBloque.path("type").asText())) {
                     JsonNode input = primerBloque.path("input");
-                    return objectMapper.writeValueAsString(input);
+                    texto = objectMapper.writeValueAsString(input);
+                } else {
+                    // Si es texto normal, extraer y limpiar markdown
+                    texto = primerBloque.path("text").asText();
+                    
+                    // Limpiar markdown si Claude responde con ```json ... ```
+                    texto = texto.trim();
+                    if (texto.startsWith("```json")) {
+                        texto = texto.substring(7); // Remover ```json
+                    } else if (texto.startsWith("```")) {
+                        texto = texto.substring(3); // Remover ```
+                    }
+                    if (texto.endsWith("```")) {
+                        texto = texto.substring(0, texto.length() - 3); // Remover ```
+                    }
+                    texto = texto.trim();
                 }
-                
-                // Si es texto normal, extraer y limpiar markdown
-                String texto = primerBloque.path("text").asText();
-                
-                // Limpiar markdown si Claude responde con ```json ... ```
-                texto = texto.trim();
-                if (texto.startsWith("```json")) {
-                    texto = texto.substring(7); // Remover ```json
-                } else if (texto.startsWith("```")) {
-                    texto = texto.substring(3); // Remover ```
-                }
-                if (texto.endsWith("```")) {
-                    texto = texto.substring(0, texto.length() - 3); // Remover ```
-                }
-                
-                return texto.trim();
             }
-            throw new ServicioNoDisponibleException(
-                    "La respuesta de Claude no contiene bloques de contenido válidos");
+            
+            if (texto == null) {
+                throw new ServicioNoDisponibleException(
+                        "La respuesta de Claude no contiene bloques de contenido válidos");
+            }
+            
+            // Extraer información de usage
+            JsonNode usage = raiz.path("usage");
+            Long tokensInput = usage.path("input_tokens").asLong(0L);
+            Long tokensOutput = usage.path("output_tokens").asLong(0L);
+            Long tokensCacheRead = usage.path("cache_read_input_tokens").asLong(0L);
+            Long tokensCacheWrite = usage.path("cache_creation_input_tokens").asLong(0L);
+            
+            return RespuestaClaudeDto.<String>builder()
+                    .resultado(texto)
+                    .tokensInput(tokensInput)
+                    .tokensOutput(tokensOutput)
+                    .tokensCacheRead(tokensCacheRead)
+                    .tokensCacheWrite(tokensCacheWrite)
+                    .build();
+                    
         } catch (JsonProcessingException e) {
             throw new ServicioNoDisponibleException(
                     "No se pudo parsear la respuesta de la API de Claude: " + e.getMessage());

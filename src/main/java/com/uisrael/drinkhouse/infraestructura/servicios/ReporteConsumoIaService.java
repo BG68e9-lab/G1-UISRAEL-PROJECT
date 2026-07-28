@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.ConsumoIaMensualEntity;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IConsumoIaMensualJpaRepositorio;
+import com.uisrael.drinkhouse.infraestructura.repositorio.IIdentificacionIaJpaRepositorio;
 import com.uisrael.drinkhouse.presentacion.dto.response.ReporteConsumoIaMensualDto;
 
 /**
@@ -23,9 +24,13 @@ public class ReporteConsumoIaService {
     private static final Logger logger = LoggerFactory.getLogger(ReporteConsumoIaService.class);
 
     private final IConsumoIaMensualJpaRepositorio consumoRepositorio;
+    private final IIdentificacionIaJpaRepositorio identificacionRepositorio;
 
-    public ReporteConsumoIaService(IConsumoIaMensualJpaRepositorio consumoRepositorio) {
+    public ReporteConsumoIaService(
+            IConsumoIaMensualJpaRepositorio consumoRepositorio,
+            IIdentificacionIaJpaRepositorio identificacionRepositorio) {
         this.consumoRepositorio = consumoRepositorio;
+        this.identificacionRepositorio = identificacionRepositorio;
     }
 
     /**
@@ -113,12 +118,16 @@ public class ReporteConsumoIaService {
         
         String estadoCuota = determinarEstadoCuota(totalTokens);
 
+        // Contar las identificaciones del periodo para este negocio
+        int cantidadIdentificaciones = identificacionRepositorio
+                .contarPorNegocioYPeriodo(entity.getNegocio().getNegocioId(), entity.getPeriodo());
+
         return ReporteConsumoIaMensualDto.builder()
                 .consumoIaId(entity.getConsumoIaId())
                 .negocioId(entity.getNegocio().getNegocioId())
                 .negocioNombre(entity.getNegocio().getNombre())
                 .periodo(entity.getPeriodo())
-                .cantidadIdentificaciones(0) // No tenemos este campo en la entidad
+                .cantidadIdentificaciones(cantidadIdentificaciones)
                 .tokensConsumidos(totalTokens)
                 .estadoCuota(estadoCuota)
                 .build();

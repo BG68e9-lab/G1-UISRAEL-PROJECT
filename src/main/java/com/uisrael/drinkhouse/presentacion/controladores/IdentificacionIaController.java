@@ -121,7 +121,7 @@ public class IdentificacionIaController {
 
         if ("PRODUCTO".equalsIgnoreCase(solicitud.getTipoIdentificacion())) {
             ResultadoProductoDto resultadoProducto = claudeVisionService.identificarProductoGenerico(
-                    solicitud.getImagenBase64(), solicitud.getFormatoImagen());
+                    solicitud.getImagenBase64(), solicitud.getFormatoImagen()).getResultado();
             respuesta.setResultadoProducto(resultadoProducto);
             respuesta.setReconocido(resultadoProducto.getReconocido());
 
@@ -138,7 +138,7 @@ public class IdentificacionIaController {
 
         } else if ("BOTELLA".equalsIgnoreCase(solicitud.getTipoIdentificacion())) {
             ResultadoBotellaDto resultadoBotella = claudeVisionService.identificarBotella(
-                    solicitud.getImagenBase64(), solicitud.getFormatoImagen());
+                    solicitud.getImagenBase64(), solicitud.getFormatoImagen()).getResultado();
             respuesta.setResultadoBotella(resultadoBotella);
             respuesta.setReconocido(resultadoBotella.getReconocido());
 
@@ -155,7 +155,7 @@ public class IdentificacionIaController {
 
         } else if ("FACTURA".equalsIgnoreCase(solicitud.getTipoIdentificacion())) {
             ResultadoFacturaDto resultadoFactura = claudeVisionService.extraerFactura(
-                    solicitud.getImagenBase64(), solicitud.getFormatoImagen());
+                    solicitud.getImagenBase64(), solicitud.getFormatoImagen()).getResultado();
             respuesta.setResultadoFactura(resultadoFactura);
             respuesta.setReconocido(resultadoFactura.getNumeroFactura() != null);
             // No se valida contra MCP para facturas

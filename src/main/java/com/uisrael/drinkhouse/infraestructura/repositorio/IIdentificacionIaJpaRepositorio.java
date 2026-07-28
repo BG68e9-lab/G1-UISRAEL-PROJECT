@@ -1,5 +1,6 @@
 package com.uisrael.drinkhouse.infraestructura.repositorio;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -20,4 +21,19 @@ public interface IIdentificacionIaJpaRepositorio extends JpaRepository<Identific
             @Param("productoId") Long productoId,
             @Param("desde") OffsetDateTime desde,
             @Param("hasta") OffsetDateTime hasta);
+
+    /**
+     * Cuenta las identificaciones de un negocio en un período específico (mes).
+     *
+     * @param negocioId ID del negocio
+     * @param periodo   primer día del mes (ej: 2026-07-01)
+     * @return cantidad de identificaciones realizadas en ese mes
+     */
+    @Query("SELECT COUNT(i) FROM IdentificacionIaEntity i " +
+           "WHERE i.negocio.negocioId = :negocioId " +
+           "AND FUNCTION('DATE_TRUNC', 'month', i.creadoEn) = " +
+           "CAST(:periodo AS timestamp)")
+    int contarPorNegocioYPeriodo(
+            @Param("negocioId") Integer negocioId,
+            @Param("periodo") LocalDate periodo);
 }

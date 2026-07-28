@@ -19,6 +19,7 @@ import com.uisrael.drinkhouse.dominio.repositorios.IIdentificacionIaRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IProductoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ITokensIaNegocioRepositorio;
 import com.uisrael.drinkhouse.infraestructura.servicios.ClaudeVisionService;
+import com.uisrael.drinkhouse.presentacion.dto.response.RespuestaClaudeDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoBotellaDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoFacturaDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoProductoDto;
@@ -101,15 +102,15 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 						.build());
 
 		// 6. Llamar a Claude según el tipo de identificación y mapear el resultado
-		IdentificacionIa identificacion = procesarConClaude(
+		RespuestaClaudeConIdentificacion resultado = procesarConClaude(
 				imagenBase64, formatoImagen, tipoIdentificacion, productoId, negocioId);
 
 		// 7. Guardar la identificación
-		IdentificacionIa guardada = identificacionRepositorio.guardar(identificacion);
+		IdentificacionIa guardada = identificacionRepositorio.guardar(resultado.getIdentificacion());
 
-		// 8. Incrementar tokens usados y guardar consumo
-		consumo.setTotalTokensInput(consumo.getTotalTokensInput() + 1L);
-		consumo.setTotalTokensOutput(consumo.getTotalTokensOutput() + 1L);
+		// 8. Incrementar tokens usados con los valores reales de Claude y guardar consumo
+		consumo.setTotalTokensInput(consumo.getTotalTokensInput() + resultado.getTokensInput());
+		consumo.setTotalTokensOutput(consumo.getTotalTokensOutput() + resultado.getTokensOutput());
 		consumoRepositorio.guardar(consumo);
 
 		return guardada;
@@ -122,6 +123,33 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 	}
 
 	/**
+	 * Clase interna para envolver la identificación con sus tokens consumidos.
+	 */
+	private static class RespuestaClaudeConIdentificacion {
+		private final IdentificacionIa identificacion;
+		private final Long tokensInput;
+		private final Long tokensOutput;
+
+		public RespuestaClaudeConIdentificacion(IdentificacionIa identificacion, Long tokensInput, Long tokensOutput) {
+			this.identificacion = identificacion;
+			this.tokensInput = tokensInput;
+			this.tokensOutput = tokensOutput;
+		}
+
+		public IdentificacionIa getIdentificacion() {
+			return identificacion;
+		}
+
+		public Long getTokensInput() {
+			return tokensInput;
+		}
+
+		public Long getTokensOutput() {
+			return tokensOutput;
+		}
+	}
+
+	/**
 	 * Delega el análisis a Claude y construye la entidad de dominio con el resultado.
 	 *
 	 * @param imagenBase64       imagen en base64
@@ -129,9 +157,9 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 	 * @param tipoIdentificacion PRODUCTO, BOTELLA o FACTURA
 	 * @param productoId         ID del producto
 	 * @param negocioId          ID del negocio
-	 * @return entidad de dominio lista para persistir
+	 * @return entidad de dominio con tokens consumidos
 	 */
-	private IdentificacionIa procesarConClaude(String imagenBase64, String formatoImagen,
+	private RespuestaClaudeConIdentificacion procesarConClaude(String imagenBase64, String formatoImagen,
 			String tipoIdentificacion, Long productoId, Integer negocioId) {
 
 		IdentificacionIa.IdentificacionIaBuilder constructor = IdentificacionIa.builder()
@@ -141,9 +169,15 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 				.modeloIaUsado(NOMBRE_MODELO)
 				.creadoEn(OffsetDateTime.now());
 
+		Long tokensInput = 0L;
+		Long tokensOutput = 0L;
+
 		if ("PRODUCTO".equalsIgnoreCase(tipoIdentificacion)) {
 			// Identificación genérica para cualquier tipo de producto
-			ResultadoProductoDto resultado = claudeVisionService.identificarProductoGenerico(imagenBase64, formatoImagen);
+			RespuestaClaudeDto<ResultadoProductoDto> respuesta = claudeVisionService.identificarProductoGenerico(imagenBase64, formatoImagen);
+			ResultadoProductoDto resultado = respuesta.getResultado();
+			tokensInput = respuesta.getTokensInput();
+			tokensOutput = respuesta.getTokensOutput();
 			constructor
 					.nombreSugerido(resultado.getNombre())
 					.marcaSugerida(resultado.getMarca())
@@ -151,7 +185,10 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 					.reconocido(resultado.getReconocido() != null ? resultado.getReconocido() : false);
 		} else if ("BOTELLA".equalsIgnoreCase(tipoIdentificacion)) {
 			// Identificación específica para bebidas
-			ResultadoBotellaDto resultado = claudeVisionService.identificarBotella(imagenBase64, formatoImagen);
+			RespuestaClaudeDto<ResultadoBotellaDto> respuesta = claudeVisionService.identificarBotella(imagenBase64, formatoImagen);
+			ResultadoBotellaDto resultado = respuesta.getResultado();
+			tokensInput = respuesta.getTokensInput();
+			tokensOutput = respuesta.getTokensOutput();
 			constructor
 					.nombreSugerido(resultado.getNombre())
 					.marcaSugerida(resultado.getMarca())
@@ -159,7 +196,10 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 					.reconocido(resultado.getReconocido() != null ? resultado.getReconocido() : false);
 		} else {
 			// FACTURA: se usa el nombre del proveedor como nombre sugerido
-			ResultadoFacturaDto resultado = claudeVisionService.extraerFactura(imagenBase64, formatoImagen);
+			RespuestaClaudeDto<ResultadoFacturaDto> respuesta = claudeVisionService.extraerFactura(imagenBase64, formatoImagen);
+			ResultadoFacturaDto resultado = respuesta.getResultado();
+			tokensInput = respuesta.getTokensInput();
+			tokensOutput = respuesta.getTokensOutput();
 			constructor
 					.nombreSugerido(resultado.getRazonSocialProveedor())
 					.marcaSugerida(null)
@@ -167,7 +207,8 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 					.reconocido(resultado.getNumeroFactura() != null);
 		}
 
-		return constructor.build();
+		IdentificacionIa identificacion = constructor.build();
+		return new RespuestaClaudeConIdentificacion(identificacion, tokensInput, tokensOutput);
 	}
 
 	/**
