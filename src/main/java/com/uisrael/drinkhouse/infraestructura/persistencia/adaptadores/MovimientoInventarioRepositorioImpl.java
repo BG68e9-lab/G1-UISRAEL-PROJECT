@@ -45,7 +45,10 @@ public class MovimientoInventarioRepositorioImpl implements IMovimientoInventari
 
 		TipoMovimientoEntity tipo = tipoMovimientoJpaRepositorio.findByCodigo(movimientoInventario.getTipo())
 				.orElseThrow(() -> new IllegalArgumentException(
-						"Tipo de movimiento invalido: " + movimientoInventario.getTipo()));
+						"Tipo de movimiento invalido: '" + movimientoInventario.getTipo()
+								+ "'. Codigos existentes en la tabla tipos_movimiento: "
+								+ codigosTipoDisponibles()
+								+ ". Si la lista esta vacia, hay que sembrar la tabla catalogo (ver scripts/seed_catalogos.sql)."));
 		entity.setFkTipoMovimientoEntity(tipo);
 
 		ProductoEntity producto = productoJpaRepositorio.findById(movimientoInventario.getProductoId())
@@ -95,6 +98,13 @@ public class MovimientoInventarioRepositorioImpl implements IMovimientoInventari
 			throw new NoSuchElementException("Movimiento de inventario no encontrado");
 		}
 		jpaRepositorio.deleteById(id);
+	}
+
+	private String codigosTipoDisponibles() {
+		List<String> codigos = tipoMovimientoJpaRepositorio.findAll().stream()
+				.map(TipoMovimientoEntity::getCodigo)
+				.toList();
+		return codigos.isEmpty() ? "(ninguno, la tabla esta vacia)" : codigos.toString();
 	}
 
 	private MovimientoInventario toDomain(MovimientoInventarioEntity entity) {

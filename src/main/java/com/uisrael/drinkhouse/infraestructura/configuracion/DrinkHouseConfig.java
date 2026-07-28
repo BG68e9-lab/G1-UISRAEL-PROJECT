@@ -71,8 +71,6 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IEstadoOcJ
 // --- Imports de Mappers y JPA Repositorios ---
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IEstadoRespaldoJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ILogAuditoriaJpaMapper;
-import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ILoteProductoJpaMapper;
-import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IMovimientoInventarioJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.INegocioJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IProductoJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IProveedorJpaMapper;

@@ -212,7 +212,17 @@ public class OrdenCompraRepositorioImpl implements IOrdenCompraRepositorio {
 
 	private EstadoOcEntity resolverEstado(String codigo) {
 		return estadoOcJpaRepositorio.findByCodigo(codigo)
-				.orElseThrow(() -> new IllegalArgumentException("Estado de orden de compra invalido: " + codigo));
+				.orElseThrow(() -> new IllegalArgumentException(
+						"Estado de orden de compra invalido: '" + codigo
+								+ "'. Codigos existentes en la tabla estados_oc: " + codigosEstadoDisponibles()
+								+ ". Si la lista esta vacia, hay que sembrar la tabla catalogo (ver scripts/seed_catalogos.sql)."));
+	}
+
+	private String codigosEstadoDisponibles() {
+		List<String> codigos = estadoOcJpaRepositorio.findAll().stream()
+				.map(EstadoOcEntity::getCodigo)
+				.toList();
+		return codigos.isEmpty() ? "(ninguno, la tabla esta vacia)" : codigos.toString();
 	}
 
 	private String generarCodigoReferencia() {
