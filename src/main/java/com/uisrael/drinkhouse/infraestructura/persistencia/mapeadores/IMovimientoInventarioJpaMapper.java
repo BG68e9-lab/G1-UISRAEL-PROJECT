@@ -5,6 +5,9 @@ import org.mapstruct.Mapping;
 
 import com.uisrael.drinkhouse.dominio.entidades.MovimientoInventario;
 import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.MovimientoInventarioEntity;
+import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.ProductoEntity;
+import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.LoteProductoEntity;
+import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.TipoMovimientoEntity;
 
 /**
  * Mapper MapStruct entre MovimientoInventarioEntity (JPA) y MovimientoInventario (dominio).
@@ -19,10 +22,31 @@ public interface IMovimientoInventarioJpaMapper {
 	@Mapping(source = "fkTipoMovimientoEntity.codigo", target = "tipoMovimientoCodigo")
 	MovimientoInventario toDomain(MovimientoInventarioEntity entity);
 
-	@Mapping(target = "fkNegocioEntity",       ignore = true)
-	@Mapping(target = "fkTipoMovimientoEntity", ignore = true)
-	@Mapping(target = "fkProductoEntity",       ignore = true)
-	@Mapping(target = "fkLoteEntity",           ignore = true)
-	@Mapping(target = "fkUsuarioEntity",        ignore = true)
+	@Mapping(target = "fkNegocioEntity", ignore = true)
+	@Mapping(target = "fkUsuarioEntity", ignore = true)
+	@Mapping(target = "fkTipoMovimientoEntity", expression = "java(createTipoMovimientoEntity(domain.getTipoMovimientoId()))")
+	@Mapping(target = "fkProductoEntity", expression = "java(createProductoEntity(domain.getProductoId()))")
+	@Mapping(target = "fkLoteEntity", expression = "java(createLoteEntity(domain.getLoteId()))")
 	MovimientoInventarioEntity toEntity(MovimientoInventario domain);
+
+	default TipoMovimientoEntity createTipoMovimientoEntity(Long tipoMovimientoId) {
+		if (tipoMovimientoId == null) return null;
+		TipoMovimientoEntity entity = new TipoMovimientoEntity();
+		entity.setTipoMovimientoId(tipoMovimientoId.intValue());
+		return entity;
+	}
+
+	default ProductoEntity createProductoEntity(Long productoId) {
+		if (productoId == null) return null;
+		ProductoEntity entity = new ProductoEntity();
+		entity.setProductoId(productoId);
+		return entity;
+	}
+
+	default LoteProductoEntity createLoteEntity(Long loteId) {
+		if (loteId == null) return null;
+		LoteProductoEntity entity = new LoteProductoEntity();
+		entity.setLoteId(loteId);
+		return entity;
+	}
 }

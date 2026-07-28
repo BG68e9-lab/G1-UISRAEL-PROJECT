@@ -13,7 +13,9 @@ public class OrdenCompraResponseDto {
     private String estado;
     private Double total;
     private OffsetDateTime creadoEn;
+    private OffsetDateTime fechaCreacion;
     private Long proveedorId;
+    private String proveedorRazonSocial;
     private List<DetalleOrdenCompraResponseDto> detalles;
 
     public OrdenCompraResponseDto() {}
@@ -35,6 +37,12 @@ public class OrdenCompraResponseDto {
 
     public Long getProveedorId() { return proveedorId; }
     public void setProveedorId(Long proveedorId) { this.proveedorId = proveedorId; }
+
+    public String getProveedorRazonSocial() { return proveedorRazonSocial; }
+    public void setProveedorRazonSocial(String proveedorRazonSocial) { this.proveedorRazonSocial = proveedorRazonSocial; }
+
+    public OffsetDateTime getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(OffsetDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 
     public List<DetalleOrdenCompraResponseDto> getDetalles() { return detalles; }
     public void setDetalles(List<DetalleOrdenCompraResponseDto> detalles) { this.detalles = detalles; }

@@ -34,6 +34,9 @@ public class LoteProductoRequestDto {
 	@DecimalMin(value = "0", inclusive = false, message = "El precioCosto debe ser mayor a cero")
 	private BigDecimal precioCosto;
 
-	/** Fecha de vencimiento del lote. Opcional. */
+	/** 
+	 * Fecha de vencimiento del lote. Opcional cuando se crea manualmente.
+	 * Cuando se crea desde una OC, se toma del detalle de la orden.
+	 */
 	private LocalDate fechaVencimiento;
 }

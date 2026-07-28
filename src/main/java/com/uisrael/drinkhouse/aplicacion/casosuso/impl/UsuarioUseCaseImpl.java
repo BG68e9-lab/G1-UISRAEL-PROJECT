@@ -70,6 +70,12 @@ public class UsuarioUseCaseImpl implements IUsuarioUseCase {
 	}
 
 	@Override
+	public Usuario buscarPorEmail(String email) {
+		return repositorio.buscarPorEmail(email)
+				.orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado con email: " + email));
+	}
+
+	@Override
 	public List<Usuario> listarConFiltro(String estadoCuenta) {
 		return repositorio.listarConFiltro(estadoCuenta);
 	}

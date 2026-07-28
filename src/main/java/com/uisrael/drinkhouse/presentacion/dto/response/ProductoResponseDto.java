@@ -9,6 +9,7 @@ import lombok.Data;
 public class ProductoResponseDto {
 
 	private Long productoId;
+	private Integer negocioId;
 	private String nombre;
 	private String marca;
 	private String tipo;

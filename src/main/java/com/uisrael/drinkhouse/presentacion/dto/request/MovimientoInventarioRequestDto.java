@@ -24,9 +24,12 @@ public class MovimientoInventarioRequestDto {
 	@NotNull(message = "El tipoMovimientoId es obligatorio")
 	private Long tipoMovimientoId;
 
-	/** Cantidad del movimiento. Debe ser mayor a cero. */
+	/** 
+	 * Cantidad del movimiento.
+	 * Para ENTRADA y SALIDA debe ser positiva.
+	 * Para AJUSTE puede ser positiva (aumentar) o negativa (disminuir).
+	 */
 	@NotNull(message = "La cantidad es obligatoria")
-	@DecimalMin(value = "0", inclusive = false, message = "La cantidad debe ser mayor a cero")
 	private BigDecimal cantidad;
 
 	/** Precio unitario del producto en el movimiento (opcional). */

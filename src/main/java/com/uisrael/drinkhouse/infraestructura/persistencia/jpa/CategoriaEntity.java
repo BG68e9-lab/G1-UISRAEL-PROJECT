@@ -1,17 +1,23 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.jpa;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -25,8 +31,9 @@ public class CategoriaEntity {
 	@Column(name = "categoria_id")
 	private Long categoriaId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "negocio_id")
+	@JsonIgnore
 	private NegocioEntity fkNegocioEntity;
 
 	@Column(name = "nombre", nullable = false, length = 60)
@@ -38,6 +45,24 @@ public class CategoriaEntity {
 	@Column(name = "activo", nullable = false)
 	private Boolean activo;
 
-	@OneToMany(mappedBy = "fkCategoriaEntity")
+	@Column(name = "creado_en", nullable = false, updatable = false)
+	private OffsetDateTime creadoEn;
+
+	@Column(name = "actualizado_en", nullable = false)
+	private OffsetDateTime actualizadoEn;
+
+	@OneToMany(mappedBy = "fkCategoriaEntity", fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ProductoEntity> productos = new ArrayList<>();
+
+	@PrePersist
+	protected void onCreate() {
+		this.creadoEn = OffsetDateTime.now();
+		this.actualizadoEn = OffsetDateTime.now();
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		this.actualizadoEn = OffsetDateTime.now();
+	}
 }

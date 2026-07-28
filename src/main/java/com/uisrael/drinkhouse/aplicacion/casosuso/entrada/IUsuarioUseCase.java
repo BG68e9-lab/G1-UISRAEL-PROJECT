@@ -15,6 +15,8 @@ public interface IUsuarioUseCase {
 
 	Usuario buscarPorId(UUID id);
 
+	Usuario buscarPorEmail(String email);
+
 	List<Usuario> listarConFiltro(String estadoCuenta);
 
 	Usuario actualizarUsuario(UUID id, Usuario usuario);

@@ -21,6 +21,7 @@ import com.uisrael.drinkhouse.dominio.repositorios.ITokensIaNegocioRepositorio;
 import com.uisrael.drinkhouse.infraestructura.servicios.ClaudeVisionService;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoBotellaDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoFacturaDto;
+import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoProductoDto;
 
 /**
  * Implementación del caso de uso de identificación mediante IA.
@@ -63,15 +64,20 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 
 		// 2. Validar tipo de identificación
 		if (tipoIdentificacion == null ||
-				(!"BOTELLA".equalsIgnoreCase(tipoIdentificacion) && !"FACTURA".equalsIgnoreCase(tipoIdentificacion))) {
+				(!"BOTELLA".equalsIgnoreCase(tipoIdentificacion) && 
+				 !"FACTURA".equalsIgnoreCase(tipoIdentificacion) &&
+				 !"PRODUCTO".equalsIgnoreCase(tipoIdentificacion))) {
 			throw new ReglaNegocioException(
-					"Tipo de identificación no válido. Use BOTELLA o FACTURA");
+					"Tipo de identificación no válido. Use PRODUCTO, BOTELLA o FACTURA");
 		}
 
-		// 3. Verificar existencia del producto
-		productoRepositorio.buscarPorId(productoId)
-				.orElseThrow(() -> new RecursoNoEncontradoException(
-						"Producto no encontrado con id: " + productoId));
+		// 3. Verificar existencia del producto (OPCIONAL - solo si se proporciona)
+		// El productoId es opcional porque puedes estar identificando un producto NUEVO
+		if (productoId != null) {
+			productoRepositorio.buscarPorId(productoId)
+					.orElseThrow(() -> new RecursoNoEncontradoException(
+							"Producto no encontrado con id: " + productoId));
+		}
 
 		// 4. Obtener configuración de tokens del negocio
 		TokensIaNegocio limiteTokens = tokensRepositorio.buscarPorNegocioId(negocioId)
@@ -120,7 +126,7 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 	 *
 	 * @param imagenBase64       imagen en base64
 	 * @param formatoImagen      formato de la imagen
-	 * @param tipoIdentificacion BOTELLA o FACTURA
+	 * @param tipoIdentificacion PRODUCTO, BOTELLA o FACTURA
 	 * @param productoId         ID del producto
 	 * @param negocioId          ID del negocio
 	 * @return entidad de dominio lista para persistir
@@ -135,7 +141,16 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 				.modeloIaUsado(NOMBRE_MODELO)
 				.creadoEn(OffsetDateTime.now());
 
-		if ("BOTELLA".equalsIgnoreCase(tipoIdentificacion)) {
+		if ("PRODUCTO".equalsIgnoreCase(tipoIdentificacion)) {
+			// Identificación genérica para cualquier tipo de producto
+			ResultadoProductoDto resultado = claudeVisionService.identificarProductoGenerico(imagenBase64, formatoImagen);
+			constructor
+					.nombreSugerido(resultado.getNombre())
+					.marcaSugerida(resultado.getMarca())
+					.tipoSugerido(resultado.getCategoriaSugerida())
+					.reconocido(resultado.getReconocido() != null ? resultado.getReconocido() : false);
+		} else if ("BOTELLA".equalsIgnoreCase(tipoIdentificacion)) {
+			// Identificación específica para bebidas
 			ResultadoBotellaDto resultado = claudeVisionService.identificarBotella(imagenBase64, formatoImagen);
 			constructor
 					.nombreSugerido(resultado.getNombre())

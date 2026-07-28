@@ -35,4 +35,35 @@ public interface IMovimientoInventarioUseCase {
 	 */
 	List<MovimientoInventario> buscarPorProductoConFiltros(Long productoId, String tipo,
 			OffsetDateTime desde, OffsetDateTime hasta);
+
+	/**
+	 * Lista todos los movimientos del sistema.
+	 *
+	 * @return lista de todos los movimientos ordenada por creadoEn descendente
+	 */
+	List<MovimientoInventario> listarTodos();
+
+	/**
+	 * Busca movimientos por tipo de movimiento.
+	 *
+	 * @param codigoTipo código del tipo (ENTRADA, SALIDA, AJUSTE)
+	 * @return lista de movimientos del tipo especificado
+	 */
+	List<MovimientoInventario> buscarPorTipo(String codigoTipo);
+
+	/**
+	 * Busca movimientos por lote.
+	 *
+	 * @param loteId ID del lote
+	 * @return lista de movimientos del lote
+	 */
+	List<MovimientoInventario> buscarPorLote(Long loteId);
+
+	/**
+	 * Busca un movimiento por su ID.
+	 *
+	 * @param id ID del movimiento
+	 * @return el movimiento encontrado
+	 */
+	MovimientoInventario buscarPorId(Long id);
 }

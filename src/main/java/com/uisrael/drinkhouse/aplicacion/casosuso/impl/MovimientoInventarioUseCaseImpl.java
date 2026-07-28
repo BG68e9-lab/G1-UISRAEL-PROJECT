@@ -74,6 +74,19 @@ public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUse
 		BigDecimal cantidad = movimiento.getCantidad();
 		String codigo = tipoMovimiento.getCodigo();
 
+		// Validar que ENTRADA y SALIDA tengan cantidad positiva
+		if (("ENTRADA".equalsIgnoreCase(codigo) || "SALIDA".equalsIgnoreCase(codigo))
+				&& cantidad.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new ReglaNegocioException(
+					"La cantidad para movimientos de tipo " + codigo + " debe ser positiva");
+		}
+
+		// Validar que AJUSTE tenga cantidad diferente de cero
+		if ("AJUSTE".equalsIgnoreCase(codigo) && cantidad.compareTo(BigDecimal.ZERO) == 0) {
+			throw new ReglaNegocioException(
+					"La cantidad para ajustes no puede ser cero");
+		}
+
 		// Aplicar lógica según tipo de movimiento
 		if ("ENTRADA".equalsIgnoreCase(codigo)) {
 			aplicarEntrada(producto, cantidad);
@@ -130,6 +143,40 @@ public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUse
 	public List<MovimientoInventario> buscarPorProductoConFiltros(Long productoId,
 			String tipo, OffsetDateTime desde, OffsetDateTime hasta) {
 		return repositorio.buscarPorProductoConFiltros(productoId, tipo, desde, hasta);
+	}
+
+	/**
+	 * Lista todos los movimientos del sistema.
+	 */
+	@Override
+	public List<MovimientoInventario> listarTodos() {
+		return repositorio.listarTodos();
+	}
+
+	/**
+	 * Busca movimientos por tipo de movimiento.
+	 */
+	@Override
+	public List<MovimientoInventario> buscarPorTipo(String codigoTipo) {
+		return repositorio.buscarPorTipo(codigoTipo);
+	}
+
+	/**
+	 * Busca movimientos por lote.
+	 */
+	@Override
+	public List<MovimientoInventario> buscarPorLote(Long loteId) {
+		return repositorio.buscarPorLote(loteId);
+	}
+
+	/**
+	 * Busca un movimiento por su ID.
+	 */
+	@Override
+	public MovimientoInventario buscarPorId(Long id) {
+		return repositorio.buscarPorId(id)
+				.orElseThrow(() -> new RecursoNoEncontradoException(
+						"Movimiento de inventario no encontrado con id: " + id));
 	}
 
 	// --- Métodos privados de lógica de negocio ---

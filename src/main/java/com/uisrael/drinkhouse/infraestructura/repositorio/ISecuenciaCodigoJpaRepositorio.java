@@ -1,5 +1,6 @@
 package com.uisrael.drinkhouse.infraestructura.repositorio;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +12,8 @@ public interface ISecuenciaCodigoJpaRepositorio extends JpaRepository<SecuenciaC
 
 	Optional<SecuenciaCodigoEntity> findByNegocio_NegocioIdAndTipoMovimiento_TipoMovimientoId(
 			Integer negocioId, Integer tipoMovimientoId);
+
+	List<SecuenciaCodigoEntity> findByNegocio_NegocioId(Integer negocioId);
 
 	/** Compatibilidad con tests legacy — busca por código de tipo de movimiento */
 	Optional<SecuenciaCodigoEntity> findByTipoMovimiento_Codigo(String codigo);

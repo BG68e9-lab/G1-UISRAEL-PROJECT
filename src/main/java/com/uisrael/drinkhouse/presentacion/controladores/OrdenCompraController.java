@@ -20,6 +20,8 @@ import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IOrdenCompraUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.DetalleOrdenCompra;
 import com.uisrael.drinkhouse.dominio.entidades.OrdenCompra;
 import com.uisrael.drinkhouse.dominio.repositorios.IDetalleOrdenCompraRepositorio;
+import com.uisrael.drinkhouse.infraestructura.repositorio.IOrdenCompraJpaRepositorio;
+import com.uisrael.drinkhouse.infraestructura.repositorio.IProductoJpaRepositorio;
 import com.uisrael.drinkhouse.presentacion.dto.request.OrdenCompraRequestDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.DetalleOrdenCompraResponseDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.OrdenCompraResponseDto;
@@ -38,14 +40,20 @@ public class OrdenCompraController {
     private final IOrdenCompraUseCase ordenCompraUseCase;
     private final IOrdenCompraDtoMapper mapper;
     private final IDetalleOrdenCompraRepositorio detalleRepositorio;
+    private final IOrdenCompraJpaRepositorio ordenCompraJpaRepositorio;
+    private final IProductoJpaRepositorio productoJpaRepositorio;
 
     public OrdenCompraController(
             IOrdenCompraUseCase ordenCompraUseCase,
             IOrdenCompraDtoMapper mapper,
-            IDetalleOrdenCompraRepositorio detalleRepositorio) {
+            IDetalleOrdenCompraRepositorio detalleRepositorio,
+            IOrdenCompraJpaRepositorio ordenCompraJpaRepositorio,
+            IProductoJpaRepositorio productoJpaRepositorio) {
         this.ordenCompraUseCase = ordenCompraUseCase;
         this.mapper = mapper;
         this.detalleRepositorio = detalleRepositorio;
+        this.ordenCompraJpaRepositorio = ordenCompraJpaRepositorio;
+        this.productoJpaRepositorio = productoJpaRepositorio;
     }
 
     /**
@@ -186,6 +194,23 @@ public class OrdenCompraController {
                 .map(mapper::detalleToResponseDto)
                 .toList();
         dto.setDetalles(detallesDto);
+
+        // Cargar información del proveedor desde la entidad JPA
+        ordenCompraJpaRepositorio.findById(orden.getOrdenCompraId()).ifPresent(entity -> {
+            if (entity.getFkProveedorEntity() != null) {
+                dto.setProveedorId(entity.getFkProveedorEntity().getProveedorId());
+                dto.setProveedorRazonSocial(entity.getFkProveedorEntity().getRazonSocial());
+            }
+        });
+
+        // Cargar nombres de productos para cada detalle consultando directamente por productoId
+        for (DetalleOrdenCompraResponseDto detalleDto : detallesDto) {
+            if (detalleDto.getProductoId() != null) {
+                productoJpaRepositorio.findById(detalleDto.getProductoId()).ifPresent(producto -> {
+                    detalleDto.setProductoNombre(producto.getNombre());
+                });
+            }
+        }
 
         return dto;
     }

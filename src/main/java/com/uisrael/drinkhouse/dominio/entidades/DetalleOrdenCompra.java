@@ -1,6 +1,7 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class DetalleOrdenCompra {
 
@@ -11,12 +12,13 @@ public class DetalleOrdenCompra {
 	private BigDecimal cantidad;
 	private BigDecimal precioUnitario;
 	private BigDecimal subtotal;
+	private LocalDate fechaVencimiento;
 
 	public DetalleOrdenCompra() {}
 
 	public DetalleOrdenCompra(Long detalleOcId, Long ordenCompraId, Long productoId,
 			String descripcionFactura, BigDecimal cantidad, BigDecimal precioUnitario,
-			BigDecimal subtotal) {
+			BigDecimal subtotal, LocalDate fechaVencimiento) {
 		this.detalleOcId = detalleOcId;
 		this.ordenCompraId = ordenCompraId;
 		this.productoId = productoId;
@@ -24,6 +26,7 @@ public class DetalleOrdenCompra {
 		this.cantidad = cantidad;
 		this.precioUnitario = precioUnitario;
 		this.subtotal = subtotal;
+		this.fechaVencimiento = fechaVencimiento;
 	}
 
 	public Long getDetalleOcId() { return detalleOcId; }
@@ -40,4 +43,6 @@ public class DetalleOrdenCompra {
 	public void setPrecioUnitario(BigDecimal precioUnitario) { this.precioUnitario = precioUnitario; }
 	public BigDecimal getSubtotal() { return subtotal; }
 	public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
+	public LocalDate getFechaVencimiento() { return fechaVencimiento; }
+	public void setFechaVencimiento(LocalDate fechaVencimiento) { this.fechaVencimiento = fechaVencimiento; }
 }

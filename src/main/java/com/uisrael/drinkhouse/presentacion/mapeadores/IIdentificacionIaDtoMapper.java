@@ -16,12 +16,13 @@ public interface IIdentificacionIaDtoMapper {
 
     /**
      * Convierte una entidad de dominio a DTO de respuesta.
-     * Los campos resultadoBotella, resultadoFactura y tipoIdentificacion
+     * Los campos resultadoProducto, resultadoBotella, resultadoFactura y tipoIdentificacion
      * se ignoran aquí porque se rellenan en el controlador con la respuesta de Claude.
      */
     @Mapping(target = "nombreModelo", source = "modeloIaUsado")
     @Mapping(target = "resultado", source = "nombreSugerido")
     @Mapping(target = "identificacionIaId", source = "identificacionId")
+    @Mapping(target = "resultadoProducto", ignore = true)
     @Mapping(target = "resultadoBotella", ignore = true)
     @Mapping(target = "resultadoFactura", ignore = true)
     @Mapping(target = "tipoIdentificacion", ignore = true)

@@ -14,7 +14,7 @@ public interface IProductoJpaMapper {
 	Producto toDomain(ProductoEntity productoEntity);
 
 
-	@Mapping(target = "fkNegocioEntity", ignore = true)
+	@Mapping(target = "fkNegocioEntity.negocioId", source = "negocioId")
 	@Mapping(target = "fkCategoriaEntity.categoriaId", source = "categoriaId")
 	@Mapping(target = "lotes", ignore = true)
 	@Mapping(target = "movimientos", ignore = true)

@@ -1,8 +1,8 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores;
 
+import java.util.List;
 import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
+import java.util.stream.Collectors;
 
 import com.uisrael.drinkhouse.dominio.entidades.SecuenciaCodigo;
 import com.uisrael.drinkhouse.dominio.repositorios.ISecuenciaCodigoRepositorio;
@@ -30,16 +30,46 @@ public class SecuenciaCodigoRepositorioImpl implements ISecuenciaCodigoRepositor
 
 	@Override
 	public SecuenciaCodigo guardar(SecuenciaCodigo seq) {
-		// Cargar la entidad managed del contexto de persistencia para hacer merge
-		// en lugar de crear una instancia detached con mapper.toEntity() que causa
-		// NonUniqueObjectException cuando la entity original ya está en el contexto
-		SecuenciaCodigoEntity managed = jpaRepositorio
+		// Buscar si ya existe
+		Optional<SecuenciaCodigoEntity> existente = jpaRepositorio
 				.findByNegocio_NegocioIdAndTipoMovimiento_TipoMovimientoId(
-						seq.getNegocioId(), seq.getTipoMovimientoId())
-				.orElseThrow(() -> new RuntimeException(
-						"Secuencia no encontrada al guardar: negocio=" + seq.getNegocioId()));
-		managed.setUltimoNumero(seq.getUltimoNumero());
-		SecuenciaCodigoEntity guardado = jpaRepositorio.saveAndFlush(managed);
+						seq.getNegocioId(), seq.getTipoMovimientoId());
+
+		SecuenciaCodigoEntity entity;
+		if (existente.isPresent()) {
+			// Actualizar la entidad existente
+			entity = existente.get();
+			entity.setUltimoNumero(seq.getUltimoNumero());
+		} else {
+			// Crear nueva entidad
+			entity = mapper.toEntity(seq);
+		}
+
+		SecuenciaCodigoEntity guardado = jpaRepositorio.saveAndFlush(entity);
 		return mapper.toDomain(guardado);
+	}
+
+	@Override
+	public List<SecuenciaCodigo> listarTodas() {
+		return jpaRepositorio.findAll()
+				.stream()
+				.map(mapper::toDomain)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<SecuenciaCodigo> listarPorNegocio(Integer negocioId) {
+		return jpaRepositorio.findByNegocio_NegocioId(negocioId)
+				.stream()
+				.map(mapper::toDomain)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public void eliminar(SecuenciaCodigo secuenciaCodigo) {
+		jpaRepositorio.findByNegocio_NegocioIdAndTipoMovimiento_TipoMovimientoId(
+				secuenciaCodigo.getNegocioId(),
+				secuenciaCodigo.getTipoMovimientoId())
+				.ifPresent(jpaRepositorio::delete);
 	}
 }

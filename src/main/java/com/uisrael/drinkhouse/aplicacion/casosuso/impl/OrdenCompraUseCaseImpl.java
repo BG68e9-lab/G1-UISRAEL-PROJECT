@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ILogAuditoriaUseCase;
+import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IMovimientoInventarioUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IOrdenCompraUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ISecuenciaCodigoUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.DetalleOrdenCompra;
 import com.uisrael.drinkhouse.dominio.entidades.LoteProducto;
+import com.uisrael.drinkhouse.dominio.entidades.MovimientoInventario;
 import com.uisrael.drinkhouse.dominio.entidades.OrdenCompra;
 import com.uisrael.drinkhouse.dominio.entidades.Producto;
 import com.uisrael.drinkhouse.dominio.entidades.TipoMovimiento;
@@ -38,6 +40,7 @@ public class OrdenCompraUseCaseImpl implements IOrdenCompraUseCase {
     private final ILogAuditoriaUseCase logAuditoriaUseCase;
     private final ITipoMovimientoRepositorio tipoMovimientoRepositorio;
     private final INegocioRepositorio negocioRepositorio;
+    private final IMovimientoInventarioUseCase movimientoInventarioUseCase;
 
     public OrdenCompraUseCaseImpl(
             IOrdenCompraRepositorio ordenCompraRepositorio,
@@ -47,7 +50,8 @@ public class OrdenCompraUseCaseImpl implements IOrdenCompraUseCase {
             ISecuenciaCodigoUseCase secuenciaUseCase,
             ILogAuditoriaUseCase logAuditoriaUseCase,
             ITipoMovimientoRepositorio tipoMovimientoRepositorio,
-            INegocioRepositorio negocioRepositorio) {
+            INegocioRepositorio negocioRepositorio,
+            IMovimientoInventarioUseCase movimientoInventarioUseCase) {
         this.ordenCompraRepositorio = ordenCompraRepositorio;
         this.detalleRepositorio = detalleRepositorio;
         this.productoRepositorio = productoRepositorio;
@@ -56,6 +60,7 @@ public class OrdenCompraUseCaseImpl implements IOrdenCompraUseCase {
         this.logAuditoriaUseCase = logAuditoriaUseCase;
         this.tipoMovimientoRepositorio = tipoMovimientoRepositorio;
         this.negocioRepositorio = negocioRepositorio;
+        this.movimientoInventarioUseCase = movimientoInventarioUseCase;
     }
 
     /**
@@ -232,19 +237,40 @@ public class OrdenCompraUseCaseImpl implements IOrdenCompraUseCase {
             lote.setCantidadDisponible(cantidad);
             lote.setPrecioCosto(precio);
             lote.setFechaIngreso(OffsetDateTime.now());
+            lote.setFechaVencimiento(detalle.getFechaVencimiento()); // Asignar fecha de vencimiento del detalle
+            lote.setNegocioId(negocioResuelto);
 
             // Guardar el lote asociado al producto
-            loteRepositorio.guardarConProductoId(lote, producto.getProductoId());
+            LoteProducto loteGuardado = loteRepositorio.guardarConProductoId(lote, producto.getProductoId());
 
             // Incrementar stock del producto
             int nuevoStock = (producto.getStockActual() != null ? producto.getStockActual() : 0)
                     + detalle.getCantidad().intValue();
             producto.setStockActual(nuevoStock);
             productoRepositorio.guardar(producto);
+
+            // Registrar movimiento de inventario tipo ENTRADA
+            TipoMovimiento tipoEntrada = tipoMovimientoRepositorio.buscarPorCodigo("ENTRADA")
+                    .orElseThrow(() -> new RecursoNoEncontradoException("Tipo de movimiento ENTRADA no configurado"));
+
+            MovimientoInventario movimiento = new MovimientoInventario();
+            movimiento.setCantidad(cantidad);
+            movimiento.setPrecioUnitario(precio);
+            movimiento.setCreadoEn(OffsetDateTime.now());
+
+            movimientoInventarioUseCase.registrar(
+                    producto.getProductoId(),
+                    loteGuardado.getLoteId(),
+                    tipoEntrada.getTipoMovimientoId().longValue(),
+                    movimiento);
         }
 
-        // Cambiar estado a RECIBIDA y guardar
+        // Cambiar estado a RECIBIDA y registrar confirmación
         orden.setEstado("RECIBIDA");
+        orden.setConfirmadoEn(OffsetDateTime.now());
+        // TODO: Obtener UUID del usuario autenticado cuando se implemente JWT
+        // Por ahora se deja null, se debe obtener del contexto de seguridad
+        
         OrdenCompra guardada = ordenCompraRepositorio.guardar(orden);
 
         logAuditoriaUseCase.registrar("OrdenCompra", id.toString(), "RECIBIR", guardada);

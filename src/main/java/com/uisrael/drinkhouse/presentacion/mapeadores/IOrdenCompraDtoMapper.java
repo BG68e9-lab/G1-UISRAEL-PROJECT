@@ -29,10 +29,13 @@ public interface IOrdenCompraDtoMapper {
 
     /**
      * Convierte la entidad de dominio a DTO de respuesta.
-     * proveedorId y detalles no están en el dominio OrdenCompra — se ignoran aquí
+     * proveedorId, proveedorRazonSocial y detalles no están en el dominio OrdenCompra — se ignoran aquí
      * y el controller los completa manualmente si es necesario.
+     * fechaCreacion se mapea desde el campo creadoEn del dominio.
      */
+    @Mapping(source = "creadoEn", target = "fechaCreacion")
     @Mapping(target = "proveedorId", ignore = true)
+    @Mapping(target = "proveedorRazonSocial", ignore = true)
     @Mapping(target = "detalles", ignore = true)
     OrdenCompraResponseDto toResponseDto(OrdenCompra orden);
 
@@ -45,6 +48,8 @@ public interface IOrdenCompraDtoMapper {
 
     /**
      * Convierte la entidad de dominio detalle a DTO de respuesta.
+     * productoNombre no está en el dominio — se completa en el controller.
      */
+    @Mapping(target = "productoNombre", ignore = true)
     DetalleOrdenCompraResponseDto detalleToResponseDto(DetalleOrdenCompra detalle);
 }

@@ -1,13 +1,17 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 public class Categoria {
 
 	private Long categoriaId;
+	private Integer negocioId;
 	private String nombre;
 	private BigDecimal margenGananciaPct;
 	private Boolean activo;
+	private OffsetDateTime creadoEn;
+	private OffsetDateTime actualizadoEn;
 
 	public Categoria() {
 	}
@@ -25,6 +29,14 @@ public class Categoria {
 
 	public void setCategoriaId(Long categoriaId) {
 		this.categoriaId = categoriaId;
+	}
+
+	public Integer getNegocioId() {
+		return negocioId;
+	}
+
+	public void setNegocioId(Integer negocioId) {
+		this.negocioId = negocioId;
 	}
 
 	public String getNombre() {
@@ -49,5 +61,21 @@ public class Categoria {
 
 	public void setActivo(Boolean activo) {
 		this.activo = activo;
+	}
+
+	public OffsetDateTime getCreadoEn() {
+		return creadoEn;
+	}
+
+	public void setCreadoEn(OffsetDateTime creadoEn) {
+		this.creadoEn = creadoEn;
+	}
+
+	public OffsetDateTime getActualizadoEn() {
+		return actualizadoEn;
+	}
+
+	public void setActualizadoEn(OffsetDateTime actualizadoEn) {
+		this.actualizadoEn = actualizadoEn;
 	}
 }

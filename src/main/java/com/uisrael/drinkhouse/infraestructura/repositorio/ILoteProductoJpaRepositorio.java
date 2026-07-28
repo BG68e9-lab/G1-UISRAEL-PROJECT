@@ -13,6 +13,6 @@ public interface ILoteProductoJpaRepositorio extends JpaRepository<LoteProductoE
 
 	List<LoteProductoEntity> findByFkProductoEntityProductoIdOrderByFechaIngresoAsc(Long productoId);
 
-	@Query("SELECT l FROM LoteProductoEntity l WHERE l.fechaVencimiento <= :limite AND l.cantidadDisponible > 0")
+	@Query("SELECT l FROM LoteProductoEntity l WHERE l.fechaVencimiento IS NOT NULL AND l.fechaVencimiento <= :limite AND l.cantidadDisponible > 0")
 	List<LoteProductoEntity> findProximosAVencer(@Param("limite") LocalDate limite);
 }

@@ -5,8 +5,11 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,12 +31,14 @@ public class ProductoEntity {
 	@Column(name = "producto_id")
 	private Long productoId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "negocio_id")
+	@JsonIgnore
 	private NegocioEntity fkNegocioEntity;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "categoria_id")
+	@JsonIgnore
 	private CategoriaEntity fkCategoriaEntity;
 
 	@Column(name = "nombre", nullable = false, length = 150)
@@ -81,10 +86,12 @@ public class ProductoEntity {
 	@Column(name = "actualizado_en", nullable = false)
 	private OffsetDateTime actualizadoEn;
 
-	@OneToMany(mappedBy = "fkProductoEntity")
+	@OneToMany(mappedBy = "fkProductoEntity", fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<LoteProductoEntity> lotes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "fkProductoEntity")
+	@OneToMany(mappedBy = "fkProductoEntity", fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<MovimientoInventarioEntity> movimientos = new ArrayList<>();
 
 	@PrePersist

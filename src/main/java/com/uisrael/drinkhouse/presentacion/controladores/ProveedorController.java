@@ -34,8 +34,11 @@ public class ProveedorController {
 
 	@PostMapping
 	public ResponseEntity<ProveedorResponseDto> crear(@Valid @RequestBody ProveedorRequestDto requestDto) {
-		ProveedorResponseDto response = mapper.toResponseDto(
-				proveedorUseCase.crearProveedor(mapper.toDomain(requestDto)));
+		var proveedor = mapper.toDomain(requestDto);
+		// TODO: Obtener negocioId del usuario autenticado cuando se implemente JWT
+		proveedor.setNegocioId(1);
+		
+		ProveedorResponseDto response = mapper.toResponseDto(proveedorUseCase.crearProveedor(proveedor));
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
@@ -43,8 +46,11 @@ public class ProveedorController {
 	public ResponseEntity<ProveedorResponseDto> actualizar(
 			@PathVariable Long id,
 			@Valid @RequestBody ProveedorRequestDto requestDto) {
-		ProveedorResponseDto response = mapper.toResponseDto(
-				proveedorUseCase.actualizarProveedor(id, mapper.toDomain(requestDto)));
+		var proveedor = mapper.toDomain(requestDto);
+		// TODO: Obtener negocioId del usuario autenticado cuando se implemente JWT
+		proveedor.setNegocioId(1);
+		
+		ProveedorResponseDto response = mapper.toResponseDto(proveedorUseCase.actualizarProveedor(id, proveedor));
 		return ResponseEntity.ok(response);
 	}
 

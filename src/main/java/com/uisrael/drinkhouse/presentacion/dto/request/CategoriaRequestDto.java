@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 public class CategoriaRequestDto {
 
+	private Integer negocioId;
+
 	@NotBlank
 	private String nombre;
 

@@ -22,4 +22,22 @@ public interface IMovimientoInventarioJpaRepositorio extends JpaRepository<Movim
 			@Param("tipo") String tipo,
 			@Param("desde") OffsetDateTime desde,
 			@Param("hasta") OffsetDateTime hasta);
+
+	/**
+	 * Lista todos los movimientos ordenados por fecha descendente.
+	 */
+	@Query("SELECT m FROM MovimientoInventarioEntity m ORDER BY m.creadoEn DESC")
+	List<MovimientoInventarioEntity> findAllOrderByCreadoEnDesc();
+
+	/**
+	 * Busca movimientos por tipo de movimiento.
+	 */
+	@Query("SELECT m FROM MovimientoInventarioEntity m WHERE m.fkTipoMovimientoEntity.codigo = :codigoTipo ORDER BY m.creadoEn DESC")
+	List<MovimientoInventarioEntity> findByTipoMovimiento(@Param("codigoTipo") String codigoTipo);
+
+	/**
+	 * Busca movimientos por lote.
+	 */
+	@Query("SELECT m FROM MovimientoInventarioEntity m WHERE m.fkLoteEntity.loteId = :loteId ORDER BY m.creadoEn DESC")
+	List<MovimientoInventarioEntity> findByLote(@Param("loteId") Long loteId);
 }

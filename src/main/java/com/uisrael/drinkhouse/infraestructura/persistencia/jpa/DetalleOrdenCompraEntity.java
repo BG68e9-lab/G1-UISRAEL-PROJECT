@@ -1,6 +1,7 @@
 package com.uisrael.drinkhouse.infraestructura.persistencia.jpa;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,6 +48,9 @@ public class DetalleOrdenCompraEntity {
 
 	@Column(name = "subtotal", nullable = false, precision = 12, scale = 2)
 	private BigDecimal subtotal;
+
+	@Column(name = "fecha_vencimiento")
+	private LocalDate fechaVencimiento;
 
 	@PrePersist
 	@PreUpdate

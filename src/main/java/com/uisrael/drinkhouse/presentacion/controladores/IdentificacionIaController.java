@@ -15,10 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IIdentificacionIaUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.IdentificacionIa;
 import com.uisrael.drinkhouse.infraestructura.servicios.ClaudeVisionService;
+import com.uisrael.drinkhouse.infraestructura.servicios.ValidacionProductoExternoService;
 import com.uisrael.drinkhouse.presentacion.dto.request.IdentificacionIaRequestDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.IdentificacionIaResponseDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoBotellaDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoFacturaDto;
+import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoProductoDto;
+import com.uisrael.drinkhouse.presentacion.dto.response.ValidacionProductoExternoDto;
 import com.uisrael.drinkhouse.presentacion.mapeadores.IIdentificacionIaDtoMapper;
 
 import jakarta.validation.Valid;
@@ -34,20 +37,25 @@ public class IdentificacionIaController {
     private final IIdentificacionIaUseCase identificacionUseCase;
     private final IIdentificacionIaDtoMapper dtoMapper;
     private final ClaudeVisionService claudeVisionService;
+    private final ValidacionProductoExternoService validacionExternaService;
 
     public IdentificacionIaController(
             IIdentificacionIaUseCase identificacionUseCase,
             IIdentificacionIaDtoMapper dtoMapper,
-            ClaudeVisionService claudeVisionService) {
+            ClaudeVisionService claudeVisionService,
+            ValidacionProductoExternoService validacionExternaService) {
         this.identificacionUseCase = identificacionUseCase;
         this.dtoMapper = dtoMapper;
         this.claudeVisionService = claudeVisionService;
+        this.validacionExternaService = validacionExternaService;
     }
 
     /**
      * Identifica un producto mediante IA a partir de una imagen en base64.
-     * El campo {@code tipoIdentificacion} del request determina si se analiza
-     * una botella ("BOTELLA") o una factura ("FACTURA").
+     * El campo {@code tipoIdentificacion} del request determina el tipo de análisis:
+     * - "PRODUCTO": identificación genérica (bebidas, snacks, alimentos, etc.)
+     * - "BOTELLA": identificación específica para bebidas
+     * - "FACTURA": extracción de datos de facturas
      *
      * POST /api/v1/ia/identificar
      * Código de respuesta: 201 Created
@@ -97,7 +105,8 @@ public class IdentificacionIaController {
 
     /**
      * Enriquece el DTO de respuesta con el resultado estructurado de Claude
-     * (ResultadoBotellaDto o ResultadoFacturaDto) y el tipo de identificación.
+     * (ResultadoProductoDto, ResultadoBotellaDto o ResultadoFacturaDto) y el tipo de identificación.
+     * También valida productos contra bases de datos externas (MCP) para productos genéricos y botellas.
      * Se llama a Claude nuevamente para obtener el objeto estructurado completo,
      * ya que el caso de uso solo persiste los campos básicos en la entidad de dominio.
      *
@@ -110,16 +119,46 @@ public class IdentificacionIaController {
 
         respuesta.setTipoIdentificacion(solicitud.getTipoIdentificacion().toUpperCase());
 
-        if ("BOTELLA".equalsIgnoreCase(solicitud.getTipoIdentificacion())) {
+        if ("PRODUCTO".equalsIgnoreCase(solicitud.getTipoIdentificacion())) {
+            ResultadoProductoDto resultadoProducto = claudeVisionService.identificarProductoGenerico(
+                    solicitud.getImagenBase64(), solicitud.getFormatoImagen());
+            respuesta.setResultadoProducto(resultadoProducto);
+            respuesta.setReconocido(resultadoProducto.getReconocido());
+
+            // Validar producto contra bases de datos externas (MCP)
+            if (Boolean.TRUE.equals(resultadoProducto.getReconocido())) {
+                ValidacionProductoExternoDto validacion = validacionExternaService.validarProducto(
+                        resultadoProducto.getNombre(),
+                        resultadoProducto.getMarca(),
+                        resultadoProducto.getCategoriaSugerida(),
+                        resultadoProducto.getInformacionAdicional()
+                );
+                respuesta.setValidacionExterna(validacion);
+            }
+
+        } else if ("BOTELLA".equalsIgnoreCase(solicitud.getTipoIdentificacion())) {
             ResultadoBotellaDto resultadoBotella = claudeVisionService.identificarBotella(
                     solicitud.getImagenBase64(), solicitud.getFormatoImagen());
             respuesta.setResultadoBotella(resultadoBotella);
             respuesta.setReconocido(resultadoBotella.getReconocido());
+
+            // Validar botella contra bases de datos externas (MCP)
+            if (Boolean.TRUE.equals(resultadoBotella.getReconocido())) {
+                ValidacionProductoExternoDto validacion = validacionExternaService.validarProducto(
+                        resultadoBotella.getNombre(),
+                        resultadoBotella.getMarca(),
+                        resultadoBotella.getTipo(),
+                        resultadoBotella.getPresentacion()
+                );
+                respuesta.setValidacionExterna(validacion);
+            }
+
         } else if ("FACTURA".equalsIgnoreCase(solicitud.getTipoIdentificacion())) {
             ResultadoFacturaDto resultadoFactura = claudeVisionService.extraerFactura(
                     solicitud.getImagenBase64(), solicitud.getFormatoImagen());
             respuesta.setResultadoFactura(resultadoFactura);
             respuesta.setReconocido(resultadoFactura.getNumeroFactura() != null);
+            // No se valida contra MCP para facturas
         }
     }
 }

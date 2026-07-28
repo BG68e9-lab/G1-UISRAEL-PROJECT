@@ -1,5 +1,7 @@
 package com.uisrael.drinkhouse.presentacion.dto.request;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +22,13 @@ public class DetalleOrdenCompraRequestDto {
     @DecimalMin(value = "0", inclusive = false, message = "El precio unitario debe ser mayor que 0")
     private Double precioUnitario;
 
+    /**
+     * Fecha de vencimiento del lote que se creará al recibir la orden.
+     * Obligatoria para control de inventario.
+     */
+    @NotNull(message = "La fecha de vencimiento es obligatoria")
+    private LocalDate fechaVencimiento;
+
     public DetalleOrdenCompraRequestDto() {}
 
     public Long getProductoId() { return productoId; }
@@ -30,4 +39,7 @@ public class DetalleOrdenCompraRequestDto {
 
     public Double getPrecioUnitario() { return precioUnitario; }
     public void setPrecioUnitario(Double precioUnitario) { this.precioUnitario = precioUnitario; }
+
+    public LocalDate getFechaVencimiento() { return fechaVencimiento; }
+    public void setFechaVencimiento(LocalDate fechaVencimiento) { this.fechaVencimiento = fechaVencimiento; }
 }

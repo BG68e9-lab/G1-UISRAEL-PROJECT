@@ -1,6 +1,7 @@
 package com.uisrael.drinkhouse.infraestructura.configuracion;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -358,10 +359,10 @@ public class DrinkHouseConfig {
 			IDetalleOrdenCompraRepositorio detalleRepositorio, IProductoRepositorio productoRepositorio,
 			ILoteProductoRepositorio loteRepositorio, ISecuenciaCodigoUseCase secuenciaUseCase,
 			ILogAuditoriaUseCase logAuditoriaUseCase, ITipoMovimientoRepositorio tipoMovimientoRepositorio,
-			INegocioRepositorio negocioRepositorio) {
+			INegocioRepositorio negocioRepositorio, IMovimientoInventarioUseCase movimientoInventarioUseCase) {
 		return new OrdenCompraUseCaseImpl(ordenCompraRepositorio, detalleRepositorio, productoRepositorio,
 				loteRepositorio, secuenciaUseCase, logAuditoriaUseCase, tipoMovimientoRepositorio,
-				negocioRepositorio);
+				negocioRepositorio, movimientoInventarioUseCase);
 	}
 
 	// ==================== DETALLE ORDEN COMPRA ====================
@@ -380,5 +381,11 @@ public class DrinkHouseConfig {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		return mapper;
+	}
+
+	// ==================== REST TEMPLATE ====================
+	@Bean
+	RestTemplate restTemplate() {
+		return new RestTemplate();
 	}
 }

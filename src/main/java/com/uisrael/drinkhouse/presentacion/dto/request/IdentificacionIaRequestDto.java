@@ -23,8 +23,11 @@ public class IdentificacionIaRequestDto {
     /** Formato de la imagen: JPEG, PNG o WEBP */
     private String formatoImagen;
 
-    /** ID del producto a identificar */
-    @NotNull(message = "El productoId es obligatorio")
+    /** 
+     * ID del producto a identificar (OPCIONAL)
+     * - null: Identificación de un producto NUEVO (caso más común)
+     * - valor: Asociar identificación a un producto existente (para historial)
+     */
     private Long productoId;
 
     /** ID del negocio que realiza la identificación */
@@ -32,9 +35,11 @@ public class IdentificacionIaRequestDto {
     private Integer negocioId;
 
     /**
-     * Tipo de identificación a realizar: "BOTELLA" para identificar una botella
-     * de bebida alcohólica, o "FACTURA" para extraer datos de una factura de compra.
+     * Tipo de identificación a realizar:
+     * - "PRODUCTO": Identificación genérica para cualquier producto (bebidas, snacks, alimentos, etc.)
+     * - "BOTELLA": Identificación específica para bebidas (incluye graduación alcohólica)
+     * - "FACTURA": Extracción de datos de facturas de compra
      */
-    @NotBlank(message = "El tipoIdentificacion es obligatorio (BOTELLA o FACTURA)")
+    @NotBlank(message = "El tipoIdentificacion es obligatorio (PRODUCTO, BOTELLA o FACTURA)")
     private String tipoIdentificacion;
 }

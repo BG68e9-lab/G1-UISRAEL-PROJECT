@@ -38,4 +38,8 @@ public class ProductoRequestDto {
 	private Integer stockMinimo;
 
 	private Boolean visibleSinStock;
+
+	private Integer negocioId;
+
+	private String origenIdentificacion;
 }

@@ -12,6 +12,8 @@ public interface IUsuarioRepositorio {
 
 	Optional<Usuario> buscarPorId(UUID id);
 
+	Optional<Usuario> buscarPorEmail(String email);
+
 	List<Usuario> listarConFiltro(String estadoCuenta);
 
 	boolean existePorEmail(String email);

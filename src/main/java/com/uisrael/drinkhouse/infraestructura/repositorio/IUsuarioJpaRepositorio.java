@@ -11,5 +11,7 @@ public interface IUsuarioJpaRepositorio extends JpaRepository<UsuarioEntity, UUI
 
 	boolean existsByEmail(String email);
 
+	java.util.Optional<UsuarioEntity> findByEmail(String email);
+
 	List<UsuarioEntity> findByEstadoCuenta(String estadoCuenta);
 }

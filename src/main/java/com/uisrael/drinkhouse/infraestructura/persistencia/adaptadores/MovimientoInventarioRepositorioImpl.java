@@ -85,4 +85,39 @@ public class MovimientoInventarioRepositorioImpl implements IMovimientoInventari
 		return jpaRepositorio.buscarConFiltros(productoId, tipo, desde, hasta)
 				.stream().map(mapper::toDomain).toList();
 	}
+
+	/**
+	 * Lista todos los movimientos ordenados por fecha descendente.
+	 */
+	@Override
+	public List<MovimientoInventario> listarTodos() {
+		return jpaRepositorio.findAllOrderByCreadoEnDesc()
+				.stream().map(mapper::toDomain).toList();
+	}
+
+	/**
+	 * Busca movimientos por tipo de movimiento.
+	 */
+	@Override
+	public List<MovimientoInventario> buscarPorTipo(String codigoTipo) {
+		return jpaRepositorio.findByTipoMovimiento(codigoTipo)
+				.stream().map(mapper::toDomain).toList();
+	}
+
+	/**
+	 * Busca movimientos por lote.
+	 */
+	@Override
+	public List<MovimientoInventario> buscarPorLote(Long loteId) {
+		return jpaRepositorio.findByLote(loteId)
+				.stream().map(mapper::toDomain).toList();
+	}
+
+	/**
+	 * Busca un movimiento por su ID.
+	 */
+	@Override
+	public java.util.Optional<MovimientoInventario> buscarPorId(Long id) {
+		return jpaRepositorio.findById(id).map(mapper::toDomain);
+	}
 }

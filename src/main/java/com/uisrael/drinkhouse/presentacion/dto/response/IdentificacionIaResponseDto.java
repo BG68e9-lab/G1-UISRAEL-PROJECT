@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 /**
  * DTO de respuesta para una identificación de producto mediante IA.
  * Incluye los campos sugeridos por Claude y el resultado estructurado
- * según el tipo de identificación (BOTELLA o FACTURA).
+ * según el tipo de identificación (PRODUCTO, BOTELLA o FACTURA).
  */
 @Data
 @NoArgsConstructor
@@ -39,8 +39,11 @@ public class IdentificacionIaResponseDto {
     /** Indica si el producto fue reconocido por la IA */
     private Boolean reconocido;
 
-    /** Tipo de identificación realizada: BOTELLA o FACTURA */
+    /** Tipo de identificación realizada: PRODUCTO, BOTELLA o FACTURA */
     private String tipoIdentificacion;
+
+    /** Resultado estructurado cuando el tipo es PRODUCTO (genérico) */
+    private ResultadoProductoDto resultadoProducto;
 
     /** Resultado estructurado cuando el tipo es BOTELLA */
     private ResultadoBotellaDto resultadoBotella;
@@ -50,6 +53,9 @@ public class IdentificacionIaResponseDto {
 
     /** ID del producto identificado */
     private Long productoId;
+
+    /** Resultado de la validación externa contra bases de datos de mercado */
+    private ValidacionProductoExternoDto validacionExterna;
 
     /** Fecha y hora de creación */
     private OffsetDateTime creadoEn;

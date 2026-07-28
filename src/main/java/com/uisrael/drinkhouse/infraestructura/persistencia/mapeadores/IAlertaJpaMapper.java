@@ -12,7 +12,18 @@ public interface IAlertaJpaMapper {
 	@Mapping(source = "fkNegocioEntity.negocioId", target = "negocioId")
 	Alerta toDomain(AlertaEntity entity);
 
-	@Mapping(target = "fkNegocioEntity", ignore = true)
+	@Mapping(target = "fkNegocioEntity", expression = "java(createNegocioEntity(domain.getNegocioId()))")
 	@Mapping(target = "creadoEn", ignore = true)
 	AlertaEntity toEntity(Alerta domain);
+
+	/**
+	 * Crea una referencia a NegocioEntity con solo el ID para evitar null en FK.
+	 */
+	default com.uisrael.drinkhouse.infraestructura.persistencia.jpa.NegocioEntity createNegocioEntity(Integer negocioId) {
+		if (negocioId == null) return null;
+		com.uisrael.drinkhouse.infraestructura.persistencia.jpa.NegocioEntity entity = 
+			new com.uisrael.drinkhouse.infraestructura.persistencia.jpa.NegocioEntity();
+		entity.setNegocioId(negocioId);
+		return entity;
+	}
 }
