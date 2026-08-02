@@ -17,6 +17,8 @@ public class Producto {
 	private Integer stockMinimo;
 	private Boolean visibleSinStock;
 	private String origenIdentificacion;
+	// Producto exento de IVA (ej: algunos alimentos basicos). Por defecto false.
+	private Boolean ivaExento;
 
 	public Producto() {
 	}
@@ -141,5 +143,13 @@ public class Producto {
 
 	public void setOrigenIdentificacion(String origenIdentificacion) {
 		this.origenIdentificacion = origenIdentificacion;
+	}
+
+	public Boolean getIvaExento() {
+		return ivaExento;
+	}
+
+	public void setIvaExento(Boolean ivaExento) {
+		this.ivaExento = ivaExento;
 	}
 }

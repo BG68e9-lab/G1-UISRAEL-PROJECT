@@ -17,7 +17,32 @@ public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUse
 
 	@Override
 	public MovimientoInventario guardar(MovimientoInventario movimientoInventario) {
+		validarCantidad(movimientoInventario.getTipo(), movimientoInventario.getCantidad());
 		return repositorio.guardar(movimientoInventario);
+	}
+
+	@Override
+	public MovimientoInventario actualizar(Long id, MovimientoInventario movimientoInventario) {
+		validarCantidad(movimientoInventario.getTipo(), movimientoInventario.getCantidad());
+		return repositorio.actualizar(id, movimientoInventario);
+	}
+
+	/**
+	 * ENTRADA/SALIDA representan cantidades fisicas que entran o salen, siempre
+	 * positivas. AJUSTE puede ser positivo (se encontro mas stock) o negativo
+	 * (merma, dano, vencimiento), pero nunca cero.
+	 */
+	private void validarCantidad(String tipo, Integer cantidad) {
+		if (cantidad == null) {
+			throw new IllegalArgumentException("La cantidad es obligatoria");
+		}
+		if (cantidad == 0) {
+			throw new IllegalArgumentException("La cantidad no puede ser cero");
+		}
+		boolean requierePositiva = "ENTRADA".equalsIgnoreCase(tipo) || "SALIDA".equalsIgnoreCase(tipo);
+		if (requierePositiva && cantidad <= 0) {
+			throw new IllegalArgumentException("La cantidad debe ser mayor a cero para movimientos de tipo " + tipo);
+		}
 	}
 
 	@Override

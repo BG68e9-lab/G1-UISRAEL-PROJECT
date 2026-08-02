@@ -22,6 +22,7 @@ public class ProductoResponseDto {
 	private Boolean visibleSinStock;
 	private String origenIdentificacion;
 	private Boolean activo;
+	private Boolean ivaExento;
 	private OffsetDateTime creadoEn;
 	private OffsetDateTime actualizadoEn;
 }

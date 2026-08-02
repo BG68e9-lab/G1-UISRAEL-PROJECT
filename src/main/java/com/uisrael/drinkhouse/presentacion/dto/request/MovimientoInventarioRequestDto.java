@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
@@ -18,8 +17,12 @@ public class MovimientoInventarioRequestDto {
 
 	private Long loteId;
 
+	/**
+	 * Para ENTRADA/SALIDA debe ser positiva; para AJUSTE puede ser positiva o
+	 * negativa (pero no cero). Esto se valida en el caso de uso, no aqui,
+	 * porque depende del valor de "tipo".
+	 */
 	@NotNull
-	@Positive
 	private Integer cantidad;
 
 	private BigDecimal precioUnitario;

@@ -45,6 +45,14 @@
 			<artifactId>jakarta.validation-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		<!-- Implementacion real de Bean Validation. Sin esto, @Valid/@NotNull/@NotBlank/
+			@Pattern en los DTOs NO se ejecutan (solo existen las anotaciones, sin
+			validador que las procese), y datos invalidos/incompletos llegan hasta
+			Hibernate en vez de devolver un 400 claro. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -73,6 +81,14 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-crypto</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

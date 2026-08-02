@@ -16,4 +16,8 @@ public interface IUsuarioRepositorio {
 	
 	void eliminar(UUID idUsuario);
 
+	Optional<Usuario> buscarPorEmail(String email);
+
+	void actualizarPasswordHash(UUID idUsuario, String nuevoPasswordHash);
+
 }

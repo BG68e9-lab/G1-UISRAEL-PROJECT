@@ -74,6 +74,12 @@ public class ProductoEntity {
 	@Column(name = "activo", nullable = false)
 	private Boolean activo;
 
+	// columnDefinition con DEFAULT explicito: asi el ALTER TABLE que genera
+	// Hibernate (ddl-auto=update) para agregar esta columna nueva no falla
+	// sobre las filas de productos que ya existen en la base de datos.
+	@Column(name = "iva_exento", nullable = false, columnDefinition = "boolean not null default false")
+	private Boolean ivaExento = false;
+
 	@Column(name = "creado_en", nullable = false, updatable = false)
 	private OffsetDateTime creadoEn;
 

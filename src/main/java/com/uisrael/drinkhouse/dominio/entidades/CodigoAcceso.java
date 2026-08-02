@@ -6,6 +6,7 @@ import java.util.UUID;
 public class CodigoAcceso {
 
 	private UUID codigoAccesoId;
+	private UUID usuarioId;
 	private String tipoCodigo;
 	private String codigoHash;
 	private OffsetDateTime expiraEn;
@@ -33,6 +34,14 @@ public class CodigoAcceso {
 
 	public void setCodigoAccesoId(UUID codigoAccesoId) {
 		this.codigoAccesoId = codigoAccesoId;
+	}
+
+	public UUID getUsuarioId() {
+		return usuarioId;
+	}
+
+	public void setUsuarioId(UUID usuarioId) {
+		this.usuarioId = usuarioId;
 	}
 
 	public String getTipoCodigo() {
