@@ -78,6 +78,47 @@ public class MovimientoInventarioRepositorioImpl implements IMovimientoInventari
 	}
 
 	@Override
+	public MovimientoInventario actualizar(Long id, MovimientoInventario datosActualizados) {
+		MovimientoInventarioEntity entity = jpaRepositorio.findById(id)
+				.orElseThrow(() -> new NoSuchElementException("Movimiento de inventario no encontrado: " + id));
+
+		if (datosActualizados.getTipo() != null) {
+			TipoMovimientoEntity tipo = tipoMovimientoJpaRepositorio.findByCodigo(datosActualizados.getTipo())
+					.orElseThrow(() -> new IllegalArgumentException(
+							"Tipo de movimiento invalido: '" + datosActualizados.getTipo() + "'"));
+			entity.setFkTipoMovimientoEntity(tipo);
+		}
+
+		if (datosActualizados.getProductoId() != null) {
+			ProductoEntity producto = productoJpaRepositorio.findById(datosActualizados.getProductoId())
+					.orElseThrow(() -> new IllegalArgumentException(
+							"El producto indicado no existe: " + datosActualizados.getProductoId()));
+			entity.setFkProductoEntity(producto);
+			entity.setFkNegocioEntity(producto.getFkNegocioEntity());
+		}
+
+		if (datosActualizados.getLoteId() != null) {
+			LoteProductoEntity lote = loteProductoJpaRepositorio.findById(datosActualizados.getLoteId())
+					.orElseThrow(() -> new IllegalArgumentException(
+							"El lote indicado no existe: " + datosActualizados.getLoteId()));
+			entity.setFkLoteEntity(lote);
+		}
+
+		if (datosActualizados.getCantidad() != null) {
+			entity.setCantidad(BigDecimal.valueOf(datosActualizados.getCantidad()));
+		}
+		if (datosActualizados.getPrecioUnitario() != null) {
+			entity.setPrecioUnitario(datosActualizados.getPrecioUnitario());
+		}
+		if (datosActualizados.getDescripcion() != null) {
+			entity.setDescripcion(datosActualizados.getDescripcion());
+		}
+
+		MovimientoInventarioEntity guardado = jpaRepositorio.save(entity);
+		return toDomain(guardado);
+	}
+
+	@Override
 	public Optional<MovimientoInventario> buscarPorId(Long id) {
 		return jpaRepositorio.findById(id).map(this::toDomain);
 	}

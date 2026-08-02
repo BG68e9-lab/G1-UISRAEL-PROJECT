@@ -16,4 +16,6 @@ public interface ICodigoAccesoRepositorio {
 	
 	void eliminar(UUID idCodigoAcceso);
 
+	List<CodigoAcceso> buscarVigentesPorUsuarioYTipo(UUID idUsuario, String tipoCodigo);
+
 }

@@ -8,6 +8,8 @@ public interface IMovimientoInventarioUseCase {
 
 	MovimientoInventario guardar(MovimientoInventario movimientoInventario);
 
+	MovimientoInventario actualizar(Long id, MovimientoInventario movimientoInventario);
+
 	MovimientoInventario buscarPorId(Long id);
 
 	List<MovimientoInventario> listarTodo(String tipo);

@@ -16,6 +16,10 @@ public class Usuario {
 	private OffsetDateTime activadoEn;
 	private OffsetDateTime creadoEn;
 	private OffsetDateTime actualizadoEn;
+	// Poblados solo en lecturas (ver UsuarioRepositorioImpl); no participan en guardar().
+	private Integer negocioId;
+	private Integer rolId;
+	private String rolNombre;
 
 	public Usuario() {
 	}
@@ -122,5 +126,29 @@ public class Usuario {
 
 	public void setActualizadoEn(OffsetDateTime actualizadoEn) {
 		this.actualizadoEn = actualizadoEn;
+	}
+
+	public Integer getNegocioId() {
+		return negocioId;
+	}
+
+	public void setNegocioId(Integer negocioId) {
+		this.negocioId = negocioId;
+	}
+
+	public Integer getRolId() {
+		return rolId;
+	}
+
+	public void setRolId(Integer rolId) {
+		this.rolId = rolId;
+	}
+
+	public String getRolNombre() {
+		return rolNombre;
+	}
+
+	public void setRolNombre(String rolNombre) {
+		this.rolNombre = rolNombre;
 	}
 }

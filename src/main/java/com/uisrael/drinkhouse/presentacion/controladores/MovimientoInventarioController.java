@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,6 +64,12 @@ public class MovimientoInventarioController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public MovimientoInventarioResponseDto guardar(@Valid @RequestBody MovimientoInventarioRequestDto requestDto) {
 		return mapper.toResponseDto(movimientoUseCase.guardar(mapper.toDomain(requestDto)));
+	}
+
+	@PutMapping("/{id}")
+	public MovimientoInventarioResponseDto actualizar(@PathVariable Long id,
+			@Valid @RequestBody MovimientoInventarioRequestDto requestDto) {
+		return mapper.toResponseDto(movimientoUseCase.actualizar(id, mapper.toDomain(requestDto)));
 	}
 
 	@DeleteMapping("/{id}")

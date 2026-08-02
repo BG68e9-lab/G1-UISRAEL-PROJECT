@@ -1,7 +1,11 @@
 package com.uisrael.drinkhouse.infraestructura.configuracion;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ICategoriaUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ICodigoAccesoUseCase;
@@ -28,12 +32,24 @@ import com.uisrael.drinkhouse.aplicacion.casosuso.impl.LoteProductoUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.MovimientoInventarioUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.NegocioUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.OrdenCompraUseCaseImpl;
+import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ITasaIvaUseCase;
+import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IProductoIceUseCase;
+import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IProductoPrecioHistoricoUseCase;
+import com.uisrael.drinkhouse.aplicacion.casosuso.impl.TasaIvaUseCaseImpl;
+import com.uisrael.drinkhouse.aplicacion.casosuso.impl.ProductoIceUseCaseImpl;
+import com.uisrael.drinkhouse.aplicacion.casosuso.impl.ProductoPrecioHistoricoUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.ProductoUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.ProveedorUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.RolUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.SecuenciaCodigoUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.TipoMovimientoUseCaseImpl;
+import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IAutenticacionUseCase;
+import com.uisrael.drinkhouse.aplicacion.casosuso.impl.AutenticacionUseCaseImpl;
+import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IRecuperacionCuentaUseCase;
+import com.uisrael.drinkhouse.aplicacion.casosuso.impl.RecuperacionCuentaUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.UsuarioUseCaseImpl;
+import com.uisrael.drinkhouse.dominio.notificaciones.INotificacionUsuarioService;
+import com.uisrael.drinkhouse.infraestructura.notificaciones.EmailNotificacionUsuarioServiceImpl;
 import com.uisrael.drinkhouse.dominio.repositorios.ICategoriaRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ICodigoAccesoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IEstadoOcRepositorio;
@@ -45,6 +61,9 @@ import com.uisrael.drinkhouse.dominio.repositorios.IMovimientoInventarioReposito
 import com.uisrael.drinkhouse.dominio.repositorios.INegocioRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IOrdenCompraRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IProductoRepositorio;
+import com.uisrael.drinkhouse.dominio.repositorios.ITasaIvaRepositorio;
+import com.uisrael.drinkhouse.dominio.repositorios.IProductoIceRepositorio;
+import com.uisrael.drinkhouse.dominio.repositorios.IProductoPrecioHistoricoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IProveedorRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IRolRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ISecuenciaCodigoRepositorio;
@@ -60,6 +79,9 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.Movimient
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.NegocioRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.OrdenCompraRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.ProductoRepositorioImpl;
+import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.TasaIvaRepositorioImpl;
+import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.ProductoIceRepositorioImpl;
+import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.ProductoPrecioHistoricoRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.ProveedorRepositoriImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.RolRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.SecuenciaCodigoRepositorioImpl;
@@ -88,6 +110,9 @@ import com.uisrael.drinkhouse.infraestructura.repositorio.IMovimientoInventarioJ
 import com.uisrael.drinkhouse.infraestructura.repositorio.INegocioJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IOrdenCompraJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IProductoJpaRepositorio;
+import com.uisrael.drinkhouse.infraestructura.repositorio.ITasaIvaJpaRepositorio;
+import com.uisrael.drinkhouse.infraestructura.repositorio.IProductoIceJpaRepositorio;
+import com.uisrael.drinkhouse.infraestructura.repositorio.IProductoPrecioHistoricoJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IProveedorJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IRolJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.ISecuenciaCodigoJpaRepositorio;
@@ -104,8 +129,44 @@ public class DrinkHouseConfig {
 	}
 
 	@Bean
-	IProductoUseCase productoUseCase(IProductoRepositorio repoUseCase) {
-		return new ProductoUseCaseImpl(repoUseCase);
+	IProductoUseCase productoUseCase(IProductoRepositorio repoUseCase, ITasaIvaUseCase tasaIvaUseCase,
+			IProductoIceUseCase productoIceUseCase, IProductoPrecioHistoricoUseCase precioHistoricoUseCase) {
+		return new ProductoUseCaseImpl(repoUseCase, tasaIvaUseCase, productoIceUseCase, precioHistoricoUseCase);
+	}
+
+	// ==================== TASA IVA (global, con historico) ====================
+	@Bean
+	ITasaIvaRepositorio tasaIvaRepositorio(ITasaIvaJpaRepositorio jpaRepositorio) {
+		return new TasaIvaRepositorioImpl(jpaRepositorio);
+	}
+
+	@Bean
+	ITasaIvaUseCase tasaIvaUseCase(ITasaIvaRepositorio repoUseCase) {
+		return new TasaIvaUseCaseImpl(repoUseCase);
+	}
+
+	// ==================== ICE POR PRODUCTO (con historico) ====================
+	@Bean
+	IProductoIceRepositorio productoIceRepositorio(IProductoIceJpaRepositorio jpaRepositorio,
+			IProductoJpaRepositorio productoJpaRepositorio) {
+		return new ProductoIceRepositorioImpl(jpaRepositorio, productoJpaRepositorio);
+	}
+
+	@Bean
+	IProductoIceUseCase productoIceUseCase(IProductoIceRepositorio repoUseCase) {
+		return new ProductoIceUseCaseImpl(repoUseCase);
+	}
+
+	// ==================== HISTORICO DE PRECIOS DE PRODUCTO ====================
+	@Bean
+	IProductoPrecioHistoricoRepositorio productoPrecioHistoricoRepositorio(
+			IProductoPrecioHistoricoJpaRepositorio jpaRepositorio, IProductoJpaRepositorio productoJpaRepositorio) {
+		return new ProductoPrecioHistoricoRepositorioImpl(jpaRepositorio, productoJpaRepositorio);
+	}
+
+	@Bean
+	IProductoPrecioHistoricoUseCase productoPrecioHistoricoUseCase(IProductoPrecioHistoricoRepositorio repoUseCase) {
+		return new ProductoPrecioHistoricoUseCaseImpl(repoUseCase);
 	}
 
 	// ==================== PROVEEDOR ====================
@@ -227,13 +288,40 @@ public class DrinkHouseConfig {
 	
 	// ==================== CODIGO ACCESO ====================
 	@Bean
-	ICodigoAccesoRepositorio codigoAccesoRepositorio(ICodigoAccesoJpaRepositorio jpaRepositorio, ICodigoAccesoJpaMapper mapper) {
-		return new CodigoAccesoRepositorioImpl(jpaRepositorio, mapper);
+	ICodigoAccesoRepositorio codigoAccesoRepositorio(ICodigoAccesoJpaRepositorio jpaRepositorio, ICodigoAccesoJpaMapper mapper,
+			IUsuarioJpaRepositorio usuarioJpaRepositorio) {
+		return new CodigoAccesoRepositorioImpl(jpaRepositorio, mapper, usuarioJpaRepositorio);
 	}
-	
+
 	@Bean
 	ICodigoAccesoUseCase codigoAccesoUseCase(ICodigoAccesoRepositorio repoUseCase) {
 		return new CodigoAccesoUseCaseImpl(repoUseCase);
+	}
+
+	// ==================== RECUPERACION DE CUENTA ====================
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	INotificacionUsuarioService notificacionUsuarioService(JavaMailSender mailSender,
+			@Value("${app.mail.from:no-reply@drinkhouse.com}") String remitente) {
+		return new EmailNotificacionUsuarioServiceImpl(mailSender, remitente);
+	}
+
+	@Bean
+	IRecuperacionCuentaUseCase recuperacionCuentaUseCase(IUsuarioRepositorio usuarioRepositorio,
+			ICodigoAccesoRepositorio codigoAccesoRepositorio, INotificacionUsuarioService notificacionUsuarioService,
+			PasswordEncoder passwordEncoder,
+			@Value("${app.recuperacion.codigo-expiracion-minutos:15}") int minutosExpiracionCodigo) {
+		return new RecuperacionCuentaUseCaseImpl(usuarioRepositorio, codigoAccesoRepositorio,
+				notificacionUsuarioService, passwordEncoder, minutosExpiracionCodigo);
+	}
+
+	@Bean
+	IAutenticacionUseCase autenticacionUseCase(IUsuarioRepositorio usuarioRepositorio, PasswordEncoder passwordEncoder) {
+		return new AutenticacionUseCaseImpl(usuarioRepositorio, passwordEncoder);
 	}
 	
 	// ==================== LOG AUDITORIA ====================
