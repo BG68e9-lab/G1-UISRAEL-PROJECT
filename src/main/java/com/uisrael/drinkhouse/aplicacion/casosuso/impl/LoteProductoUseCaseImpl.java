@@ -55,32 +55,26 @@ public class LoteProductoUseCaseImpl implements ILoteProductoUseCase {
 	@Override
 	@Transactional
 	public LoteProducto crearLote(LoteProducto lote, Long productoId) {
-		// Validar cantidadInicial > 0 (Requisito 5.5)
 		if (lote.getCantidadInicial() == null
 				|| lote.getCantidadInicial().compareTo(BigDecimal.ZERO) <= 0) {
 			throw new ReglaNegocioException(
 					"La cantidadInicial debe ser mayor a cero");
 		}
 
-		// Verificar que el producto existe (Requisito 5.6)
 		productoRepositorio.buscarPorId(productoId)
 				.orElseThrow(() -> new RecursoNoEncontradoException(
 						"Producto no encontrado con id: " + productoId));
 
-		// Asignar cantidadDisponible = cantidadInicial (Requisito 5.1)
 		lote.setCantidadDisponible(lote.getCantidadInicial());
 
-		// Registrar fechaIngreso con la fecha-hora actual (Requisito 5.1)
 		lote.setFechaIngreso(OffsetDateTime.now());
 
-		// Generar código de entrada único (Requisito 5.1, 15.4)
 		TipoMovimiento tipoLote = tipoMovimientoRepositorio.buscarPorCodigo("LOTE")
 				.orElseThrow(() -> new RecursoNoEncontradoException("Tipo de movimiento LOTE no configurado"));
 		Long secuencia = secuenciaCodigoUseCase.siguiente(lote.getNegocioId(), tipoLote.getTipoMovimientoId());
 		String codigoEntrada = "LOTE-" + String.format("%08d", secuencia);
 		lote.setCodigoEntrada(codigoEntrada);
 
-		// Persistir el lote asociado al producto
 		return repositorio.guardarConProductoId(lote, productoId);
 	}
 

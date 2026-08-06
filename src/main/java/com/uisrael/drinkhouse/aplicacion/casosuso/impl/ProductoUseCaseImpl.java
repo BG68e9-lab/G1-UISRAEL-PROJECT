@@ -23,17 +23,18 @@ public class ProductoUseCaseImpl implements IProductoUseCase {
 
 	@Override
 	public Producto crearProducto(Producto producto) {
+		System.out.println("=== USE CASE (ANTES): producto.tipoProductoId = " + producto.getTipoProductoId());
 		validarCostoPromedio(producto);
 		if (repositorio.existePorNombre(producto.getNombre())) {
 			throw new ConflictoUnicoException("Ya existe un producto con nombre: " + producto.getNombre());
 		}
-		// Defaults para campos obligatorios al crear un producto nuevo
 		producto.setActivo(true);
 		if (producto.getStockActual() == null)      producto.setStockActual(0);
 		if (producto.getStockMinimo() == null)      producto.setStockMinimo(0);
 		if (producto.getVisibleSinStock() == null)  producto.setVisibleSinStock(false);
 		if (producto.getPrecioPersonalizado() == null) producto.setPrecioPersonalizado(false);
 		calcularPrecioVenta(producto);
+		System.out.println("=== USE CASE (DESPUES): producto.tipoProductoId = " + producto.getTipoProductoId());
 		Producto guardado = repositorio.guardar(producto);
 		logAuditoriaUseCase.registrar("Producto", guardado.getProductoId().toString(), "CREAR", guardado);
 		return guardado;
@@ -45,7 +46,6 @@ public class ProductoUseCaseImpl implements IProductoUseCase {
 				.orElseThrow(() -> new RecursoNoEncontradoException("Producto no encontrado con id: " + id));
 		validarCostoPromedio(producto);
 		producto.setProductoId(id);
-		// Preservar campos que no vienen en el request de actualización
 		if (producto.getActivo() == null)
 			producto.setActivo(existente.getActivo() != null ? existente.getActivo() : true);
 		if (producto.getCategoriaId() == null)
@@ -76,8 +76,8 @@ public class ProductoUseCaseImpl implements IProductoUseCase {
 	}
 
 	@Override
-	public List<Producto> buscarConFiltros(String nombre, String marca, String tipo, Long categoriaId) {
-		return repositorio.buscarConFiltros(nombre, marca, tipo, categoriaId);
+	public List<Producto> buscarConFiltros(String nombre, String marca, Long tipoProductoId, Long categoriaId) {
+		return repositorio.buscarConFiltros(nombre, marca, tipoProductoId, categoriaId);
 	}
 
 	@Override
@@ -88,7 +88,6 @@ public class ProductoUseCaseImpl implements IProductoUseCase {
 		logAuditoriaUseCase.registrar("Producto", id.toString(), "ELIMINAR", null);
 	}
 
-	// --- Lógica de precio ---
 	public void calcularPrecioVenta(Producto producto) {
 		if (!Boolean.TRUE.equals(producto.getPrecioPersonalizado())) {
 			BigDecimal factor = BigDecimal.ONE.add(

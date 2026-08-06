@@ -26,11 +26,9 @@ public class SecuenciaCodigoUseCaseImpl implements ISecuenciaCodigoUseCase {
 		int intentos = 0;
 		while (intentos < 3) {
 			try {
-				// Buscar la secuencia, si no existe, crearla automáticamente
 				SecuenciaCodigo seq = repositorio
 						.buscarPorNegocioYTipo(negocioId, tipoMovimientoId)
 						.orElseGet(() -> {
-							// Crear la secuencia automáticamente si no existe
 							SecuenciaCodigo nueva = new SecuenciaCodigo(negocioId, tipoMovimientoId, 0L);
 							return repositorio.guardar(nueva);
 						});
@@ -70,7 +68,6 @@ public class SecuenciaCodigoUseCaseImpl implements ISecuenciaCodigoUseCase {
 	@Override
 	@Transactional
 	public SecuenciaCodigo crear(SecuenciaCodigo secuencia) {
-		// Validar que no exista ya
 		if (repositorio.buscarPorNegocioYTipo(
 				secuencia.getNegocioId(), 
 				secuencia.getTipoMovimientoId()).isPresent()) {
@@ -79,7 +76,6 @@ public class SecuenciaCodigoUseCaseImpl implements ISecuenciaCodigoUseCase {
 							+ " tipo=" + secuencia.getTipoMovimientoId());
 		}
 
-		// Asegurar que empiece desde 0 o el valor especificado
 		if (secuencia.getUltimoNumero() == null) {
 			secuencia.setUltimoNumero(0L);
 		}
@@ -111,20 +107,12 @@ public class SecuenciaCodigoUseCaseImpl implements ISecuenciaCodigoUseCase {
 	@Override
 	@Transactional
 	public int inicializarSecuenciasParaTodosLosNegocios() {
-		// Obtener todos los negocios activos y todos los tipos de movimiento
 		List<SecuenciaCodigo> secuenciasExistentes = repositorio.listarTodas();
-		
-		// Por cada negocio activo, crear secuencias para todos los tipos de movimiento si no existen
-		// Como no tenemos acceso directo a los repositorios de Negocio y TipoMovimiento aquí,
-		// intentamos crear las secuencias de los IDs típicos (1-4 para tipos, 1-N para negocios)
 		int contadorCreadas = 0;
 		
-		// Intentar crear secuencias para negocio 1 y tipos de movimiento 1-4
-		// (estos deberían existir según data.sql)
 		for (int negocioId = 1; negocioId <= 5; negocioId++) {
 			for (int tipoId = 1; tipoId <= 4; tipoId++) {
 				try {
-					// Verificar si ya existe
 					final int negocioIdFinal = negocioId;
 					final int tipoIdFinal = tipoId;
 					
@@ -138,7 +126,6 @@ public class SecuenciaCodigoUseCaseImpl implements ISecuenciaCodigoUseCase {
 						contadorCreadas++;
 					}
 				} catch (Exception e) {
-					// Si falla (negocio o tipo no existe), continuar con el siguiente
 				}
 			}
 		}

@@ -88,7 +88,6 @@ public interface ISecuenciaCodigoUseCase {
 	 * No usar en producción.
 	 */
 	default Long siguiente(String tipo) {
-		// Para tests legacy que no tienen contexto de negocio/tipo
 		return siguiente(1, 1);
 	}
 }

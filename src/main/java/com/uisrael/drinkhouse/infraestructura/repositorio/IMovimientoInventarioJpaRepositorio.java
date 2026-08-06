@@ -40,4 +40,10 @@ public interface IMovimientoInventarioJpaRepositorio extends JpaRepository<Movim
 	 */
 	@Query("SELECT m FROM MovimientoInventarioEntity m WHERE m.fkLoteEntity.loteId = :loteId ORDER BY m.creadoEn DESC")
 	List<MovimientoInventarioEntity> findByLote(@Param("loteId") Long loteId);
+
+	/**
+	 * Busca movimientos por venta ID.
+	 */
+	@Query("SELECT m FROM MovimientoInventarioEntity m WHERE m.ventaId = :ventaId")
+	List<MovimientoInventarioEntity> findByVentaId(@Param("ventaId") Long ventaId);
 }

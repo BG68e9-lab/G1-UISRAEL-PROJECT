@@ -10,4 +10,6 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.CodigoAccesoEntit
 public interface ICodigoAccesoJpaRepositorio extends JpaRepository<CodigoAccesoEntity, UUID> {
 
 	Optional<CodigoAccesoEntity> findByCodigoHash(String codigoHash);
+	
+	Optional<CodigoAccesoEntity> findTopByFkUsuarioEntityUsuarioIdAndTipoCodigoOrderByCreadoEnDesc(UUID usuarioId, String tipoCodigo);
 }

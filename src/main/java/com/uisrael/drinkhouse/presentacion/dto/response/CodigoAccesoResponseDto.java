@@ -9,6 +9,7 @@ import lombok.Data;
 public class CodigoAccesoResponseDto {
 
 	private UUID codigoAccesoId;
+	private String codigoHash;
 	private String tipoCodigo;
 	private Boolean usado;
 	private OffsetDateTime usadoEn;

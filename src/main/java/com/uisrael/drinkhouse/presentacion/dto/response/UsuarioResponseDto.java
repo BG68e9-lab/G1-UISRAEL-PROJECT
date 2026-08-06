@@ -18,5 +18,4 @@ public class UsuarioResponseDto {
 	private OffsetDateTime activadoEn;
 	private OffsetDateTime creadoEn;
 	private OffsetDateTime actualizadoEn;
-	// passwordHash nunca se expone
 }

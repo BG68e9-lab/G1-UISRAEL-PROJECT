@@ -14,9 +14,15 @@ public class ProductoSpecification {
 	private ProductoSpecification() {}
 
 	public static Specification<ProductoEntity> conFiltros(
-			String nombre, String marca, String tipo, Long categoriaId) {
+			String nombre, String marca, Long tipoProductoId, Long categoriaId) {
 
 		return (root, query, cb) -> {
+			if (query != null) {
+				query.distinct(true);
+				root.fetch("fkCategoriaEntity", jakarta.persistence.criteria.JoinType.LEFT);
+				root.fetch("fkTipoProductoEntity", jakarta.persistence.criteria.JoinType.LEFT);
+			}
+			
 			List<Predicate> predicados = new ArrayList<>();
 
 			if (nombre != null && !nombre.isBlank()) {
@@ -29,10 +35,10 @@ public class ProductoSpecification {
 						cb.lower(root.get("marca")),
 						"%" + marca.toLowerCase() + "%"));
 			}
-			if (tipo != null && !tipo.isBlank()) {
-				predicados.add(cb.like(
-						cb.lower(root.get("tipo")),
-						"%" + tipo.toLowerCase() + "%"));
+			if (tipoProductoId != null) {
+				predicados.add(cb.equal(
+						root.get("fkTipoProductoEntity").get("tipoProductoId"),
+						tipoProductoId));
 			}
 			if (categoriaId != null) {
 				predicados.add(cb.equal(
@@ -40,6 +46,10 @@ public class ProductoSpecification {
 						categoriaId));
 			}
 
+			if (predicados.isEmpty()) {
+				return cb.conjunction();
+			}
+			
 			return cb.and(predicados.toArray(new Predicate[0]));
 		};
 	}

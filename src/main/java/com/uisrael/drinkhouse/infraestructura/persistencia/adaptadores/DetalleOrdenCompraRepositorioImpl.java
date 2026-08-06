@@ -13,10 +13,16 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.ProductoEntity;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IDetalleOrdenCompraJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IDetalleOrdenCompraJpaRepositorio;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 public class DetalleOrdenCompraRepositorioImpl implements IDetalleOrdenCompraRepositorio {
 
 	private final IDetalleOrdenCompraJpaRepositorio jpaRepositorio;
 	private final IDetalleOrdenCompraJpaMapper mapper;
+	
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	public DetalleOrdenCompraRepositorioImpl(IDetalleOrdenCompraJpaRepositorio jpaRepositorio,
 			IDetalleOrdenCompraJpaMapper mapper) {
@@ -27,10 +33,8 @@ public class DetalleOrdenCompraRepositorioImpl implements IDetalleOrdenCompraRep
 	@Override
 	public DetalleOrdenCompra guardar(DetalleOrdenCompra detalle) {
 		DetalleOrdenCompraEntity entity = mapper.toEntity(detalle);
-		// Asignar la relación con el Producto por referencia de ID
 		if (detalle.getProductoId() != null) {
-			ProductoEntity productoRef = new ProductoEntity();
-			productoRef.setProductoId(detalle.getProductoId());
+			ProductoEntity productoRef = entityManager.getReference(ProductoEntity.class, detalle.getProductoId());
 			entity.setFkProductoEntity(productoRef);
 		}
 		DetalleOrdenCompraEntity guardado = jpaRepositorio.save(entity);
@@ -40,14 +44,10 @@ public class DetalleOrdenCompraRepositorioImpl implements IDetalleOrdenCompraRep
 	@Override
 	public DetalleOrdenCompra guardarConOrdenCompraId(DetalleOrdenCompra detalle, Long ordenCompraId) {
 		DetalleOrdenCompraEntity entity = mapper.toEntity(detalle);
-		// Asignar la relación con la OrdenCompra por referencia de ID
-		OrdenCompraEntity ordenCompraRef = new OrdenCompraEntity();
-		ordenCompraRef.setOrdenCompraId(ordenCompraId);
+		OrdenCompraEntity ordenCompraRef = entityManager.getReference(OrdenCompraEntity.class, ordenCompraId);
 		entity.setOrdenCompraId(ordenCompraRef);
-		// Asignar la relación con el Producto por referencia de ID
 		if (detalle.getProductoId() != null) {
-			ProductoEntity productoRef = new ProductoEntity();
-			productoRef.setProductoId(detalle.getProductoId());
+			ProductoEntity productoRef = entityManager.getReference(ProductoEntity.class, detalle.getProductoId());
 			entity.setFkProductoEntity(productoRef);
 		}
 		DetalleOrdenCompraEntity guardado = jpaRepositorio.save(entity);

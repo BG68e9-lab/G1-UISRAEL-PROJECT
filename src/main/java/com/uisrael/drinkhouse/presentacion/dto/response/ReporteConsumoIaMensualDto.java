@@ -22,5 +22,5 @@ public class ReporteConsumoIaMensualDto {
     private LocalDate periodo;
     private Integer cantidadIdentificaciones;
     private Integer tokensConsumidos;
-    private String estadoCuota; // NORMAL, ADVERTENCIA, LIMITE_ALCANZADO
+    private String estadoCuota;
 }

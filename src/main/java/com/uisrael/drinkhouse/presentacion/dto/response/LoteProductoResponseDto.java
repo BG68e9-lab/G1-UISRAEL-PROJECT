@@ -15,6 +15,12 @@ public class LoteProductoResponseDto {
 	/** Identificador único del lote. */
 	private Long loteId;
 
+	/** ID del producto asociado. */
+	private Long productoId;
+
+	/** Nombre del producto asociado. */
+	private String productoNombre;
+
 	/** Código de entrada generado (formato LOTE-XXXXXXXX). */
 	private String codigoEntrada;
 

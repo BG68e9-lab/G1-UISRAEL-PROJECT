@@ -7,10 +7,12 @@ public class Producto {
 	private Long productoId;
 	private Integer negocioId;
 	private Long categoriaId;
+	private String categoriaNombre;
+	private Long tipoProductoId;
+	private String tipoProductoNombre;
 	private Boolean activo;
 	private String nombre;
 	private String marca;
-	private String tipo;
 	private String descripcion;
 	private BigDecimal costoPromedio;
 	private BigDecimal margenGanancia;
@@ -19,19 +21,19 @@ public class Producto {
 	private Integer stockActual;
 	private Integer stockMinimo;
 	private Boolean visibleSinStock;
+	private Boolean permiteStockNegativo;
 	private String origenIdentificacion;
 
 	public Producto() {
 	}
 
-	public Producto(Long productoId, String nombre, String marca, String tipo, String descripcion,
+	public Producto(Long productoId, String nombre, String marca, String descripcion,
 			BigDecimal costoPromedio, BigDecimal margenGanancia, BigDecimal precioVenta,
 			Boolean precioPersonalizado, Integer stockActual, Integer stockMinimo,
 			Boolean visibleSinStock, String origenIdentificacion) {
 		this.productoId = productoId;
 		this.nombre = nombre;
 		this.marca = marca;
-		this.tipo = tipo;
 		this.descripcion = descripcion;
 		this.costoPromedio = costoPromedio;
 		this.margenGanancia = margenGanancia;
@@ -51,6 +53,15 @@ public class Producto {
 	public Long getCategoriaId() { return categoriaId; }
 	public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }
 
+	public String getCategoriaNombre() { return categoriaNombre; }
+	public void setCategoriaNombre(String categoriaNombre) { this.categoriaNombre = categoriaNombre; }
+
+	public Long getTipoProductoId() { return tipoProductoId; }
+	public void setTipoProductoId(Long tipoProductoId) { this.tipoProductoId = tipoProductoId; }
+
+	public String getTipoProductoNombre() { return tipoProductoNombre; }
+	public void setTipoProductoNombre(String tipoProductoNombre) { this.tipoProductoNombre = tipoProductoNombre; }
+
 	public Boolean getActivo() { return activo; }
 	public void setActivo(Boolean activo) { this.activo = activo; }
 
@@ -59,9 +70,6 @@ public class Producto {
 
 	public String getMarca() { return marca; }
 	public void setMarca(String marca) { this.marca = marca; }
-
-	public String getTipo() { return tipo; }
-	public void setTipo(String tipo) { this.tipo = tipo; }
 
 	public String getDescripcion() { return descripcion; }
 	public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
@@ -86,6 +94,9 @@ public class Producto {
 
 	public Boolean getVisibleSinStock() { return visibleSinStock; }
 	public void setVisibleSinStock(Boolean visibleSinStock) { this.visibleSinStock = visibleSinStock; }
+
+	public Boolean getPermiteStockNegativo() { return permiteStockNegativo; }
+	public void setPermiteStockNegativo(Boolean permiteStockNegativo) { this.permiteStockNegativo = permiteStockNegativo; }
 
 	public String getOrigenIdentificacion() { return origenIdentificacion; }
 	public void setOrigenIdentificacion(String origenIdentificacion) { this.origenIdentificacion = origenIdentificacion; }

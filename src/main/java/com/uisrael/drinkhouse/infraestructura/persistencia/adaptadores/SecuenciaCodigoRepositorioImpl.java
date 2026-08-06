@@ -30,18 +30,15 @@ public class SecuenciaCodigoRepositorioImpl implements ISecuenciaCodigoRepositor
 
 	@Override
 	public SecuenciaCodigo guardar(SecuenciaCodigo seq) {
-		// Buscar si ya existe
 		Optional<SecuenciaCodigoEntity> existente = jpaRepositorio
 				.findByNegocio_NegocioIdAndTipoMovimiento_TipoMovimientoId(
 						seq.getNegocioId(), seq.getTipoMovimientoId());
 
 		SecuenciaCodigoEntity entity;
 		if (existente.isPresent()) {
-			// Actualizar la entidad existente
 			entity = existente.get();
 			entity.setUltimoNumero(seq.getUltimoNumero());
 		} else {
-			// Crear nueva entidad
 			entity = mapper.toEntity(seq);
 		}
 

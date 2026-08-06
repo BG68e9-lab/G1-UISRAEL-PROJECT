@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.uisrael.drinkhouse.aplicacion.excepciones.ConcurrentModificationException;
 import com.uisrael.drinkhouse.aplicacion.excepciones.ConflictoUnicoException;
 import com.uisrael.drinkhouse.aplicacion.excepciones.CuotaIaExcedidaException;
 import com.uisrael.drinkhouse.aplicacion.excepciones.RecursoNoEncontradoException;
 import com.uisrael.drinkhouse.aplicacion.excepciones.ReglaNegocioException;
 import com.uisrael.drinkhouse.aplicacion.excepciones.ServicioNoDisponibleException;
+import com.uisrael.drinkhouse.aplicacion.excepciones.StockValidationException;
 import com.uisrael.drinkhouse.presentacion.dto.response.ErrorResponseDto;
 
 /**
@@ -28,10 +30,6 @@ import com.uisrael.drinkhouse.presentacion.dto.response.ErrorResponseDto;
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
-    // -------------------------------------------------------------------------
-    // Excepciones de dominio
-    // -------------------------------------------------------------------------
 
     @ExceptionHandler(RecursoNoEncontradoException.class)
     public ResponseEntity<ErrorResponseDto> manejarNoEncontrado(RecursoNoEncontradoException ex) {
@@ -63,9 +61,19 @@ public class GlobalExceptionHandler {
                 .body(construirError(503, "Service Unavailable", ex.getMessage()));
     }
 
-    // -------------------------------------------------------------------------
-    // Excepciones de Spring / Jakarta Validation
-    // -------------------------------------------------------------------------
+    @ExceptionHandler(StockValidationException.class)
+    public ResponseEntity<ErrorResponseDto> manejarValidacionStock(StockValidationException ex) {
+        logger.warn("Validación de stock fallida: {}", ex.getMessage());
+        return ResponseEntity.status(400)
+                .body(construirError(400, "Bad Request", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ConcurrentModificationException.class)
+    public ResponseEntity<ErrorResponseDto> manejarModificacionConcurrente(ConcurrentModificationException ex) {
+        logger.warn("Conflicto de concurrencia detectado: {}", ex.getMessage());
+        return ResponseEntity.status(409)
+                .body(construirError(409, "Conflict", ex.getMessage()));
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> manejarValidacion(MethodArgumentNotValidException ex) {
@@ -100,21 +108,16 @@ public class GlobalExceptionHandler {
                 .body(construirError(405, "Method Not Allowed", mensaje));
     }
 
-    // -------------------------------------------------------------------------
-    // Fallback genérico
-    // -------------------------------------------------------------------------
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> manejarGeneral(Exception ex) {
         logger.error("Error interno no manejado: {}", ex.getMessage(), ex);
+        
+        String sanitizedMessage = sanitizeErrorMessage(ex.getMessage());
+        
         return ResponseEntity.status(500)
                 .body(construirError(500, "Internal Server Error",
-                        "Error interno: " + ex.getMessage()));
+                        "Error interno: " + sanitizedMessage));
     }
-
-    // -------------------------------------------------------------------------
-    // Método auxiliar
-    // -------------------------------------------------------------------------
 
     private ErrorResponseDto construirError(int status, String error, String message) {
         return ErrorResponseDto.builder()
@@ -123,5 +126,30 @@ public class GlobalExceptionHandler {
                 .error(error)
                 .message(message)
                 .build();
+    }
+
+    /**
+     * Sanitizes error messages to prevent exposure of sensitive database details.
+     * Removes table names, column names, constraint names, and SQL fragments.
+     */
+    private String sanitizeErrorMessage(String message) {
+        if (message == null) {
+            return "Error procesando la solicitud";
+        }
+        
+        String sanitized = message
+            .replaceAll("(?i)constraint \\[.*?\\]", "constraint violation")
+            .replaceAll("(?i)table \".*?\"", "table")
+            .replaceAll("(?i)column \".*?\"", "column")
+            .replaceAll("(?i)relation \".*?\"", "relation")
+            .replaceAll("(?i)key \\(.*?\\)=\\(.*?\\)", "key constraint")
+            .replaceAll("(?i)detail:.*", "")
+            .replaceAll("(?i)hint:.*", "");
+        
+        if (message.matches(".*\\b(SQL|ERROR|psql).*")) {
+            return "Error de base de datos. Contacte al administrador";
+        }
+        
+        return sanitized.trim();
     }
 }

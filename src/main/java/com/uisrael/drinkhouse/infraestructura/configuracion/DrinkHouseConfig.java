@@ -13,19 +13,20 @@ import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IAlertaUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ICategoriaUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ICodigoAccesoUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IEstadoOcUseCase;
-// --- Imports de Casos de Uso (Interfaces e Implementaciones) ---
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IEstadoRespaldoUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IIdentificacionIaUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ILogAuditoriaUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ILoteProductoUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IMovimientoInventarioUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.INegocioUseCase;
+import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.INotaVentaUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IOrdenCompraUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IProductoUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IProveedorUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IRolUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ISecuenciaCodigoUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ITipoMovimientoUseCase;
+import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ITipoProductoUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IUsuarioUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.AlertaUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.CategoriaUseCaseImpl;
@@ -37,32 +38,38 @@ import com.uisrael.drinkhouse.aplicacion.casosuso.impl.LogAuditoriaUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.LoteProductoUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.MovimientoInventarioUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.NegocioUseCaseImpl;
+import com.uisrael.drinkhouse.aplicacion.casosuso.impl.NotaVentaUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.OrdenCompraUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.ProductoUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.ProveedorUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.RolUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.SecuenciaCodigoUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.TipoMovimientoUseCaseImpl;
+import com.uisrael.drinkhouse.aplicacion.casosuso.impl.TipoProductoUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.UsuarioUseCaseImpl;
+import com.uisrael.drinkhouse.aplicacion.servicios.StockValidator;
+import com.uisrael.drinkhouse.dominio.repositorios.IAjusteInventarioAuditoriaRepositorio;
+import com.uisrael.drinkhouse.infraestructura.servicios.EmailService;
 import com.uisrael.drinkhouse.dominio.repositorios.IAlertaRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ICategoriaRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ICodigoAccesoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IConsumoIaMensualRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IDetalleOrdenCompraRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IEstadoOcRepositorio;
-// --- Imports de Repositorios (Dominio y Adaptadores) ---
 import com.uisrael.drinkhouse.dominio.repositorios.IEstadoRespaldoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IIdentificacionIaRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ILogAuditoriaRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ILoteProductoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IMovimientoInventarioRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.INegocioRepositorio;
+import com.uisrael.drinkhouse.dominio.repositorios.INotaVentaRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IOrdenCompraRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IProductoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IProveedorRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IRolRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ISecuenciaCodigoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ITipoMovimientoRepositorio;
+import com.uisrael.drinkhouse.dominio.repositorios.ITipoProductoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ITokensIaNegocioRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IUsuarioRepositorio;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.AlertaRepositorioImpl;
@@ -83,6 +90,7 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.Proveedor
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.RolRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.SecuenciaCodigoRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.TipoMovimientoRepositorioImpl;
+import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.TipoProductoRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.TokensIaNegocioRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.UsuarioRepositorioImpl;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IAlertaJpaMapper;
@@ -91,7 +99,6 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ICodigoAcc
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IConsumoIaMensualJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IDetalleOrdenCompraJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IEstadoOcJpaMapper;
-// --- Imports de Mappers y JPA Repositorios ---
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IEstadoRespaldoJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IIdentificacionIaJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ILogAuditoriaJpaMapper;
@@ -104,6 +111,7 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IProveedor
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IRolJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ISecuenciaCodigoJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ITipoMovimientoJpaMapper;
+import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ITipoProductoJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ITokensIaNegocioJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IUsuarioJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IAlertaJpaRepositorio;
@@ -124,6 +132,7 @@ import com.uisrael.drinkhouse.infraestructura.repositorio.IProveedorJpaRepositor
 import com.uisrael.drinkhouse.infraestructura.repositorio.IRolJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.ISecuenciaCodigoJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.ITipoMovimientoJpaRepositorio;
+import com.uisrael.drinkhouse.infraestructura.repositorio.ITipoProductoJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.ITokensIaNegocioJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IUsuarioJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.servicios.ClaudeVisionService;
@@ -132,8 +141,6 @@ import com.uisrael.drinkhouse.infraestructura.servicios.ClaudeVisionService;
 @EnableScheduling
 public class DrinkHouseConfig {
 
-	
-	// ==================== ALERTA ====================
 	@Bean
 	IAlertaRepositorio alertaRepositorio(IAlertaJpaRepositorio jpaRepositorio, IAlertaJpaMapper mapper) {
 	    return new AlertaRepositorioImpl(jpaRepositorio, mapper);
@@ -144,7 +151,6 @@ public class DrinkHouseConfig {
 	    return new AlertaUseCaseImpl(repoUseCase);
 	}
 
-	// ==================== PRODUCTO ====================
 	@Bean
 	IProductoRepositorio productoRepositorio(IProductoJpaRepositorio jpaRepositorio, IProductoJpaMapper mapper) {
 		return new ProductoRepositorioImpl(jpaRepositorio, mapper);
@@ -155,7 +161,6 @@ public class DrinkHouseConfig {
 		return new ProductoUseCaseImpl(repoUseCase, logAuditoriaUseCase);
 	}
 
-	// ==================== PROVEEDOR ====================
 	@Bean
 	IProveedorRepositorio proveedorRepositorio(IProveedorJpaRepositorio jpaRepositorio, IProveedorJpaMapper mapper) {
 		return new ProveedorRepositoriImpl(jpaRepositorio, mapper);
@@ -165,12 +170,16 @@ public class DrinkHouseConfig {
 	IProveedorUseCase proveedorUseCase(IProveedorRepositorio repoUseCase, ILogAuditoriaUseCase logAuditoriaUseCase) {
 		return new ProveedorUseCaseImpl(repoUseCase, logAuditoriaUseCase);
 	}
+	
+	@Bean
+	com.uisrael.drinkhouse.aplicacion.servicios.FacturaIAService facturaIAService(IProveedorUseCase proveedorUseCase) {
+		return new com.uisrael.drinkhouse.aplicacion.servicios.FacturaIAService(proveedorUseCase);
+	}
 
-	// ==================== LOTE PRODUCTO ====================
 	@Bean
 	ILoteProductoRepositorio loteProductoRepositorio(ILoteProductoJpaRepositorio jpaRepositorio,
-			ILoteProductoJpaMapper mapper) {
-		return new LoteProductoRepositorioImpl(jpaRepositorio, mapper);
+			ILoteProductoJpaMapper mapper, jakarta.persistence.EntityManager entityManager) {
+		return new LoteProductoRepositorioImpl(jpaRepositorio, mapper, entityManager);
 	}
 
 	@Bean
@@ -181,7 +190,6 @@ public class DrinkHouseConfig {
 				tipoMovimientoRepositorio);
 	}
 
-	// ==================== MOVIMIENTO INVENTARIO ====================
 	@Bean
 	IMovimientoInventarioRepositorio movimientoInventarioRepositorio(IMovimientoInventarioJpaRepositorio jpaRepositorio,
 			IMovimientoInventarioJpaMapper mapper, IProductoJpaRepositorio productoJpaRepositorio,
@@ -195,12 +203,17 @@ public class DrinkHouseConfig {
 	IMovimientoInventarioUseCase movimientoInventarioUseCase(IMovimientoInventarioRepositorio repoUseCase,
 			IProductoRepositorio productoRepositorio, ILoteProductoRepositorio loteProductoRepositorio,
 			ITipoMovimientoRepositorio tipoMovimientoRepositorio, ISecuenciaCodigoUseCase secuenciaCodigoUseCase,
-			IAlertaUseCase alertaUseCase, ILogAuditoriaUseCase logAuditoriaUseCase) {
+			IAlertaUseCase alertaUseCase, ILogAuditoriaUseCase logAuditoriaUseCase,
+			IAjusteInventarioAuditoriaRepositorio ajusteAuditoriaRepositorio,
+			StockValidator stockValidator, ICodigoAccesoUseCase codigoAccesoUseCase,
+			com.uisrael.drinkhouse.dominio.repositorios.INotaVentaRepositorio notaVentaRepositorio,
+			com.uisrael.drinkhouse.dominio.repositorios.IVentaRepositorio ventaRepositorio) {
 		return new MovimientoInventarioUseCaseImpl(repoUseCase, productoRepositorio, loteProductoRepositorio,
-				tipoMovimientoRepositorio, secuenciaCodigoUseCase, alertaUseCase, logAuditoriaUseCase);
+				tipoMovimientoRepositorio, secuenciaCodigoUseCase, alertaUseCase, logAuditoriaUseCase,
+				ajusteAuditoriaRepositorio, stockValidator, codigoAccesoUseCase,
+				notaVentaRepositorio, ventaRepositorio);
 	}
 
-	// ==================== ESTADO RESPALDO ====================
 	@Bean
 	IEstadoRespaldoRepositorio estadoRespaldoRepositorio(IEstadoRespaldoJpaRepositorio jpaRepositorio,
 			IEstadoRespaldoJpaMapper mapper) {
@@ -212,7 +225,6 @@ public class DrinkHouseConfig {
 		return new EstadoRespaldoUseCaseImpl(repoUseCase);
 	}
 
-	// ==================== SECUENCIA CODIGO ====================
 	@Bean
 	ISecuenciaCodigoRepositorio secuenciaCodigoRepositorio(ISecuenciaCodigoJpaRepositorio jpaRepositorio,
 			ISecuenciaCodigoJpaMapper mapper) {
@@ -224,7 +236,6 @@ public class DrinkHouseConfig {
 		return new SecuenciaCodigoUseCaseImpl(repoUseCase);
 	}
 
-	// ==================== TIPO MOVIMIENTO ====================
 	@Bean
 	ITipoMovimientoRepositorio tipoMovimientoRepositorio(ITipoMovimientoJpaRepositorio jpaRepositorio,
 			ITipoMovimientoJpaMapper mapper) {
@@ -236,7 +247,6 @@ public class DrinkHouseConfig {
 		return new TipoMovimientoUseCaseImpl(repoUseCase);
 	}
 
-	// ==================== NEGOCIO ====================
 	@Bean
 	INegocioRepositorio negocioRepositorio(INegocioJpaRepositorio jpaRepositorio, INegocioJpaMapper mapper) {
 		return new NegocioRepositorioImpl(jpaRepositorio, mapper);
@@ -247,7 +257,6 @@ public class DrinkHouseConfig {
 		return new NegocioUseCaseImpl(repoUseCase, logAuditoriaUseCase);
 	}
 
-	// ==================== ROL ====================
 	@Bean
 	IRolRepositorio rolRepositorio(IRolJpaRepositorio jpaRepositorio, IRolJpaMapper mapper) {
 		return new RolRepositorioImpl(jpaRepositorio, mapper);
@@ -258,7 +267,6 @@ public class DrinkHouseConfig {
 		return new RolUseCaseImpl(repoUseCase, usuarioRepositorio);
 	}
 
-	// ==================== USUARIO ====================
 	@Bean
 	IUsuarioRepositorio usuarioRepositorio(IUsuarioJpaRepositorio jpaRepositorio, IUsuarioJpaMapper mapper,
 			IRolJpaRepositorio rolJpaRepositorio) {
@@ -270,7 +278,6 @@ public class DrinkHouseConfig {
 		return new UsuarioUseCaseImpl(repoUseCase, logAuditoriaUseCase);
 	}
 
-	// ==================== CODIGO ACCESO ====================
 	@Bean
 	ICodigoAccesoRepositorio codigoAccesoRepositorio(ICodigoAccesoJpaRepositorio jpaRepositorio,
 			ICodigoAccesoJpaMapper mapper) {
@@ -279,11 +286,10 @@ public class DrinkHouseConfig {
 
 	@Bean
 	ICodigoAccesoUseCase codigoAccesoUseCase(ICodigoAccesoRepositorio repoUseCase,
-			ILogAuditoriaUseCase logAuditoriaUseCase) {
-		return new CodigoAccesoUseCaseImpl(repoUseCase, logAuditoriaUseCase);
+			ILogAuditoriaUseCase logAuditoriaUseCase, EmailService emailService) {
+		return new CodigoAccesoUseCaseImpl(repoUseCase, logAuditoriaUseCase, emailService);
 	}
 
-	// ==================== LOG AUDITORIA ====================
 	@Bean
 	ILogAuditoriaRepositorio logAuditoriaRepositorio(ILogAuditoriaJpaRepositorio jpaRepositorio,
 			ILogAuditoriaJpaMapper mapper) {
@@ -295,7 +301,6 @@ public class DrinkHouseConfig {
 		return new LogAuditoriaUseCaseImpl(repoUseCase, objectMapper);
 	}
 
-	// ==================== ESTADO OC ====================
 	@Bean
 	IEstadoOcRepositorio estadoOcRepositorio(IEstadoOcJpaRepositorio jpaRepositorio, IEstadoOcJpaMapper mapper) {
 		return new EstadoOcRepositorioImpl(jpaRepositorio, mapper);
@@ -306,7 +311,6 @@ public class DrinkHouseConfig {
 		return new EstadoOcUseCaseImpl(repoUseCase);
 	}
 
-	// ==================== CATEGORIA ====================
 	@Bean
 	ICategoriaRepositorio categoriaRepositorio(ICategoriaJpaRepositorio jpaRepositorio, ICategoriaJpaMapper mapper) {
 		return new CategoriaRepositorioImpl(jpaRepositorio, mapper);
@@ -317,7 +321,18 @@ public class DrinkHouseConfig {
 		return new CategoriaUseCaseImpl(repoUseCase, logAuditoriaUseCase);
 	}
 
-	// ==================== IDENTIFICACION IA ====================
+	@Bean
+	ITipoProductoRepositorio tipoProductoRepositorio(ITipoProductoJpaRepositorio jpaRepositorio, 
+			ITipoProductoJpaMapper mapper) {
+		return new TipoProductoRepositorioImpl(jpaRepositorio, mapper);
+	}
+
+	@Bean
+	ITipoProductoUseCase tipoProductoUseCase(ITipoProductoRepositorio tipoProductoRepositorio,
+			ICategoriaRepositorio categoriaRepositorio, ILogAuditoriaUseCase logAuditoriaUseCase) {
+		return new TipoProductoUseCaseImpl(tipoProductoRepositorio, categoriaRepositorio, logAuditoriaUseCase);
+	}
+
 	@Bean
 	IIdentificacionIaRepositorio identificacionIaRepositorio(IIdentificacionIaJpaRepositorio jpaRepositorio,
 			IIdentificacionIaJpaMapper mapper) {
@@ -332,21 +347,18 @@ public class DrinkHouseConfig {
 				productoRepositorio, claudeVisionService);
 	}
 
-	// ==================== CONSUMO IA MENSUAL ====================
 	@Bean
 	IConsumoIaMensualRepositorio consumoIaMensualRepositorio(IConsumoIaMensualJpaRepositorio jpaRepositorio,
 			IConsumoIaMensualJpaMapper mapper) {
 		return new ConsumoIaMensualRepositorioImpl(jpaRepositorio, mapper);
 	}
 
-	// ==================== TOKENS IA NEGOCIO ====================
 	@Bean
 	ITokensIaNegocioRepositorio tokensIaNegocioRepositorio(ITokensIaNegocioJpaRepositorio jpaRepositorio,
 			ITokensIaNegocioJpaMapper mapper) {
 		return new TokensIaNegocioRepositorioImpl(jpaRepositorio, mapper);
 	}
 
-	// ==================== ORDEN COMPRA ====================
 	@Bean
 	IOrdenCompraRepositorio ordenCompraRepositorio(IOrdenCompraJpaRepositorio jpaRepositorio,
 			IOrdenCompraJpaMapper mapper, IProveedorJpaRepositorio proveedorJpaRepositorio,
@@ -365,14 +377,17 @@ public class DrinkHouseConfig {
 				negocioRepositorio, movimientoInventarioUseCase);
 	}
 
-	// ==================== DETALLE ORDEN COMPRA ====================
 	@Bean
 	IDetalleOrdenCompraRepositorio detalleOrdenCompraRepositorio(IDetalleOrdenCompraJpaRepositorio jpaRepositorio,
 			IDetalleOrdenCompraJpaMapper mapper) {
 		return new DetalleOrdenCompraRepositorioImpl(jpaRepositorio, mapper);
 	}
 
-	// ==================== JACKSON ====================
+	@Bean
+	INotaVentaUseCase notaVentaUseCase(INotaVentaRepositorio notaVentaRepositorio) {
+		return new NotaVentaUseCaseImpl(notaVentaRepositorio);
+	}
+
 	@Bean
 	ObjectMapper objectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -383,7 +398,6 @@ public class DrinkHouseConfig {
 		return mapper;
 	}
 
-	// ==================== REST TEMPLATE ====================
 	@Bean
 	RestTemplate restTemplate() {
 		return new RestTemplate();

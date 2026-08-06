@@ -14,7 +14,6 @@ public class UsuarioRequestDto {
 	@Email
 	private String email;
 
-	// Opcional cuando se usa SSO
 	private String passwordHash;
 
 	private String proveedorSso;

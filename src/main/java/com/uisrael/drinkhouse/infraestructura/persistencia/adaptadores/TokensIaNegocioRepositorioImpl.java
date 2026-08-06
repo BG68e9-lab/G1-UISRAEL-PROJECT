@@ -32,7 +32,6 @@ public class TokensIaNegocioRepositorioImpl implements ITokensIaNegocioRepositor
     @Override
     public TokensIaNegocio guardar(TokensIaNegocio tokens) {
         TokensIaNegocioEntity entidad = mapper.aEntidad(tokens);
-        // Asignar referencia al negocio
         NegocioEntity negocioRef = new NegocioEntity();
         negocioRef.setNegocioId(tokens.getNegocioId());
         entidad.setNegocio(negocioRef);

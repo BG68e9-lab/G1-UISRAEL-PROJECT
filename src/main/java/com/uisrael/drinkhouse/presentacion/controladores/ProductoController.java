@@ -35,8 +35,11 @@ public class ProductoController {
 
 	@PostMapping
 	public ResponseEntity<ProductoResponseDto> crear(@Valid @RequestBody ProductoRequestDto requestDto) {
+		System.out.println("=== CONTROLLER: requestDto.tipoProductoId = " + requestDto.getTipoProductoId());
+		var productoDomain = mapper.toDomain(requestDto);
+		System.out.println("=== CONTROLLER: productoDomain.tipoProductoId = " + productoDomain.getTipoProductoId());
 		ProductoResponseDto response = mapper.toResponseDto(
-				productoUseCase.crearProducto(mapper.toDomain(requestDto)));
+				productoUseCase.crearProducto(productoDomain));
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
@@ -55,9 +58,22 @@ public class ProductoController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<ProductoResponseDto>> listar() {
-		List<ProductoResponseDto> lista = productoUseCase.listarProductos()
-				.stream().map(mapper::toResponseDto).toList();
+	public ResponseEntity<List<ProductoResponseDto>> listar(
+			@RequestParam(required = false) Long categoriaId,
+			@RequestParam(required = false) Long tipoProductoId,
+			@RequestParam(required = false) String nombre,
+			@RequestParam(required = false) String marca) {
+		
+		List<ProductoResponseDto> lista;
+		
+		if (categoriaId != null || tipoProductoId != null || nombre != null || marca != null) {
+			lista = productoUseCase.buscarConFiltros(nombre, marca, tipoProductoId, categoriaId)
+					.stream().map(mapper::toResponseDto).toList();
+		} else {
+			lista = productoUseCase.listarProductos()
+					.stream().map(mapper::toResponseDto).toList();
+		}
+		
 		return ResponseEntity.ok(lista);
 	}
 
@@ -65,10 +81,10 @@ public class ProductoController {
 	public ResponseEntity<List<ProductoResponseDto>> buscarConFiltros(
 			@RequestParam(required = false) String nombre,
 			@RequestParam(required = false) String marca,
-			@RequestParam(required = false) String tipo,
+			@RequestParam(required = false) Long tipoProductoId,
 			@RequestParam(required = false) Long categoriaId) {
 		List<ProductoResponseDto> lista = productoUseCase
-				.buscarConFiltros(nombre, marca, tipo, categoriaId)
+				.buscarConFiltros(nombre, marca, tipoProductoId, categoriaId)
 				.stream().map(mapper::toResponseDto).toList();
 		return ResponseEntity.ok(lista);
 	}

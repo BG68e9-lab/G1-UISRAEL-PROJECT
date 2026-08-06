@@ -18,13 +18,17 @@ public class MovimientoInventario {
 	private BigDecimal cantidad;
 	private BigDecimal precioUnitario;
 	private OffsetDateTime creadoEn;
+	private Long ventaId;
+	private BigDecimal cantidadAnterior;
+	private BigDecimal ajuste;
+	private BigDecimal cantidadPosterior;
 
 	public MovimientoInventario() {
 	}
 
 	public MovimientoInventario(Long movimientoId, Long productoId, Long loteId,
 			Long tipoMovimientoId, String tipoMovimientoCodigo, String codigoMovimiento,
-			BigDecimal cantidad, BigDecimal precioUnitario, OffsetDateTime creadoEn) {
+			BigDecimal cantidad, BigDecimal precioUnitario, OffsetDateTime creadoEn, Long ventaId) {
 		this.movimientoId = movimientoId;
 		this.productoId = productoId;
 		this.loteId = loteId;
@@ -34,6 +38,7 @@ public class MovimientoInventario {
 		this.cantidad = cantidad;
 		this.precioUnitario = precioUnitario;
 		this.creadoEn = creadoEn;
+		this.ventaId = ventaId;
 	}
 
 	public Long getMovimientoId() { return movimientoId; }
@@ -64,4 +69,16 @@ public class MovimientoInventario {
 
 	public OffsetDateTime getCreadoEn() { return creadoEn; }
 	public void setCreadoEn(OffsetDateTime creadoEn) { this.creadoEn = creadoEn; }
+
+	public Long getVentaId() { return ventaId; }
+	public void setVentaId(Long ventaId) { this.ventaId = ventaId; }
+
+	public BigDecimal getCantidadAnterior() { return cantidadAnterior; }
+	public void setCantidadAnterior(BigDecimal cantidadAnterior) { this.cantidadAnterior = cantidadAnterior; }
+
+	public BigDecimal getAjuste() { return ajuste; }
+	public void setAjuste(BigDecimal ajuste) { this.ajuste = ajuste; }
+
+	public BigDecimal getCantidadPosterior() { return cantidadPosterior; }
+	public void setCantidadPosterior(BigDecimal cantidadPosterior) { this.cantidadPosterior = cantidadPosterior; }
 }

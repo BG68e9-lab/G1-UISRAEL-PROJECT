@@ -25,6 +25,21 @@ public interface IMovimientoInventarioDtoMapper {
 	MovimientoInventario toDomain(MovimientoInventarioRequestDto dto);
 
 	/**
+	 * Convierte el request DTO a entidad de dominio incluyendo campos de auditoría.
+	 * Mapea explícitamente ventaId, cantidadAnterior, ajuste y cantidadPosterior
+	 * desde el DTO de request hacia la entidad de dominio para soporte de auditoría.
+	 */
+	@Mapping(target = "movimientoId",          ignore = true)
+	@Mapping(target = "codigoMovimiento",      ignore = true)
+	@Mapping(target = "tipoMovimientoCodigo",  ignore = true)
+	@Mapping(target = "creadoEn",              ignore = true)
+	@Mapping(source = "ventaId",               target = "ventaId")
+	@Mapping(source = "cantidadAnterior",      target = "cantidadAnterior")
+	@Mapping(source = "ajuste",                target = "ajuste")
+	@Mapping(source = "cantidadPosterior",     target = "cantidadPosterior")
+	MovimientoInventario toDomainWithAuditFields(MovimientoInventarioRequestDto dto);
+
+	/**
 	 * Convierte la entidad de dominio al DTO de respuesta.
 	 * El campo tipoMovimiento en el response es el código del tipo.
 	 */

@@ -1,5 +1,6 @@
 package com.uisrael.drinkhouse.presentacion.dto.response;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -11,8 +12,8 @@ public class DetalleOrdenCompraResponseDto {
     private Long ordenCompraId;
     private Long productoId;
     private String productoNombre;
-    private Integer cantidad;
-    private Double precioUnitario;
+    private BigDecimal cantidad;
+    private BigDecimal precioUnitario;
     private LocalDate fechaVencimiento;
 
     public DetalleOrdenCompraResponseDto() {}
@@ -26,11 +27,11 @@ public class DetalleOrdenCompraResponseDto {
     public Long getProductoId() { return productoId; }
     public void setProductoId(Long productoId) { this.productoId = productoId; }
 
-    public Integer getCantidad() { return cantidad; }
-    public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+    public BigDecimal getCantidad() { return cantidad; }
+    public void setCantidad(BigDecimal cantidad) { this.cantidad = cantidad; }
 
-    public Double getPrecioUnitario() { return precioUnitario; }
-    public void setPrecioUnitario(Double precioUnitario) { this.precioUnitario = precioUnitario; }
+    public BigDecimal getPrecioUnitario() { return precioUnitario; }
+    public void setPrecioUnitario(BigDecimal precioUnitario) { this.precioUnitario = precioUnitario; }
 
     public String getProductoNombre() { return productoNombre; }
     public void setProductoNombre(String productoNombre) { this.productoNombre = productoNombre; }

@@ -35,7 +35,6 @@ public class ProveedorController {
 	@PostMapping
 	public ResponseEntity<ProveedorResponseDto> crear(@Valid @RequestBody ProveedorRequestDto requestDto) {
 		var proveedor = mapper.toDomain(requestDto);
-		// TODO: Obtener negocioId del usuario autenticado cuando se implemente JWT
 		proveedor.setNegocioId(1);
 		
 		ProveedorResponseDto response = mapper.toResponseDto(proveedorUseCase.crearProveedor(proveedor));
@@ -47,7 +46,6 @@ public class ProveedorController {
 			@PathVariable Long id,
 			@Valid @RequestBody ProveedorRequestDto requestDto) {
 		var proveedor = mapper.toDomain(requestDto);
-		// TODO: Obtener negocioId del usuario autenticado cuando se implemente JWT
 		proveedor.setNegocioId(1);
 		
 		ProveedorResponseDto response = mapper.toResponseDto(proveedorUseCase.actualizarProveedor(id, proveedor));

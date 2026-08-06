@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uisrael.drinkhouse.aplicacion.excepciones.ServicioNoDisponibleException;
 import com.uisrael.drinkhouse.infraestructura.utils.ImageOptimizer;
+import com.uisrael.drinkhouse.infraestructura.utils.PdfToImageConverter;
 import com.uisrael.drinkhouse.presentacion.dto.response.RespuestaClaudeDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoBotellaDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoFacturaDto;
@@ -27,7 +28,6 @@ import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoProductoDto;
 @Service
 public class ClaudeVisionService {
 
-    // Prompts optimizados para precisión y bajo costo
     private static final String PROMPT_BOTELLA = """
             Analiza esta imagen de bebida.
             IMPORTANTE:
@@ -38,11 +38,37 @@ public class ClaudeVisionService {
             """;
 
     private static final String PROMPT_FACTURA = """
-            Extrae datos visibles de esta factura.
+            Extrae datos visibles de esta factura ecuatoriana.
             IMPORTANTE:
             - Solo información VISIBLE y legible
             - Usa null (sin comillas) para campos no visibles
             - NO adivines números o datos
+            
+            INSTRUCCIONES ESPECÍFICAS:
+            - FECHA: Busca cualquiera de estos textos:
+              * "Fecha Emisión:" seguido de fecha DD/MM/YYYY
+              * "FECHA Y HORA DE AUTORIZACIÓN" seguido de DD/MM/YYYY HH:MM:SS
+              * "Fecha de Emisión" o similar
+              La fecha debe convertirse a formato YYYY-MM-DD para el campo fechaFactura
+            - TOTAL: Está en la parte inferior derecha, busca:
+              * "VALOR TOTAL" seguido de $ y monto
+              * "Total" o "TOTAL" seguido de cifra
+              Extrae solo el número (sin $ ni símbolos) para el campo totalFactura
+            - PRODUCTOS: En la tabla central de la factura, cada fila tiene: código, cantidad, descripción y precios
+            - RUC: Número de 13 dígitos en la parte superior (campo rucProveedor)
+            - RAZÓN SOCIAL: Nombre del proveedor emisor de la factura (campo razonSocialProveedor)
+            - NÚMERO FACTURA: Puede aparecer como "No." o "FACTURA" seguido de números con guiones (ej: 043-003-008450776)
+            
+            FORMATO DE SALIDA JSON:
+            {
+              "rucProveedor": "0992526742001",
+              "razonSocialProveedor": "DINADEC S.A.",
+              "fechaFactura": "2026-07-25",
+              "numeroFactura": "043-003-008450776",
+              "totalFactura": 86.63,
+              "productos": [...],
+              "nivelConfianzaGeneral": 95
+            }
             """;
 
     private static final String PROMPT_PRODUCTO = """
@@ -58,6 +84,7 @@ public class ClaudeVisionService {
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
     private final ImageOptimizer imageOptimizer;
+    private final PdfToImageConverter pdfConverter;
 
     @Value("${anthropic.api.key}")
     private String apiKey;
@@ -74,9 +101,11 @@ public class ClaudeVisionService {
     public ClaudeVisionService(
             @Value("${anthropic.api.url:https://api.anthropic.com/v1/messages}") String apiUrl,
             ObjectMapper objectMapper,
-            ImageOptimizer imageOptimizer) {
+            ImageOptimizer imageOptimizer,
+            PdfToImageConverter pdfConverter) {
         this.objectMapper = objectMapper;
         this.imageOptimizer = imageOptimizer;
+        this.pdfConverter = pdfConverter;
         this.webClient = WebClient.builder()
                 .baseUrl(apiUrl)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -164,33 +193,42 @@ public class ClaudeVisionService {
      * Usa Tool Calling para garantizar respuestas JSON estructuradas.
      * 
      * OPTIMIZACIONES APLICADAS:
-     * 1. Redimensiona imagen a 1024px máximo antes de enviarla (reduce 80-90% tokens de imagen)
-     * 2. Convierte a JPEG calidad 85% (reduce peso sin perder legibilidad)
-     * 3. Usa prompt caching para system prompts repetidos (reduce 90% costo del prompt)
-     * 4. Ajusta maxTokens según configuración (solo lo necesario para la respuesta JSON)
+     * 1. Detecta y convierte PDFs a imágenes JPEG (Claude no acepta PDFs directamente)
+     * 2. Redimensiona imagen a 1024px máximo antes de enviarla (reduce 80-90% tokens de imagen)
+     * 3. Convierte a JPEG calidad 85% (reduce peso sin perder legibilidad)
+     * 4. Usa prompt caching para system prompts repetidos (reduce 90% costo del prompt)
+     * 5. Ajusta maxTokens según configuración (solo lo necesario para la respuesta JSON)
      *
-     * @param imagenBase64  imagen en base64
+     * @param imagenBase64  imagen en base64 (o PDF en base64)
      * @param formatoImagen formato de la imagen original
      * @param prompt        instrucción de texto para Claude
      * @param toolName      nombre de la herramienta a usar para estructurar la respuesta
      * @return respuesta con el JSON y los tokens consumidos
      */
     private RespuestaClaudeDto<String> llamarClaudeConImagen(String imagenBase64, String formatoImagen, String prompt, String toolName) {
-        // OPTIMIZACIÓN 1: Redimensionar y comprimir imagen antes de enviarla
-        String imagenOptimizada = imagenBase64;
+        String imagenProcesada = imagenBase64;
+        if (pdfConverter.esPdf(imagenBase64)) {
+            try {
+                System.out.println("Detectado PDF, convirtiendo a imagen...");
+                imagenProcesada = pdfConverter.convertirPrimeraPaginaAImagen(imagenBase64, 200);
+                formatoImagen = "JPEG";
+                System.out.println("PDF convertido exitosamente a imagen JPEG");
+            } catch (Exception e) {
+                throw new ServicioNoDisponibleException(
+                    "Error al convertir PDF a imagen: " + e.getMessage());
+            }
+        }
+        
+        String imagenOptimizada = imagenProcesada;
         try {
-            imagenOptimizada = imageOptimizer.optimizarImagen(imagenBase64);
-            // Después de optimizar, siempre es JPEG
+            imagenOptimizada = imageOptimizer.optimizarImagen(imagenProcesada);
             formatoImagen = "JPEG";
         } catch (Exception e) {
-            // Si falla la optimización, continuar con la imagen original
-            // Esto permite que el servicio sea resiliente ante errores de procesamiento
             System.err.println("Advertencia: No se pudo optimizar la imagen. Usando original. Error: " + e.getMessage());
         }
         
         String mediaType = resolverMediaType(formatoImagen);
 
-        // Construir el cuerpo de la solicitud según la especificación de la API de Claude
         Map<String, Object> fuenteImagen = Map.of(
                 "type", "base64",
                 "media_type", mediaType,
@@ -212,14 +250,11 @@ public class ClaudeVisionService {
                 "content", List.of(contenidoImagen, contenidoTexto)
         );
 
-        // OPTIMIZACIÓN 2: System prompt con cache control para reutilización
-        // El tool schema se envía como system para poder cachearlo
         Map<String, Object> toolSchema = crearToolSchema(toolName);
         String systemPrompt = crearSystemPromptConSchema(toolSchema);
         
         Map<String, Object> systemBlock;
         if (enablePromptCaching) {
-            // Habilitar cache para el system prompt (reduce 90% del costo en llamadas subsecuentes)
             systemBlock = Map.of(
                     "type", "text",
                     "text", systemPrompt,
@@ -391,38 +426,84 @@ public class ClaudeVisionService {
      * Schema para extracción de datos de facturas.
      */
     private Map<String, Object> crearToolSchemaFactura() {
+        Map<String, Object> productoProperties = Map.of(
+                "nombre", Map.of(
+                        "type", "string",
+                        "description", "Descripción del producto visible en la tabla"
+                ),
+                "marca", Map.of(
+                        "type", List.of("string", "null"),
+                        "description", "Marca del producto si es visible, null si no aplica"
+                ),
+                "tipo", Map.of(
+                        "type", List.of("string", "null"),
+                        "description", "Tipo de bebida (cerveza, gaseosa, agua, etc.) si es identificable, null si no aplica"
+                ),
+                "cantidad", Map.of(
+                        "type", List.of("number", "null"),
+                        "description", "Cantidad de unidades del producto"
+                ),
+                "precioUnitario", Map.of(
+                        "type", List.of("number", "null"),
+                        "description", "Precio unitario del producto"
+                ),
+                "subtotal", Map.of(
+                        "type", List.of("number", "null"),
+                        "description", "Subtotal (cantidad × precio unitario)"
+                ),
+                "nivelConfianza", Map.of(
+                        "type", "integer",
+                        "description", "Nivel de confianza del OCR para este producto (0-100). 100 = completamente legible, 50 = parcialmente legible, 0 = ilegible. Ser honesto con la legibilidad."
+                )
+        );
+        
+        Map<String, Object> productoSchema = Map.of(
+                "type", "object",
+                "properties", productoProperties,
+                "required", List.of("nombre", "nivelConfianza")
+        );
+        
         Map<String, Object> properties = Map.of(
                 "numeroFactura", Map.of(
                         "type", List.of("string", "null"),
-                        "description", "Número de factura visible"
+                        "description", "Número de factura visible (ej: 043-003-008450776)"
                 ),
                 "razonSocialProveedor", Map.of(
                         "type", "string",
-                        "description", "Razón social del proveedor"
+                        "description", "Razón social del proveedor emisor"
                 ),
                 "rucProveedor", Map.of(
                         "type", List.of("string", "null"),
-                        "description", "RUC/NIT del proveedor"
+                        "description", "RUC del proveedor (13 dígitos)"
                 ),
-                "fecha", Map.of(
+                "fechaFactura", Map.of(
                         "type", List.of("string", "null"),
-                        "description", "Fecha de emisión de la factura"
+                        "description", "Fecha de emisión que aparece junto a 'FECHA Y HORA DE AUTORIZACIÓN' (formato: DD/MM/YYYY o DD/MM/YYYY HH:MM:SS). Extraer SOLO la fecha, no la hora."
                 ),
-                "total", Map.of(
+                "totalFactura", Map.of(
                         "type", List.of("number", "null"),
-                        "description", "Monto total de la factura"
+                        "description", "Monto total visible en la parte inferior derecha junto a 'VALOR TOTAL' (solo el número, sin símbolo $)"
+                ),
+                "productos", Map.of(
+                        "type", "array",
+                        "description", "Lista de productos de la tabla central de la factura",
+                        "items", productoSchema
+                ),
+                "nivelConfianzaGeneral", Map.of(
+                        "type", "integer",
+                        "description", "Nivel de confianza general del OCR para toda la factura (0-100). Evalúa la calidad general de la imagen y legibilidad."
                 )
         );
 
         Map<String, Object> inputSchema = Map.of(
                 "type", "object",
                 "properties", properties,
-                "required", List.of("razonSocialProveedor")
+                "required", List.of("razonSocialProveedor", "nivelConfianzaGeneral")
         );
 
         return Map.of(
                 "name", "extraer_factura",
-                "description", "Extrae datos estructurados de una factura. Solo reporta información visible y legible.",
+                "description", "Extrae datos estructurados de una factura ecuatoriana. Busca la fecha junto a 'FECHA Y HORA DE AUTORIZACIÓN', el total en 'VALOR TOTAL', y los productos en la tabla central. IMPORTANTE: Evalúa honestamente la legibilidad y asigna niveles de confianza realistas.",
                 "input_schema", inputSchema
         );
     }
@@ -443,23 +524,20 @@ public class ClaudeVisionService {
             if (contenido.isArray() && !contenido.isEmpty()) {
                 JsonNode primerBloque = contenido.get(0);
                 
-                // Si es una respuesta de tool_use, extraer el input (ya es JSON estructurado)
                 if ("tool_use".equals(primerBloque.path("type").asText())) {
                     JsonNode input = primerBloque.path("input");
                     texto = objectMapper.writeValueAsString(input);
                 } else {
-                    // Si es texto normal, extraer y limpiar markdown
                     texto = primerBloque.path("text").asText();
                     
-                    // Limpiar markdown si Claude responde con ```json ... ```
                     texto = texto.trim();
                     if (texto.startsWith("```json")) {
-                        texto = texto.substring(7); // Remover ```json
+                        texto = texto.substring(7);
                     } else if (texto.startsWith("```")) {
-                        texto = texto.substring(3); // Remover ```
+                        texto = texto.substring(3);
                     }
                     if (texto.endsWith("```")) {
-                        texto = texto.substring(0, texto.length() - 3); // Remover ```
+                        texto = texto.substring(0, texto.length() - 3);
                     }
                     texto = texto.trim();
                 }
@@ -470,7 +548,6 @@ public class ClaudeVisionService {
                         "La respuesta de Claude no contiene bloques de contenido válidos");
             }
             
-            // Extraer información de usage
             JsonNode usage = raiz.path("usage");
             Long tokensInput = usage.path("input_tokens").asLong(0L);
             Long tokensOutput = usage.path("output_tokens").asLong(0L);
@@ -505,7 +582,7 @@ public class ClaudeVisionService {
             case "PNG"  -> "image/png";
             case "WEBP" -> "image/webp";
             case "GIF"  -> "image/gif";
-            default     -> "image/jpeg"; // JPEG y cualquier otro valor
+            default     -> "image/jpeg";
         };
     }
 }

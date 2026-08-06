@@ -12,9 +12,11 @@ public class ProductoResponseDto {
 	private Integer negocioId;
 	private String nombre;
 	private String marca;
-	private String tipo;
+	private Long tipoProductoId;
+	private String tipoProductoNombre;
 	private String descripcion;
 	private Long categoriaId;
+	private String categoriaNombre;
 	private BigDecimal costoPromedio;
 	private BigDecimal margenGanancia;
 	private BigDecimal precioVenta;

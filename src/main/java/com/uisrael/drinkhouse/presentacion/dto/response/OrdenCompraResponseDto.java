@@ -1,5 +1,6 @@
 package com.uisrael.drinkhouse.presentacion.dto.response;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -11,9 +12,8 @@ public class OrdenCompraResponseDto {
     private Long ordenCompraId;
     private String codigoReferencia;
     private String estado;
-    private Double total;
+    private BigDecimal total;
     private OffsetDateTime creadoEn;
-    private OffsetDateTime fechaCreacion;
     private Long proveedorId;
     private String proveedorRazonSocial;
     private List<DetalleOrdenCompraResponseDto> detalles;
@@ -29,8 +29,8 @@ public class OrdenCompraResponseDto {
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
 
-    public Double getTotal() { return total; }
-    public void setTotal(Double total) { this.total = total; }
+    public BigDecimal getTotal() { return total; }
+    public void setTotal(BigDecimal total) { this.total = total; }
 
     public OffsetDateTime getCreadoEn() { return creadoEn; }
     public void setCreadoEn(OffsetDateTime creadoEn) { this.creadoEn = creadoEn; }
@@ -40,9 +40,6 @@ public class OrdenCompraResponseDto {
 
     public String getProveedorRazonSocial() { return proveedorRazonSocial; }
     public void setProveedorRazonSocial(String proveedorRazonSocial) { this.proveedorRazonSocial = proveedorRazonSocial; }
-
-    public OffsetDateTime getFechaCreacion() { return fechaCreacion; }
-    public void setFechaCreacion(OffsetDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 
     public List<DetalleOrdenCompraResponseDto> getDetalles() { return detalles; }
     public void setDetalles(List<DetalleOrdenCompraResponseDto> detalles) { this.detalles = detalles; }

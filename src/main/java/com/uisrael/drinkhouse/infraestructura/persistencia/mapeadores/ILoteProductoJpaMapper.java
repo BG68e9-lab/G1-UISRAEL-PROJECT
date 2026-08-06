@@ -20,6 +20,8 @@ public interface ILoteProductoJpaMapper {
 	 * @return objeto de dominio LoteProducto
 	 */
 	@Mapping(source = "fkNegocioEntity.negocioId", target = "negocioId")
+	@Mapping(source = "fkProductoEntity.productoId", target = "productoId")
+	@Mapping(source = "fkProductoEntity.nombre", target = "productoNombre")
 	LoteProducto aDominio(LoteProductoEntity entidad);
 
 	/**

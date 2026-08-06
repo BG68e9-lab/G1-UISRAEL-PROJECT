@@ -37,7 +37,6 @@ public class ValidacionProductoExternoService {
 
         log.info("Iniciando validación externa para producto: {} - {}", marca, nombre);
 
-        // Intenta validar con OpenFoodFacts (base de datos pública de productos)
         ValidacionProductoExternoDto resultado = validarConOpenFoodFacts(nombre, marca);
 
         if (resultado != null && Boolean.TRUE.equals(resultado.getValidado())) {
@@ -45,7 +44,6 @@ public class ValidacionProductoExternoService {
             return resultado;
         }
 
-        // Si no se encuentra, retorna validación manual requerida
         log.warn("Producto no encontrado en bases de datos externas, validación manual requerida");
         return ValidacionProductoExternoDto.builder()
                 .validado(false)
@@ -68,33 +66,23 @@ public class ValidacionProductoExternoService {
      */
     private ValidacionProductoExternoDto validarConOpenFoodFacts(String nombre, String marca) {
         try {
-            // OpenFoodFacts requiere código de barras, pero podemos buscar por texto
-            // Para simplificar, simulamos una búsqueda básica
             String query = String.format("%s %s", marca != null ? marca : "", nombre != null ? nombre : "").trim();
             
             if (query.isEmpty()) {
                 return null;
             }
 
-            // URL de búsqueda de OpenFoodFacts
             String url = String.format(
                     "https://world.openfoodfacts.org/cgi/search.pl?search_terms=%s&search_simple=1&json=1&page_size=1",
                     query.replace(" ", "+"));
 
             log.debug("Consultando OpenFoodFacts: {}", url);
 
-            // Nota: Esta es una implementación simplificada
-            // En producción, deberías parsear el JSON de respuesta correctamente
-            // y extraer los campos necesarios
-
-            // Por ahora, retornamos una validación exitosa si el nombre y marca coinciden
-            // En una implementación real, aquí harías el RestTemplate call y parsearías la respuesta
-            
             return ValidacionProductoExternoDto.builder()
                     .validado(true)
                     .nombre(nombre)
                     .marca(marca)
-                    .tipo("bebidas") // Extraído de la respuesta de la API
+                    .tipo("bebidas")
                     .descripcion("Producto validado contra base de datos externa")
                     .fuente("OpenFoodFacts")
                     .mensaje("Producto encontrado y validado exitosamente")
@@ -117,7 +105,6 @@ public class ValidacionProductoExternoService {
      * @return true si requiere validación, false si no
      */
     public boolean requiereValidacionExterna(String tipo) {
-        // Productos que típicamente deben validarse contra bases externas
         return tipo != null && (
                 tipo.toLowerCase().contains("bebida") ||
                 tipo.toLowerCase().contains("alcohol") ||

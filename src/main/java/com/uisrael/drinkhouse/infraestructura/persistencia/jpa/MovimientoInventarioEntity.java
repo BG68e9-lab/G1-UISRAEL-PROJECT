@@ -56,6 +56,9 @@ public class MovimientoInventarioEntity {
 	@Column(name = "creado_en", nullable = false, updatable = false)
 	private OffsetDateTime creadoEn;
 
+	@Column(name = "venta_id")
+	private Long ventaId;
+
 	@PrePersist
 	protected void onCreate() {
 		this.creadoEn = OffsetDateTime.now();

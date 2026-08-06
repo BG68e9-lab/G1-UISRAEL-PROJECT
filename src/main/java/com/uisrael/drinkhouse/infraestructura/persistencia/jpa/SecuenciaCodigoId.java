@@ -5,12 +5,9 @@ import java.util.Objects;
 
 /**
  * Clase de clave primaria compuesta para SecuenciaCodigoEntity.
- * IMPORTANTE: Los campos deben coincidir exactamente con los nombres de las propiedades @Id en SecuenciaCodigoEntity.
- * JPA usa reflexión para mapear estos campos, por lo que deben llamarse igual.
  */
 public class SecuenciaCodigoId implements Serializable {
 
-    // CRÍTICO: Estos campos deben tener el mismo nombre que las propiedades @Id en SecuenciaCodigoEntity
     private NegocioEntity negocio;
     private TipoMovimientoEntity tipoMovimiento;
 
@@ -21,7 +18,6 @@ public class SecuenciaCodigoId implements Serializable {
         this.tipoMovimiento = tipoMovimiento;
     }
 
-    // Getters y setters necesarios para JPA
     public NegocioEntity getNegocio() {
         return negocio;
     }
@@ -39,8 +35,7 @@ public class SecuenciaCodigoId implements Serializable {
     }
 
     /**
-     * Comparación basada SOLO en los IDs, no en toda la entidad.
-     * Esto es crítico para que funcione con referencias parciales de JPA.
+     * Comparación basada en los IDs.
      */
     @Override
     public boolean equals(Object o) {
@@ -48,7 +43,6 @@ public class SecuenciaCodigoId implements Serializable {
         if (!(o instanceof SecuenciaCodigoId)) return false;
         SecuenciaCodigoId that = (SecuenciaCodigoId) o;
         
-        // Comparar solo los IDs, no las entidades completas
         Integer thisNegocioId = (negocio != null) ? negocio.getNegocioId() : null;
         Integer thatNegocioId = (that.negocio != null) ? that.negocio.getNegocioId() : null;
         Integer thisTipoId = (tipoMovimiento != null) ? tipoMovimiento.getTipoMovimientoId() : null;
@@ -59,8 +53,7 @@ public class SecuenciaCodigoId implements Serializable {
     }
 
     /**
-     * Hash basado SOLO en los IDs, no en toda la entidad.
-     * Esto es crítico para que funcione con referencias parciales de JPA.
+     * Hash basado en los IDs.
      */
     @Override
     public int hashCode() {

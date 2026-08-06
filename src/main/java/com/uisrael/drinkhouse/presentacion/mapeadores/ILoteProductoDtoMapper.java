@@ -17,6 +17,8 @@ public interface ILoteProductoDtoMapper {
 	 * por el caso de uso, no por el DTO.
 	 */
 	@Mapping(target = "loteId", ignore = true)
+	@Mapping(target = "productoId", ignore = true)
+	@Mapping(target = "productoNombre", ignore = true)
 	@Mapping(target = "codigoEntrada", ignore = true)
 	@Mapping(target = "cantidadDisponible", ignore = true)
 	@Mapping(target = "fechaIngreso", ignore = true)

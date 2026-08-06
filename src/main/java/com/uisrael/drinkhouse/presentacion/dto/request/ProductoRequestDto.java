@@ -16,7 +16,7 @@ public class ProductoRequestDto {
 	@NotBlank
 	private String marca;
 
-	private String tipo;
+	private Long tipoProductoId;
 
 	private String descripcion;
 
@@ -30,7 +30,6 @@ public class ProductoRequestDto {
 	@DecimalMin(value = "0")
 	private BigDecimal margenGanancia;
 
-	// Requerido solo cuando precioPersonalizado = true
 	private BigDecimal precioVenta;
 
 	private Boolean precioPersonalizado;

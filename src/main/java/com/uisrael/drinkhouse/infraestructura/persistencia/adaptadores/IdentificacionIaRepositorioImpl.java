@@ -36,14 +36,12 @@ public class IdentificacionIaRepositorioImpl implements IIdentificacionIaReposit
     public IdentificacionIa guardar(IdentificacionIa identificacion) {
         IdentificacionIaEntity entidad = mapper.aEntidad(identificacion);
 
-        // Asignar referencia al producto
         if (identificacion.getProductoId() != null) {
             ProductoEntity productoRef = new ProductoEntity();
             productoRef.setProductoId(identificacion.getProductoId());
             entidad.setProducto(productoRef);
         }
 
-        // Asignar referencia al negocio
         if (identificacion.getNegocioId() != null) {
             NegocioEntity negocioRef = new NegocioEntity();
             negocioRef.setNegocioId(identificacion.getNegocioId());

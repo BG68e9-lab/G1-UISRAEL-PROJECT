@@ -36,16 +36,13 @@ public class OrdenCompraRepositorioImpl implements IOrdenCompraRepositorio {
 	@Override
 	public OrdenCompra guardar(OrdenCompra orden) {
 		OrdenCompraEntity entity = mapper.toEntity(orden);
-		// Si la entidad ya existe (tiene ID), cargar y mantener las relaciones y campos NOT NULL existentes
 		if (orden.getOrdenCompraId() != null) {
 			jpaRepositorio.findById(orden.getOrdenCompraId()).ifPresent(existente -> {
 				entity.setFkProveedorEntity(existente.getFkProveedorEntity());
 				entity.setFkNegocioEntity(existente.getFkNegocioEntity());
-				entity.setExtraidoPorIa(existente.getExtraidoPorIa()); // Preservar campo NOT NULL
-				entity.setFechaOc(existente.getFechaOc()); // Preservar campo NOT NULL
-				entity.setNumeroOc(existente.getNumeroOc()); // Preservar número de OC
-				// Para confirmación: si el mapper trae null, preservar el valor existente
-				// Esto permite que valores nuevos del dominio sobrescriban los existentes
+				entity.setExtraidoPorIa(existente.getExtraidoPorIa());
+				entity.setFechaOc(existente.getFechaOc());
+				entity.setNumeroOc(existente.getNumeroOc());
 				if (entity.getConfirmadoPor() == null && existente.getConfirmadoPor() != null) {
 					entity.setConfirmadoPor(existente.getConfirmadoPor());
 				}
@@ -54,7 +51,6 @@ public class OrdenCompraRepositorioImpl implements IOrdenCompraRepositorio {
 				}
 			});
 		}
-		// Asignar estado por código
 		if (orden.getEstado() != null) {
 			EstadoOcEntity estadoEntity = estadoOcJpaRepositorio.findByCodigo(orden.getEstado())
 					.orElse(null);
@@ -67,13 +63,11 @@ public class OrdenCompraRepositorioImpl implements IOrdenCompraRepositorio {
 	@Override
 	public OrdenCompra guardarConRelaciones(OrdenCompra orden, Long proveedorId) {
 		OrdenCompraEntity entity = mapper.toEntity(orden);
-		// Asignar proveedor
 		if (proveedorId != null) {
 			ProveedorEntity proveedorEntity = new ProveedorEntity();
 			proveedorEntity.setProveedorId(proveedorId);
 			entity.setFkProveedorEntity(proveedorEntity);
 		}
-		// Asignar estado por código
 		if (orden.getEstado() != null) {
 			EstadoOcEntity estadoEntity = estadoOcJpaRepositorio.findByCodigo(orden.getEstado())
 					.orElse(null);

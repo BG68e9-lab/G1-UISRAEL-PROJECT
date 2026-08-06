@@ -87,6 +87,11 @@ public class UsuarioUseCaseImpl implements IUsuarioUseCase {
 		existente.setNombreCompleto(usuario.getNombreCompleto());
 		existente.setEmail(usuario.getEmail());
 		existente.setRolId(usuario.getRolId());
+		
+		if (usuario.getPasswordHash() != null && !usuario.getPasswordHash().isBlank()) {
+			existente.setPasswordHash(usuario.getPasswordHash());
+		}
+		
 		return repositorio.guardar(existente);
 	}
 }

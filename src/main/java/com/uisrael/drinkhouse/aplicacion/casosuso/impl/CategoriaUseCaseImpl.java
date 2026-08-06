@@ -39,7 +39,6 @@ public class CategoriaUseCaseImpl implements ICategoriaUseCase {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Categoría no encontrada con id: " + id));
         existente.setNombre(categoria.getNombre());
         existente.setMargenGananciaPct(categoria.getMargenGananciaPct());
-        // Si activo es null, mantener el valor existente
         if (categoria.getActivo() != null) {
             existente.setActivo(categoria.getActivo());
         }

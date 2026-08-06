@@ -31,7 +31,6 @@ public class UsuarioRepositorioImpl implements IUsuarioRepositorio {
 	@Override
 	public Usuario guardar(Usuario usuario) {
 		UsuarioEntity entity = usuarioMapper.toEntity(usuario);
-		// Asignar rol si está presente
 		if (usuario.getRolId() != null) {
 			RolEntity rolRef = new RolEntity();
 			rolRef.setRolId(usuario.getRolId());

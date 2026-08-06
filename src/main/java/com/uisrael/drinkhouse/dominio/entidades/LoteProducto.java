@@ -9,6 +9,8 @@ public class LoteProducto {
 
 	private Long loteId;
 	private Integer negocioId;
+	private Long productoId;
+	private String productoNombre;
 	private String codigoEntrada;
 	private BigDecimal cantidadInicial;
 	private BigDecimal cantidadDisponible;
@@ -35,6 +37,12 @@ public class LoteProducto {
 	public void setLoteId(Long loteId) { this.loteId = loteId; }
 	public Integer getNegocioId() { return negocioId; }
 	public void setNegocioId(Integer negocioId) { this.negocioId = negocioId; }
+
+	public Long getProductoId() { return productoId; }
+	public void setProductoId(Long productoId) { this.productoId = productoId; }
+
+	public String getProductoNombre() { return productoNombre; }
+	public void setProductoNombre(String productoNombre) { this.productoNombre = productoNombre; }
 
 	public String getCodigoEntrada() { return codigoEntrada; }
 	public void setCodigoEntrada(String codigoEntrada) { this.codigoEntrada = codigoEntrada; }

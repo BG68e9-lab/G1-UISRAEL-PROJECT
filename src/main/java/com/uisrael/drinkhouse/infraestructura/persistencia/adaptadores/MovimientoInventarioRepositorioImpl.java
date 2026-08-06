@@ -50,21 +50,18 @@ public class MovimientoInventarioRepositorioImpl implements IMovimientoInventari
 	public MovimientoInventario guardar(MovimientoInventario movimiento) {
 		MovimientoInventarioEntity entity = mapper.toEntity(movimiento);
 
-		// Resolver FK obligatoria: producto
 		if (movimiento.getProductoId() != null) {
 			ProductoEntity productoRef = productoJpaRepositorio
 					.getReferenceById(movimiento.getProductoId());
 			entity.setFkProductoEntity(productoRef);
 		}
 
-		// Resolver FK obligatoria: tipo de movimiento
 		if (movimiento.getTipoMovimientoId() != null) {
 			TipoMovimientoEntity tipoRef = tipoMovimientoJpaRepositorio
 					.getReferenceById(movimiento.getTipoMovimientoId().intValue());
 			entity.setFkTipoMovimientoEntity(tipoRef);
 		}
 
-		// Resolver FK opcional: lote (requerido para SALIDA, opcional para ENTRADA/AJUSTE)
 		if (movimiento.getLoteId() != null) {
 			LoteProductoEntity loteRef = loteJpaRepositorio
 					.getReferenceById(movimiento.getLoteId());

@@ -15,6 +15,8 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.ProductoEntity;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ILoteProductoJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.repositorio.ILoteProductoJpaRepositorio;
 
+import jakarta.persistence.EntityManager;
+
 /**
  * Adaptador de repositorio para LoteProducto.
  * Implementa el puerto de salida ILoteProductoRepositorio usando Spring Data JPA.
@@ -23,11 +25,14 @@ public class LoteProductoRepositorioImpl implements ILoteProductoRepositorio {
 
 	private final ILoteProductoJpaRepositorio jpaRepositorio;
 	private final ILoteProductoJpaMapper mapper;
+	private final EntityManager entityManager;
 
 	public LoteProductoRepositorioImpl(ILoteProductoJpaRepositorio jpaRepositorio,
-			ILoteProductoJpaMapper mapper) {
+			ILoteProductoJpaMapper mapper,
+			EntityManager entityManager) {
 		this.jpaRepositorio = jpaRepositorio;
 		this.mapper = mapper;
+		this.entityManager = entityManager;
 	}
 
 	/**
@@ -36,7 +41,6 @@ public class LoteProductoRepositorioImpl implements ILoteProductoRepositorio {
 	@Override
 	public LoteProducto guardar(LoteProducto loteProducto) {
 		LoteProductoEntity entidad = mapper.aEntidad(loteProducto);
-		// Preservar la relación con producto si el loteId ya existe
 		if (loteProducto.getLoteId() != null) {
 			jpaRepositorio.findById(loteProducto.getLoteId()).ifPresent(existente -> {
 				entidad.setFkProductoEntity(existente.getFkProductoEntity());
@@ -52,9 +56,7 @@ public class LoteProductoRepositorioImpl implements ILoteProductoRepositorio {
 	@Override
 	public LoteProducto guardarConProductoId(LoteProducto loteProducto, Long productoId) {
 		LoteProductoEntity entidad = mapper.aEntidad(loteProducto);
-		// Asignar la relación con el Producto por referencia de ID
-		ProductoEntity productoRef = new ProductoEntity();
-		productoRef.setProductoId(productoId);
+		ProductoEntity productoRef = entityManager.getReference(ProductoEntity.class, productoId);
 		entidad.setFkProductoEntity(productoRef);
 		LoteProductoEntity guardado = jpaRepositorio.save(entidad);
 		return mapper.aDominio(guardado);
@@ -100,7 +102,7 @@ public class LoteProductoRepositorioImpl implements ILoteProductoRepositorio {
 	 */
 	@Override
 	public Page<LoteProducto> listarPaginado(Pageable pageable) {
-		return jpaRepositorio.findAll(pageable).map(mapper::aDominio);
+		return jpaRepositorio.findAllWithProductoPaginado(pageable).map(mapper::aDominio);
 	}
 
 	/**

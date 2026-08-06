@@ -42,6 +42,11 @@ public class ProveedorRepositoriImpl implements IProveedorRepositorio {
 	public boolean existePorRuc(String ruc) {
 		return jpaRepositorio.existsByRuc(ruc);
 	}
+	
+	@Override
+	public Optional<Proveedor> buscarPorRuc(String ruc) {
+		return jpaRepositorio.findByRuc(ruc).map(proveedorMapper::toDomain);
+	}
 
 	@Override
 	public void eliminar(Long id) {

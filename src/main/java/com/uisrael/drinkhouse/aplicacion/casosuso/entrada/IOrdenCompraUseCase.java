@@ -15,12 +15,11 @@ public interface IOrdenCompraUseCase {
     /**
      * Crea una nueva orden de compra en estado BORRADOR con sus detalles.
      *
-     * @param orden    datos de la orden (proveedorId incluido como campo separado en impl)
+     * @param orden    datos de la orden (debe incluir proveedorId)
      * @param detalles lista de detalles de la orden
-     * @param proveedorId ID del proveedor
      * @return la orden creada con su código de referencia generado
      */
-    OrdenCompra crearOrden(OrdenCompra orden, List<DetalleOrdenCompra> detalles, Long proveedorId);
+    OrdenCompra crearOrden(OrdenCompra orden, List<DetalleOrdenCompra> detalles);
 
     /**
      * Actualiza una orden existente en estado BORRADOR.

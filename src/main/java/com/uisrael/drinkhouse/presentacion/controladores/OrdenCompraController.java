@@ -72,7 +72,7 @@ public class OrdenCompraController {
                 .map(mapper::detalleRequestToDomain)
                 .toList();
 
-        OrdenCompra creada = ordenCompraUseCase.crearOrden(orden, detalles, requestDto.getProveedorId());
+        OrdenCompra creada = ordenCompraUseCase.crearOrden(orden, detalles);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(construirResponseConDetalles(creada));
@@ -179,15 +179,12 @@ public class OrdenCompraController {
         return ResponseEntity.ok(lista);
     }
 
-    // --- Método auxiliar ---
-
     /**
      * Construye el DTO de respuesta incluyendo los detalles de la orden.
      */
     private OrdenCompraResponseDto construirResponseConDetalles(OrdenCompra orden) {
         OrdenCompraResponseDto dto = mapper.toResponseDto(orden);
 
-        // Cargar y mapear los detalles
         List<DetalleOrdenCompraResponseDto> detallesDto = detalleRepositorio
                 .buscarPorOrdenCompraId(orden.getOrdenCompraId())
                 .stream()
@@ -195,7 +192,6 @@ public class OrdenCompraController {
                 .toList();
         dto.setDetalles(detallesDto);
 
-        // Cargar información del proveedor desde la entidad JPA
         ordenCompraJpaRepositorio.findById(orden.getOrdenCompraId()).ifPresent(entity -> {
             if (entity.getFkProveedorEntity() != null) {
                 dto.setProveedorId(entity.getFkProveedorEntity().getProveedorId());
@@ -203,7 +199,6 @@ public class OrdenCompraController {
             }
         });
 
-        // Cargar nombres de productos para cada detalle consultando directamente por productoId
         for (DetalleOrdenCompraResponseDto detalleDto : detallesDto) {
             if (detalleDto.getProductoId() != null) {
                 productoJpaRepositorio.findById(detalleDto.getProductoId()).ifPresent(producto -> {

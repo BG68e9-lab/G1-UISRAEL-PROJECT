@@ -32,4 +32,10 @@ public class CodigoAccesoRepositorioImpl implements ICodigoAccesoRepositorio {
 	public Optional<CodigoAcceso> buscarPorHash(String codigoHash) {
 		return jpaRepositorio.findByCodigoHash(codigoHash).map(codigoAccesoMapper::toDomain);
 	}
+	
+	@Override
+	public Optional<CodigoAcceso> buscarUltimoCodigoPorUsuarioYTipo(java.util.UUID usuarioId, String tipoCodigo) {
+		return jpaRepositorio.findTopByFkUsuarioEntityUsuarioIdAndTipoCodigoOrderByCreadoEnDesc(usuarioId, tipoCodigo)
+				.map(codigoAccesoMapper::toDomain);
+	}
 }

@@ -15,4 +15,11 @@ public interface ILoteProductoJpaRepositorio extends JpaRepository<LoteProductoE
 
 	@Query("SELECT l FROM LoteProductoEntity l WHERE l.fechaVencimiento IS NOT NULL AND l.fechaVencimiento <= :limite AND l.cantidadDisponible > 0")
 	List<LoteProductoEntity> findProximosAVencer(@Param("limite") LocalDate limite);
+
+	@Query("SELECT l FROM LoteProductoEntity l LEFT JOIN FETCH l.fkProductoEntity ORDER BY l.fechaIngreso DESC")
+	List<LoteProductoEntity> findAllWithProducto();
+
+	@Query(value = "SELECT l FROM LoteProductoEntity l LEFT JOIN FETCH l.fkProductoEntity",
+		   countQuery = "SELECT COUNT(l) FROM LoteProductoEntity l")
+	org.springframework.data.domain.Page<LoteProductoEntity> findAllWithProductoPaginado(org.springframework.data.domain.Pageable pageable);
 }

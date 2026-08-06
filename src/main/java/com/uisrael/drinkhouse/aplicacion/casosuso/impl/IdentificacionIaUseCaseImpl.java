@@ -57,13 +57,11 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 	public IdentificacionIa identificarProducto(String imagenBase64, String formatoImagen,
 			Long productoId, Integer negocioId, String tipoIdentificacion) {
 
-		// 1. Validar formato de imagen
 		if (formatoImagen == null || !esFormatoSoportado(formatoImagen)) {
 			throw new ReglaNegocioException(
 					"Formato de imagen no soportado. Use JPEG, PNG o WEBP");
 		}
 
-		// 2. Validar tipo de identificación
 		if (tipoIdentificacion == null ||
 				(!"BOTELLA".equalsIgnoreCase(tipoIdentificacion) && 
 				 !"FACTURA".equalsIgnoreCase(tipoIdentificacion) &&
@@ -72,25 +70,20 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 					"Tipo de identificación no válido. Use PRODUCTO, BOTELLA o FACTURA");
 		}
 
-		// 3. Verificar existencia del producto (OPCIONAL - solo si se proporciona)
-		// El productoId es opcional porque puedes estar identificando un producto NUEVO
 		if (productoId != null) {
 			productoRepositorio.buscarPorId(productoId)
 					.orElseThrow(() -> new RecursoNoEncontradoException(
 							"Producto no encontrado con id: " + productoId));
 		}
 
-		// 4. Obtener configuración de tokens del negocio
 		TokensIaNegocio limiteTokens = tokensRepositorio.buscarPorNegocioId(negocioId)
 				.orElseThrow(() -> new RecursoNoEncontradoException(
 						"Configuración de tokens IA no encontrada para el negocio: " + negocioId));
 
-		// Solo verificar si hay token activo
 		if (Boolean.FALSE.equals(limiteTokens.getActivo())) {
 			throw new CuotaIaExcedidaException("El token de IA del negocio no está activo");
 		}
 
-		// 5. Obtener o crear registro de consumo del mes actual (periodo = 1er día del mes)
 		LocalDate periodoActual = LocalDate.now().withDayOfMonth(1);
 		ConsumoIaMensual consumo = consumoRepositorio
 				.buscarPorNegocioYPeriodo(negocioId, periodoActual)
@@ -101,14 +94,11 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 						.totalTokensOutput(0L)
 						.build());
 
-		// 6. Llamar a Claude según el tipo de identificación y mapear el resultado
 		RespuestaClaudeConIdentificacion resultado = procesarConClaude(
 				imagenBase64, formatoImagen, tipoIdentificacion, productoId, negocioId);
 
-		// 7. Guardar la identificación
 		IdentificacionIa guardada = identificacionRepositorio.guardar(resultado.getIdentificacion());
 
-		// 8. Incrementar tokens usados con los valores reales de Claude y guardar consumo
 		consumo.setTotalTokensInput(consumo.getTotalTokensInput() + resultado.getTokensInput());
 		consumo.setTotalTokensOutput(consumo.getTotalTokensOutput() + resultado.getTokensOutput());
 		consumoRepositorio.guardar(consumo);
@@ -173,7 +163,6 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 		Long tokensOutput = 0L;
 
 		if ("PRODUCTO".equalsIgnoreCase(tipoIdentificacion)) {
-			// Identificación genérica para cualquier tipo de producto
 			RespuestaClaudeDto<ResultadoProductoDto> respuesta = claudeVisionService.identificarProductoGenerico(imagenBase64, formatoImagen);
 			ResultadoProductoDto resultado = respuesta.getResultado();
 			tokensInput = respuesta.getTokensInput();
@@ -184,7 +173,6 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 					.tipoSugerido(resultado.getCategoriaSugerida())
 					.reconocido(resultado.getReconocido() != null ? resultado.getReconocido() : false);
 		} else if ("BOTELLA".equalsIgnoreCase(tipoIdentificacion)) {
-			// Identificación específica para bebidas
 			RespuestaClaudeDto<ResultadoBotellaDto> respuesta = claudeVisionService.identificarBotella(imagenBase64, formatoImagen);
 			ResultadoBotellaDto resultado = respuesta.getResultado();
 			tokensInput = respuesta.getTokensInput();
@@ -195,7 +183,6 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 					.tipoSugerido(resultado.getTipo())
 					.reconocido(resultado.getReconocido() != null ? resultado.getReconocido() : false);
 		} else {
-			// FACTURA: se usa el nombre del proveedor como nombre sugerido
 			RespuestaClaudeDto<ResultadoFacturaDto> respuesta = claudeVisionService.extraerFactura(imagenBase64, formatoImagen);
 			ResultadoFacturaDto resultado = respuesta.getResultado();
 			tokensInput = respuesta.getTokensInput();

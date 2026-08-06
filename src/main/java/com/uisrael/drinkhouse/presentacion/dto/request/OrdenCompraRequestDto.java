@@ -3,7 +3,6 @@ package com.uisrael.drinkhouse.presentacion.dto.request;
 import java.util.List;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -16,7 +15,11 @@ public class OrdenCompraRequestDto {
 
     private Integer negocioId;
 
-    @NotEmpty(message = "La lista de detalles no puede estar vacía")
+    /**
+     * Lista de detalles de la orden de compra.
+     * Puede estar vacía para órdenes en estado BORRADOR creadas desde IA,
+     * donde los productos serán agregados manualmente después.
+     */
     @Valid
     private List<DetalleOrdenCompraRequestDto> detalles;
 

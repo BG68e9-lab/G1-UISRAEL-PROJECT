@@ -1,9 +1,9 @@
 package com.uisrael.drinkhouse.presentacion.dto.request;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -15,18 +15,17 @@ public class DetalleOrdenCompraRequestDto {
     private Long productoId;
 
     @NotNull(message = "La cantidad es obligatoria")
-    @Min(value = 1, message = "La cantidad debe ser al menos 1")
-    private Integer cantidad;
+    @DecimalMin(value = "0.001", inclusive = true, message = "La cantidad debe ser al menos 0.001")
+    private BigDecimal cantidad;
 
     @NotNull(message = "El precio unitario es obligatorio")
-    @DecimalMin(value = "0", inclusive = false, message = "El precio unitario debe ser mayor que 0")
-    private Double precioUnitario;
+    @DecimalMin(value = "0.01", message = "El precio unitario debe ser mayor que 0")
+    private BigDecimal precioUnitario;
 
     /**
      * Fecha de vencimiento del lote que se creará al recibir la orden.
-     * Obligatoria para control de inventario.
+     * Si no se proporciona, se usará la fecha actual + 1 año como default.
      */
-    @NotNull(message = "La fecha de vencimiento es obligatoria")
     private LocalDate fechaVencimiento;
 
     public DetalleOrdenCompraRequestDto() {}
@@ -34,11 +33,11 @@ public class DetalleOrdenCompraRequestDto {
     public Long getProductoId() { return productoId; }
     public void setProductoId(Long productoId) { this.productoId = productoId; }
 
-    public Integer getCantidad() { return cantidad; }
-    public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+    public BigDecimal getCantidad() { return cantidad; }
+    public void setCantidad(BigDecimal cantidad) { this.cantidad = cantidad; }
 
-    public Double getPrecioUnitario() { return precioUnitario; }
-    public void setPrecioUnitario(Double precioUnitario) { this.precioUnitario = precioUnitario; }
+    public BigDecimal getPrecioUnitario() { return precioUnitario; }
+    public void setPrecioUnitario(BigDecimal precioUnitario) { this.precioUnitario = precioUnitario; }
 
     public LocalDate getFechaVencimiento() { return fechaVencimiento; }
     public void setFechaVencimiento(LocalDate fechaVencimiento) { this.fechaVencimiento = fechaVencimiento; }

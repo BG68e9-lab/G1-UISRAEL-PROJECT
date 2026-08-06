@@ -10,6 +10,7 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.OrdenCompraEntity
 public interface IOrdenCompraJpaMapper {
 
 	@Mapping(source = "fkNegocioEntity.negocioId", target = "negocioId")
+	@Mapping(source = "fkProveedorEntity.proveedorId", target = "proveedorId")
 	@Mapping(target = "codigoReferencia", source = "numeroOc")
 	@Mapping(target = "estado", source = "fkEstadoOcEntity.codigo")
 	@Mapping(target = "total", source = "totalOc")
@@ -18,7 +19,7 @@ public interface IOrdenCompraJpaMapper {
 	@Mapping(target = "numeroOc", source = "codigoReferencia")
 	@Mapping(target = "totalOc", source = "total")
 	@Mapping(target = "fkNegocioEntity", expression = "java(createNegocioEntity(domain.getNegocioId()))")
-	@Mapping(target = "fkProveedorEntity", ignore = true)
+	@Mapping(target = "fkProveedorEntity", expression = "java(createProveedorEntity(domain.getProveedorId()))")
 	@Mapping(target = "fkEstadoOcEntity", ignore = true)
 	@Mapping(target = "fechaOc", ignore = true)
 	@Mapping(target = "documentoUrl", ignore = true)
@@ -35,6 +36,17 @@ public interface IOrdenCompraJpaMapper {
 		com.uisrael.drinkhouse.infraestructura.persistencia.jpa.NegocioEntity entity = 
 			new com.uisrael.drinkhouse.infraestructura.persistencia.jpa.NegocioEntity();
 		entity.setNegocioId(negocioId);
+		return entity;
+	}
+
+	/**
+	 * Crea una referencia a ProveedorEntity con solo el ID para evitar null en FK.
+	 */
+	default com.uisrael.drinkhouse.infraestructura.persistencia.jpa.ProveedorEntity createProveedorEntity(Long proveedorId) {
+		if (proveedorId == null) return null;
+		com.uisrael.drinkhouse.infraestructura.persistencia.jpa.ProveedorEntity entity = 
+			new com.uisrael.drinkhouse.infraestructura.persistencia.jpa.ProveedorEntity();
+		entity.setProveedorId(proveedorId);
 		return entity;
 	}
 }

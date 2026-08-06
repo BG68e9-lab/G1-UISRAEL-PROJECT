@@ -14,6 +14,8 @@ public interface IProveedorRepositorio {
 	List<Proveedor> listarTodos();
 
 	boolean existePorRuc(String ruc);
+	
+	Optional<Proveedor> buscarPorRuc(String ruc);
 
 	void eliminar(Long id);
 

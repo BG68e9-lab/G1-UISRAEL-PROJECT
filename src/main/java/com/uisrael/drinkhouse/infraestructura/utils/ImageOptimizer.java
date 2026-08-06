@@ -51,18 +51,15 @@ public class ImageOptimizer {
      * @throws Exception si ocurre un error durante el procesamiento de la imagen
      */
     public String optimizarImagen(String imagenBase64Original) throws Exception {
-        // Decodificar Base64 a bytes
         byte[] bytesOriginales = Base64.getDecoder().decode(imagenBase64Original);
         
-        // Redimensionar y comprimir
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Thumbnails.of(new ByteArrayInputStream(bytesOriginales))
-                .size(MAX_DIMENSION, MAX_DIMENSION) // mantiene aspect ratio
+                .size(MAX_DIMENSION, MAX_DIMENSION)
                 .outputFormat("jpg")
                 .outputQuality(JPEG_QUALITY)
                 .toOutputStream(outputStream);
         
-        // Recodificar a Base64
         return Base64.getEncoder().encodeToString(outputStream.toByteArray());
     }
 
@@ -96,7 +93,6 @@ public class ImageOptimizer {
      * @return true si la imagen es mayor a 500KB y debería optimizarse
      */
     public boolean necesitaOptimizacion(String imagenBase64) {
-        // Base64 incrementa el tamaño ~33%, así que 500KB → ~667KB en Base64
         final int UMBRAL_BYTES_BASE64 = 667_000;
         return imagenBase64.length() > UMBRAL_BYTES_BASE64;
     }

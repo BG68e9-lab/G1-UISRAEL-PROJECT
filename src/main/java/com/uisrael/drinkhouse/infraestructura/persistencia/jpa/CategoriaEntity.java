@@ -55,6 +55,10 @@ public class CategoriaEntity {
 	@JsonIgnore
 	private List<ProductoEntity> productos = new ArrayList<>();
 
+	@OneToMany(mappedBy = "fkCategoriaEntity", fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<TipoProductoEntity> tiposProducto = new ArrayList<>();
+
 	@PrePersist
 	protected void onCreate() {
 		this.creadoEn = OffsetDateTime.now();

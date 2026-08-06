@@ -65,5 +65,11 @@ public class ResultadoFacturaDto {
 
         /** Subtotal (cantidad × precio unitario) */
         private Double subtotal;
+
+        /** ID del producto si existe en el sistema, null si no existe */
+        private Long productoId;
+
+        /** Indica si el producto ya existe en el sistema */
+        private boolean productoExiste;
     }
 }

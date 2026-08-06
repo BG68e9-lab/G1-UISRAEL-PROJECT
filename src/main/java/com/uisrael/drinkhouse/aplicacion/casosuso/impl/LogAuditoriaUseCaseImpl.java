@@ -26,13 +26,11 @@ public class LogAuditoriaUseCaseImpl implements ILogAuditoriaUseCase {
 
 	@Override
 	public LogAuditoria registrar(String entidad, String entidadId, String accion, Object detalle) {
-		// Serializar el detalle como JSON para el registro de auditoría
 		String detalleJson = null;
 		if (detalle != null) {
 			try {
 				detalleJson = objectMapper.writeValueAsString(detalle);
 			} catch (JsonProcessingException e) {
-				// Si falla la conversión a JSON, crear un JSON válido con el toString
 				detalleJson = "{\"error\":\"Serialization failed\",\"value\":\"" + 
 					detalle.toString().replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r") + "\"}";
 			}

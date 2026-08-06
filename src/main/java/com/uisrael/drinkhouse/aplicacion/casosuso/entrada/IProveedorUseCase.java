@@ -14,5 +14,9 @@ public interface IProveedorUseCase {
 
 	List<Proveedor> listarProveedores();
 	
+	Proveedor buscarPorRuc(String ruc);
+	
+	Proveedor buscarOCrearPorRuc(Proveedor proveedor);
+	
 	void eliminarProveedor(Long id);
 }

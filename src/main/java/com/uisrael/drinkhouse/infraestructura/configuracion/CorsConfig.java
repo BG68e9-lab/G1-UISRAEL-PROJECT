@@ -17,14 +17,12 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         
-        // Permitir peticiones desde cualquier origen (para desarrollo)
         config.setAllowCredentials(true);
         config.addAllowedOriginPattern("*");
         
-        // Permitir todos los headers
         config.addAllowedHeader("*");
+        config.addExposedHeader("X-Secondary-Auth");
         
-        // Permitir todos los métodos HTTP
         config.addAllowedMethod("*");
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

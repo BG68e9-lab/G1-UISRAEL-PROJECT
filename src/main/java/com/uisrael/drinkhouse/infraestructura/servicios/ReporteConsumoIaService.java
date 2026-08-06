@@ -86,10 +86,8 @@ public class ReporteConsumoIaService {
                 return;
             }
 
-            // Aquí se puede implementar el envío por email
             logger.info("Reporte generado exitosamente. Total de negocios: {}", reporte.size());
             
-            // Calcular totales
             int totalIdentificaciones = reporte.stream()
                     .mapToInt(ReporteConsumoIaMensualDto::getCantidadIdentificaciones)
                     .sum();
@@ -100,9 +98,6 @@ public class ReporteConsumoIaService {
             logger.info("Totales del período: {} identificaciones, {} tokens consumidos",
                     totalIdentificaciones, totalTokens);
 
-            // TODO: Implementar envío de email con el reporte
-            // emailService.enviarReporteConsumoIa(reporte);
-
         } catch (Exception e) {
             logger.error("Error al generar reporte mensual automático", e);
         }
@@ -112,13 +107,11 @@ public class ReporteConsumoIaService {
      * Convierte una entidad de consumo a DTO de reporte.
      */
     private ReporteConsumoIaMensualDto convertirADto(ConsumoIaMensualEntity entity) {
-        // Calcular total de tokens (input + output)
         Integer totalTokens = (entity.getTotalTokensInput() != null ? entity.getTotalTokensInput().intValue() : 0)
                 + (entity.getTotalTokensOutput() != null ? entity.getTotalTokensOutput().intValue() : 0);
         
         String estadoCuota = determinarEstadoCuota(totalTokens);
 
-        // Contar las identificaciones del periodo para este negocio
         int cantidadIdentificaciones = identificacionRepositorio
                 .contarPorNegocioYPeriodo(entity.getNegocio().getNegocioId(), entity.getPeriodo());
 

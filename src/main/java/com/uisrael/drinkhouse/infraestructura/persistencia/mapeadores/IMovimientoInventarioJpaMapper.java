@@ -20,6 +20,10 @@ public interface IMovimientoInventarioJpaMapper {
 	@Mapping(source = "fkLoteEntity.loteId",         target = "loteId")
 	@Mapping(source = "fkTipoMovimientoEntity.tipoMovimientoId", target = "tipoMovimientoId")
 	@Mapping(source = "fkTipoMovimientoEntity.codigo", target = "tipoMovimientoCodigo")
+	@Mapping(source = "ventaId", target = "ventaId")
+	@Mapping(target = "cantidadAnterior", ignore = true)
+	@Mapping(target = "ajuste", ignore = true)
+	@Mapping(target = "cantidadPosterior", ignore = true)
 	MovimientoInventario toDomain(MovimientoInventarioEntity entity);
 
 	@Mapping(target = "fkNegocioEntity", ignore = true)
@@ -27,6 +31,7 @@ public interface IMovimientoInventarioJpaMapper {
 	@Mapping(target = "fkTipoMovimientoEntity", expression = "java(createTipoMovimientoEntity(domain.getTipoMovimientoId()))")
 	@Mapping(target = "fkProductoEntity", expression = "java(createProductoEntity(domain.getProductoId()))")
 	@Mapping(target = "fkLoteEntity", expression = "java(createLoteEntity(domain.getLoteId()))")
+	@Mapping(source = "ventaId", target = "ventaId")
 	MovimientoInventarioEntity toEntity(MovimientoInventario domain);
 
 	default TipoMovimientoEntity createTipoMovimientoEntity(Long tipoMovimientoId) {

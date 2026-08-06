@@ -45,13 +45,11 @@ public class ExportacionService {
 
             Sheet sheet = workbook.createSheet("Movimientos Inventario");
 
-            // Crear estilo para encabezados
             CellStyle headerStyle = workbook.createCellStyle();
             Font headerFont = workbook.createFont();
             headerFont.setBold(true);
             headerStyle.setFont(headerFont);
 
-            // Crear fila de encabezados
             Row headerRow = sheet.createRow(0);
             String[] columnas = { "Código", "Tipo", "Producto", "Lote", "Cantidad", "Precio Unitario",
                     "Fecha Movimiento", "Estado Respaldo", "Estado Caducidad" };
@@ -62,23 +60,21 @@ public class ExportacionService {
                 cell.setCellStyle(headerStyle);
             }
 
-            // Llenar datos
             int rowNum = 1;
             for (MovimientoInventarioResponseDto mov : movimientos) {
                 Row row = sheet.createRow(rowNum++);
 
                 row.createCell(0).setCellValue(mov.getCodigoMovimiento());
                 row.createCell(1).setCellValue(mov.getTipoMovimiento());
-                row.createCell(2).setCellValue("N/A"); // productoNombre no está en DTO
-                row.createCell(3).setCellValue("N/A"); // loteCodigo no está en DTO
+                row.createCell(2).setCellValue("N/A");
+                row.createCell(3).setCellValue("N/A");
                 row.createCell(4).setCellValue(mov.getCantidad() != null ? mov.getCantidad().doubleValue() : 0.0);
                 row.createCell(5).setCellValue(mov.getPrecioUnitario() != null ? mov.getPrecioUnitario().doubleValue() : 0.0);
                 row.createCell(6).setCellValue(mov.getCreadoEn() != null ? mov.getCreadoEn().format(DATE_FORMATTER) : "N/A");
-                row.createCell(7).setCellValue("N/A"); // estadoRespaldo no está en DTO
-                row.createCell(8).setCellValue("N/A"); // estadoCaducidad no está en DTO
+                row.createCell(7).setCellValue("N/A");
+                row.createCell(8).setCellValue("N/A");
             }
 
-            // Ajustar ancho de columnas
             for (int i = 0; i < columnas.length; i++) {
                 sheet.autoSizeColumn(i);
             }
@@ -108,7 +104,6 @@ public class ExportacionService {
             PdfDocument pdfDoc = new PdfDocument(writer);
             Document document = new Document(pdfDoc);
 
-            // Título
             Paragraph titulo = new Paragraph("Historial de Movimientos de Inventario")
                     .setFontSize(18)
                     .setBold()
@@ -117,12 +112,10 @@ public class ExportacionService {
 
             document.add(new Paragraph("\n"));
 
-            // Crear tabla con 9 columnas
             float[] columnWidths = { 2f, 1.5f, 2f, 2f, 1f, 1.5f, 2f, 1.5f, 1.5f };
             Table table = new Table(columnWidths);
             table.setWidth(550);
 
-            // Encabezados
             String[] headers = { "Código", "Tipo", "Producto", "Lote", "Cant.", "P. Unit.",
                     "Fecha", "Respaldo", "Caducidad" };
 
@@ -132,22 +125,20 @@ public class ExportacionService {
                         .setBold());
             }
 
-            // Datos
             for (MovimientoInventarioResponseDto mov : movimientos) {
                 table.addCell(mov.getCodigoMovimiento());
                 table.addCell(mov.getTipoMovimiento());
-                table.addCell("N/A"); // productoNombre no está en DTO
-                table.addCell("N/A"); // loteCodigo no está en DTO
+                table.addCell("N/A");
+                table.addCell("N/A");
                 table.addCell(mov.getCantidad() != null ? String.valueOf(mov.getCantidad()) : "0");
                 table.addCell(mov.getPrecioUnitario() != null ? String.format("%.2f", mov.getPrecioUnitario()) : "0.00");
                 table.addCell(mov.getCreadoEn() != null ? mov.getCreadoEn().format(DATE_FORMATTER) : "N/A");
-                table.addCell("N/A"); // estadoRespaldo no está en DTO
-                table.addCell("N/A"); // estadoCaducidad no está en DTO
+                table.addCell("N/A");
+                table.addCell("N/A");
             }
 
             document.add(table);
 
-            // Pie de página
             document.add(new Paragraph("\n"));
             document.add(new Paragraph("Total de movimientos: " + movimientos.size())
                     .setTextAlignment(TextAlignment.RIGHT)

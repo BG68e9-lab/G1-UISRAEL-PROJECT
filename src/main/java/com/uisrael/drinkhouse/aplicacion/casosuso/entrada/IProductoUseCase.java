@@ -14,7 +14,7 @@ public interface IProductoUseCase {
 
 	List<Producto> listarProductos();
 
-	List<Producto> buscarConFiltros(String nombre, String marca, String tipo, Long categoriaId);
+	List<Producto> buscarConFiltros(String nombre, String marca, Long tipoProductoId, Long categoriaId);
 
 	void eliminarProducto(Long id);
 }

@@ -18,23 +18,21 @@ public interface IOrdenCompraDtoMapper {
 
     /**
      * Convierte el request DTO de orden a entidad de dominio.
-     * proveedorId y detalles se manejan por separado en el controller/use case.
+     * detalles se manejan por separado en el controller/use case.
      */
     @Mapping(target = "ordenCompraId", ignore = true)
     @Mapping(target = "codigoReferencia", ignore = true)
     @Mapping(target = "estado", ignore = true)
     @Mapping(target = "total", ignore = true)
     @Mapping(target = "creadoEn", ignore = true)
+    @Mapping(target = "confirmadoPor", ignore = true)
+    @Mapping(target = "confirmadoEn", ignore = true)
     OrdenCompra toDomain(OrdenCompraRequestDto dto);
 
     /**
      * Convierte la entidad de dominio a DTO de respuesta.
-     * proveedorId, proveedorRazonSocial y detalles no están en el dominio OrdenCompra — se ignoran aquí
-     * y el controller los completa manualmente si es necesario.
-     * fechaCreacion se mapea desde el campo creadoEn del dominio.
+     * proveedorRazonSocial y detalles no están en el dominio OrdenCompra — se completan en el controller.
      */
-    @Mapping(source = "creadoEn", target = "fechaCreacion")
-    @Mapping(target = "proveedorId", ignore = true)
     @Mapping(target = "proveedorRazonSocial", ignore = true)
     @Mapping(target = "detalles", ignore = true)
     OrdenCompraResponseDto toResponseDto(OrdenCompra orden);
