@@ -8,10 +8,7 @@ public interface IDetalleOrdenCompraRepositorio {
 
 	DetalleOrdenCompra guardar(DetalleOrdenCompra detalle);
 
-	/**
-	 * Guarda el detalle asociándolo a la orden de compra mediante su ID JPA.
-	 */
-	DetalleOrdenCompra guardarConOrdenCompraId(DetalleOrdenCompra detalle, Long ordenCompraId);
+DetalleOrdenCompra guardarConOrdenCompraId(DetalleOrdenCompra detalle, Long ordenCompraId);
 
 	List<DetalleOrdenCompra> buscarPorOrdenCompraId(Long ordenCompraId);
 

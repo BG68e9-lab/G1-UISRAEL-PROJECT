@@ -14,10 +14,6 @@ import com.uisrael.drinkhouse.infraestructura.repositorio.IConsumoIaMensualJpaRe
 import com.uisrael.drinkhouse.infraestructura.repositorio.IIdentificacionIaJpaRepositorio;
 import com.uisrael.drinkhouse.presentacion.dto.response.ReporteConsumoIaMensualDto;
 
-/**
- * Servicio para generar y enviar reportes de consumo de IA mensual.
- * Se ejecuta automáticamente el primer día de cada mes a las 8:00 AM.
- */
 @Service
 public class ReporteConsumoIaService {
 
@@ -33,13 +29,7 @@ public class ReporteConsumoIaService {
         this.identificacionRepositorio = identificacionRepositorio;
     }
 
-    /**
-     * Genera el reporte de consumo de IA para un período específico.
-     *
-     * @param periodo fecha del período (primer día del mes)
-     * @return lista de reportes por negocio
-     */
-    public List<ReporteConsumoIaMensualDto> generarReporte(LocalDate periodo) {
+public List<ReporteConsumoIaMensualDto> generarReporte(LocalDate periodo) {
         logger.info("Generando reporte de consumo IA para período: {}", periodo);
 
         List<ConsumoIaMensualEntity> consumos = consumoRepositorio.findAll();
@@ -50,31 +40,17 @@ public class ReporteConsumoIaService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Obtiene el reporte del mes actual.
-     *
-     * @return lista de reportes por negocio del mes en curso
-     */
-    public List<ReporteConsumoIaMensualDto> obtenerReporteMesActual() {
+public List<ReporteConsumoIaMensualDto> obtenerReporteMesActual() {
         LocalDate periodoActual = LocalDate.now().withDayOfMonth(1);
         return generarReporte(periodoActual);
     }
 
-    /**
-     * Obtiene el reporte del mes anterior.
-     *
-     * @return lista de reportes por negocio del mes pasado
-     */
-    public List<ReporteConsumoIaMensualDto> obtenerReporteMesAnterior() {
+public List<ReporteConsumoIaMensualDto> obtenerReporteMesAnterior() {
         LocalDate periodoAnterior = LocalDate.now().minusMonths(1).withDayOfMonth(1);
         return generarReporte(periodoAnterior);
     }
 
-    /**
-     * Tarea programada que se ejecuta el primer día de cada mes a las 8:00 AM.
-     * Genera y envía el reporte del mes anterior.
-     */
-    @Scheduled(cron = "0 0 8 1 * ?") // Día 1 de cada mes a las 8:00 AM
+@Scheduled(cron = "0 0 8 1 * ?") // Día 1 de cada mes a las 8:00 AM
     public void generarReporteMensualAutomatico() {
         logger.info("Ejecutando generación automática de reporte mensual de IA");
 
@@ -103,10 +79,7 @@ public class ReporteConsumoIaService {
         }
     }
 
-    /**
-     * Convierte una entidad de consumo a DTO de reporte.
-     */
-    private ReporteConsumoIaMensualDto convertirADto(ConsumoIaMensualEntity entity) {
+private ReporteConsumoIaMensualDto convertirADto(ConsumoIaMensualEntity entity) {
         Integer totalTokens = (entity.getTotalTokensInput() != null ? entity.getTotalTokensInput().intValue() : 0)
                 + (entity.getTotalTokensOutput() != null ? entity.getTotalTokensOutput().intValue() : 0);
         
@@ -126,10 +99,7 @@ public class ReporteConsumoIaService {
                 .build();
     }
 
-    /**
-     * Determina el estado de la cuota según los tokens consumidos.
-     */
-    private String determinarEstadoCuota(Integer tokensConsumidos) {
+private String determinarEstadoCuota(Integer tokensConsumidos) {
         if (tokensConsumidos == null || tokensConsumidos < 8000) {
             return "NORMAL";
         } else if (tokensConsumidos < 10000) {

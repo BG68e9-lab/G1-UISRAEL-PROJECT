@@ -3,9 +3,6 @@ package com.uisrael.drinkhouse.presentacion.dto.response;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * DTO de respuesta para un Detalle de Orden de Compra.
- */
 public class DetalleOrdenCompraResponseDto {
 
     private Long detalleOrdenCompraId;

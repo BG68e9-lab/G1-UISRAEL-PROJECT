@@ -16,9 +16,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Entidad JPA que registra el consumo mensual de tokens de IA por negocio.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,8 +33,7 @@ public class ConsumoIaMensualEntity {
     @JoinColumn(name = "negocio_id", nullable = false)
     private NegocioEntity negocio;
 
-    /** Período de consumo (primer día del mes, ej: 2026-07-01) */
-    @Column(name = "periodo", nullable = false)
+@Column(name = "periodo", nullable = false)
     private LocalDate periodo;
 
     @Column(name = "total_tokens_input", nullable = false)

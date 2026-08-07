@@ -9,10 +9,6 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.ProductoEntity;
 import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.LoteProductoEntity;
 import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.TipoMovimientoEntity;
 
-/**
- * Mapper MapStruct entre MovimientoInventarioEntity (JPA) y MovimientoInventario (dominio).
- * Extrae los IDs de las entidades relacionadas hacia los campos planos del dominio.
- */
 @Mapper(componentModel = "spring")
 public interface IMovimientoInventarioJpaMapper {
 

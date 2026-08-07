@@ -21,10 +21,6 @@ import com.uisrael.drinkhouse.presentacion.mapeadores.IUsuarioDtoMappper;
 
 import jakarta.validation.Valid;
 
-/**
- * Controlador de autenticación simple.
- * Valida email y contraseña contra la base de datos usando BCrypt.
- */
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -41,14 +37,7 @@ public class AuthController {
 		this.passwordEncoder = new BCryptPasswordEncoder();
 	}
 
-	/**
-	 * POST /api/v1/auth/login
-	 * Autentica un usuario con email y contraseña.
-	 * 
-	 * @param loginRequest email y password
-	 * @return LoginResponseDto con datos del usuario si es exitoso
-	 */
-	@PostMapping("/login")
+@PostMapping("/login")
 	public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto loginRequest) {
 		System.out.println("=== DEBUG LOGIN ===");
 		System.out.println("Email recibido: " + loginRequest.getEmail());
@@ -90,12 +79,8 @@ public class AuthController {
 					.body(new ErrorResponse("Credenciales inválidas"));
 		}
 	}
-	
-	/**
-	 * GET /api/v1/auth/generate-hash?password=xxx
-	 * Genera hash BCrypt para una contraseña (endpoint temporal)
-	 */
-	@PostMapping("/generate-hash")
+
+@PostMapping("/generate-hash")
 	public ResponseEntity<?> generateHash(@RequestBody String password) {
 		String hash = passwordEncoder.encode(password);
 		System.out.println("Password: " + password);
@@ -111,12 +96,7 @@ public class AuthController {
 		));
 	}
 
-	/**
-	 * POST /api/v1/auth/solicitar-recuperacion
-	 * Genera código de acceso y lo envía al email del usuario
-	 * Rate limit: 1 código cada 20 minutos por email
-	 */
-	@PostMapping("/solicitar-recuperacion")
+@PostMapping("/solicitar-recuperacion")
 	public ResponseEntity<?> solicitarRecuperacion(@RequestBody java.util.Map<String, String> request) {
 		String email = request.get("email");
 		
@@ -153,11 +133,7 @@ public class AuthController {
 		}
 	}
 
-	/**
-	 * POST /api/v1/auth/validar-codigo-recuperacion
-	 * Valida que el código sea correcto
-	 */
-	@PostMapping("/validar-codigo-recuperacion")
+@PostMapping("/validar-codigo-recuperacion")
 	public ResponseEntity<?> validarCodigoRecuperacion(@RequestBody java.util.Map<String, String> request) {
 		String codigo = request.get("codigo");
 		
@@ -179,11 +155,7 @@ public class AuthController {
 		}
 	}
 
-	/**
-	 * POST /api/v1/auth/restablecer-contrasena
-	 * Cambia la contraseña del usuario después de validar el código
-	 */
-	@PostMapping("/restablecer-contrasena")
+@PostMapping("/restablecer-contrasena")
 	public ResponseEntity<?> restablecerContrasena(@RequestBody java.util.Map<String, String> request) {
 		String codigo = request.get("codigo");
 		String nuevaPassword = request.get("nuevaPassword");
@@ -211,12 +183,7 @@ public class AuthController {
 		}
 	}
 
-	/**
-	 * POST /api/v1/auth/solicitar-codigo-movimientos
-	 * Genera código de acceso para movimientos de inventario y lo envía al email del usuario
-	 * Rate limit: 1 código cada 2 minutos por email
-	 */
-	@PostMapping("/solicitar-codigo-movimientos")
+@PostMapping("/solicitar-codigo-movimientos")
 	public ResponseEntity<?> solicitarCodigoMovimientos(@RequestBody java.util.Map<String, String> request) {
 		String email = request.get("email");
 		
@@ -253,12 +220,7 @@ public class AuthController {
 		}
 	}
 
-	/**
-	 * POST /api/v1/auth/validar-codigo-movimientos
-	 * Valida que el código sea correcto para acceso a movimientos.
-	 * NO MARCA EL CÓDIGO COMO USADO - Se puede llamar múltiples veces.
-	 */
-	@PostMapping("/validar-codigo-movimientos")
+@PostMapping("/validar-codigo-movimientos")
 	public ResponseEntity<?> validarCodigoMovimientos(@RequestBody java.util.Map<String, String> request) {
 		String codigo = request.get("codigo");
 		
@@ -282,11 +244,7 @@ public class AuthController {
 		}
 	}
 
-	/**
-	 * POST /api/v1/auth/marcar-codigo-usado
-	 * Marca un código como usado cuando el usuario sale de la sección de movimientos.
-	 */
-	@PostMapping("/marcar-codigo-usado")
+@PostMapping("/marcar-codigo-usado")
 	public ResponseEntity<?> marcarCodigoUsado(@RequestBody java.util.Map<String, String> request) {
 		String codigo = request.get("codigo");
 		
@@ -306,12 +264,7 @@ public class AuthController {
 		}
 	}
 
-	/**
-	 * GET /api/v1/auth/verificar-acceso-movimientos?email=xxx
-	 * Verifica si el usuario tiene un código válido de movimientos SIN marcarlo como usado.
-	 * Útil para verificar si ya tiene acceso activo.
-	 */
-	@GetMapping("/verificar-acceso-movimientos")
+@GetMapping("/verificar-acceso-movimientos")
 	public ResponseEntity<?> verificarAccesoMovimientos(@RequestParam String email) {
 		try {
 			Usuario usuario = usuarioUseCase.buscarPorEmail(email);
@@ -351,10 +304,7 @@ public class AuthController {
 		}
 	}
 
-	/**
-	 * Clase interna para respuestas de error.
-	 */
-	private static class ErrorResponse {
+private static class ErrorResponse {
 		private final String message;
 
 		public ErrorResponse(String message) {

@@ -35,7 +35,6 @@ build/
 
 # Eclipse SpringTools specific
 .metadata
-.kiro/
 *.launch
 .recommenders/
 .buildpath
@@ -65,6 +64,5 @@ logs/
 .DS_Store
 Thumbs.db
 
-*.md
 !README.md
 *.sql

@@ -21,11 +21,6 @@ import com.uisrael.drinkhouse.aplicacion.excepciones.ServicioNoDisponibleExcepti
 import com.uisrael.drinkhouse.aplicacion.excepciones.StockValidationException;
 import com.uisrael.drinkhouse.presentacion.dto.response.ErrorResponseDto;
 
-/**
- * Manejador global de excepciones para toda la API REST.
- * Transforma excepciones de dominio y de Spring en respuestas JSON uniformes
- * con la estructura {timestamp, status, error, message}.
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -128,11 +123,7 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    /**
-     * Sanitizes error messages to prevent exposure of sensitive database details.
-     * Removes table names, column names, constraint names, and SQL fragments.
-     */
-    private String sanitizeErrorMessage(String message) {
+private String sanitizeErrorMessage(String message) {
         if (message == null) {
             return "Error procesando la solicitud";
         }

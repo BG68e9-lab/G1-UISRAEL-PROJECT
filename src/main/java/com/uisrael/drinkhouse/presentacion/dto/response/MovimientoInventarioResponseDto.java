@@ -6,10 +6,6 @@ import java.time.OffsetDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-/**
- * DTO de respuesta para un movimiento de inventario.
- * Incluye identificadores de las entidades relacionadas.
- */
 @Data
 @Schema(description = "Respuesta de un movimiento de inventario registrado exitosamente")
 public class MovimientoInventarioResponseDto {

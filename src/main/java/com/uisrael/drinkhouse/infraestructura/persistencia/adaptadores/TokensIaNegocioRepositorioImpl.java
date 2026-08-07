@@ -11,10 +11,6 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.TokensIaNegocioEn
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.ITokensIaNegocioJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.repositorio.ITokensIaNegocioJpaRepositorio;
 
-/**
- * Adaptador de repositorio para TokensIaNegocio.
- * Implementa el puerto de salida ITokensIaNegocioRepositorio usando Spring Data JPA.
- */
 public class TokensIaNegocioRepositorioImpl implements ITokensIaNegocioRepositorio {
 
     private final ITokensIaNegocioJpaRepositorio jpaRepositorio;
@@ -26,10 +22,7 @@ public class TokensIaNegocioRepositorioImpl implements ITokensIaNegocioRepositor
         this.mapper = mapper;
     }
 
-    /**
-     * Persiste la configuración de tokens IA asignando la relación con el negocio.
-     */
-    @Override
+@Override
     public TokensIaNegocio guardar(TokensIaNegocio tokens) {
         TokensIaNegocioEntity entidad = mapper.aEntidad(tokens);
         NegocioEntity negocioRef = new NegocioEntity();
@@ -39,10 +32,7 @@ public class TokensIaNegocioRepositorioImpl implements ITokensIaNegocioRepositor
         return mapper.aDominio(guardado);
     }
 
-    /**
-     * Busca la configuración de tokens por ID de negocio.
-     */
-    @Override
+@Override
     public Optional<TokensIaNegocio> buscarPorNegocioId(Integer negocioId) {
         return jpaRepositorio.findByNegocio_NegocioId(negocioId)
                 .map(mapper::aDominio);

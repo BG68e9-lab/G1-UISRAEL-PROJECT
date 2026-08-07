@@ -7,9 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO de respuesta para el reporte de consumo de IA mensual.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

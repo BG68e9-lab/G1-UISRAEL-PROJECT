@@ -10,11 +10,7 @@ public interface IOrdenCompraRepositorio {
 
 	OrdenCompra guardar(OrdenCompra ordenCompra);
 
-	/**
-	 * Guarda la orden de compra estableciendo las relaciones JPA con
-	 * el proveedor y el estado (por código) directamente en el adaptador.
-	 */
-	OrdenCompra guardarConRelaciones(OrdenCompra ordenCompra, Long proveedorId);
+OrdenCompra guardarConRelaciones(OrdenCompra ordenCompra, Long proveedorId);
 
 	Optional<OrdenCompra> buscarPorId(Long id);
 

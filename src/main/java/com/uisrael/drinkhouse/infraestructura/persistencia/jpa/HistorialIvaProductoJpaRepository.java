@@ -14,50 +14,26 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HistorialIvaProductoJpaRepository extends JpaRepository<HistorialIvaProductoEntity, Long> {
 
-	/**
-	 * Busca todo el historial de IVA de un producto ordenado por fecha descendente
-	 */
-	List<HistorialIvaProductoEntity> findByProductoIdOrderByFechaCambioDesc(Long productoId);
-	
-	/**
-	 * Busca historial de IVA de un producto con paginación
-	 */
-	Page<HistorialIvaProductoEntity> findByProductoIdOrderByFechaCambioDesc(Long productoId, Pageable pageable);
-	
-	/**
-	 * Busca el último cambio de IVA de un producto
-	 */
-	HistorialIvaProductoEntity findTopByProductoIdOrderByFechaCambioDesc(Long productoId);
-	
-	/**
-	 * Busca historial de IVA por origen del cambio
-	 */
-	List<HistorialIvaProductoEntity> findByOrigenCambioOrderByFechaCambioDesc(String origenCambio);
-	
-	/**
-	 * Busca cambios de IVA por resolución del SRI
-	 */
-	List<HistorialIvaProductoEntity> findByResolucionSriOrderByFechaCambioDesc(String resolucionSri);
-	
-	/**
-	 * Busca productos afectados por una reforma tributaria específica
-	 */
-	@Query("SELECT h FROM HistorialIvaProductoEntity h WHERE h.origenCambio = 'CAMBIO_LEY' " +
+List<HistorialIvaProductoEntity> findByProductoIdOrderByFechaCambioDesc(Long productoId);
+
+Page<HistorialIvaProductoEntity> findByProductoIdOrderByFechaCambioDesc(Long productoId, Pageable pageable);
+
+HistorialIvaProductoEntity findTopByProductoIdOrderByFechaCambioDesc(Long productoId);
+
+List<HistorialIvaProductoEntity> findByOrigenCambioOrderByFechaCambioDesc(String origenCambio);
+
+List<HistorialIvaProductoEntity> findByResolucionSriOrderByFechaCambioDesc(String resolucionSri);
+
+@Query("SELECT h FROM HistorialIvaProductoEntity h WHERE h.origenCambio = 'CAMBIO_LEY' " +
 	       "AND h.resolucionSri = :resolucion " +
 	       "ORDER BY h.fechaCambio DESC")
 	List<HistorialIvaProductoEntity> findByReformaTributaria(@Param("resolucion") String resolucion);
-	
-	/**
-	 * Busca cambios de IVA vigentes en una fecha específica
-	 */
-	@Query("SELECT h FROM HistorialIvaProductoEntity h WHERE h.fechaVigencia <= :fecha " +
+
+@Query("SELECT h FROM HistorialIvaProductoEntity h WHERE h.fechaVigencia <= :fecha " +
 	       "ORDER BY h.fechaVigencia DESC")
 	List<HistorialIvaProductoEntity> findVigentesEnFecha(@Param("fecha") LocalDate fecha);
-	
-	/**
-	 * Busca el IVA vigente para un producto en una fecha específica
-	 */
-	@Query("SELECT h FROM HistorialIvaProductoEntity h WHERE h.productoId = :productoId " +
+
+@Query("SELECT h FROM HistorialIvaProductoEntity h WHERE h.productoId = :productoId " +
 	       "AND h.fechaCambio <= :fecha " +
 	       "ORDER BY h.fechaCambio DESC")
 	List<HistorialIvaProductoEntity> findIvaEnFecha(
@@ -65,9 +41,6 @@ public interface HistorialIvaProductoJpaRepository extends JpaRepository<Histori
 		@Param("fecha") OffsetDateTime fecha,
 		Pageable pageable
 	);
-	
-	/**
-	 * Cuenta cambios de IVA de un producto
-	 */
-	long countByProductoId(Long productoId);
+
+long countByProductoId(Long productoId);
 }

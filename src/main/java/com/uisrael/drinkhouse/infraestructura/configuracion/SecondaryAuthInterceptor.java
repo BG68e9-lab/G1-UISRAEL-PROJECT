@@ -10,13 +10,6 @@ import com.uisrael.drinkhouse.dominio.entidades.CodigoAcceso;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * Interceptor that validates the X-Secondary-Auth header before controller execution.
- * This ensures secondary authentication is validated at the infrastructure layer,
- * preventing unauthorized requests from reaching the controller.
- * 
- * <p>Requirements: 1.4 - Secondary authentication validation</p>
- */
 @Component
 public class SecondaryAuthInterceptor implements HandlerInterceptor {
 
@@ -69,15 +62,7 @@ public class SecondaryAuthInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    /**
-     * Determines if the given request path and method require secondary authentication.
-     * Currently applies to POST /api/v1/movimientos/con-auditoria endpoint.
-     * 
-     * @param path Request URI path
-     * @param method HTTP method
-     * @return true if secondary authentication is required
-     */
-    private boolean requiresSecondaryAuth(String path, String method) {
+private boolean requiresSecondaryAuth(String path, String method) {
         return "POST".equalsIgnoreCase(method) && 
                path.matches(".*/api/v1/movimientos/con-auditoria");
     }

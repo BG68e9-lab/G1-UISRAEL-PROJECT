@@ -9,10 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO que contiene el resultado estructurado de la extracción de datos
- * de una factura de compra a través de Claude Vision.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,56 +16,39 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ResultadoFacturaDto {
 
-    /** RUC del proveedor emisor de la factura, o null si no se pudo leer */
-    private String rucProveedor;
+private String rucProveedor;
 
-    /** Razón social del proveedor emisor, o null si no se pudo leer */
-    private String razonSocialProveedor;
+private String razonSocialProveedor;
 
-    /** Fecha de la factura en formato YYYY-MM-DD, o null si no se pudo leer */
-    private String fechaFactura;
+private String fechaFactura;
 
-    /** Número de factura, o null si no se pudo leer */
-    private String numeroFactura;
+private String numeroFactura;
 
-    /** Lista de productos incluidos en la factura */
-    private List<ProductoFacturaDto> productos;
+private List<ProductoFacturaDto> productos;
 
-    /** Total de la factura, o null si no se pudo leer */
-    private Double totalFactura;
+private Double totalFactura;
 
-    /**
-     * Representa un producto individual dentro de la factura.
-     */
-    @Data
+@Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ProductoFacturaDto {
 
-        /** Nombre del producto */
-        private String nombre;
+private String nombre;
 
-        /** Marca del producto, o null */
-        private String marca;
+private String marca;
 
-        /** Tipo de bebida, o null */
-        private String tipo;
+private String tipo;
 
-        /** Cantidad de unidades */
-        private Integer cantidad;
+private Integer cantidad;
 
-        /** Precio unitario */
-        private Double precioUnitario;
+private Double precioUnitario;
 
-        /** Subtotal (cantidad × precio unitario) */
-        private Double subtotal;
+private Double subtotal;
 
-        /** ID del producto si existe en el sistema, null si no existe */
-        private Long productoId;
+private Long productoId;
 
-        /** Indica si el producto ya existe en el sistema */
-        private boolean productoExiste;
+private boolean productoExiste;
     }
 }

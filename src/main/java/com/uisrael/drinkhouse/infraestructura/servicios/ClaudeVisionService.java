@@ -21,10 +21,6 @@ import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoBotellaDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoFacturaDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoProductoDto;
 
-/**
- * Servicio de infraestructura que encapsula la comunicación con la API de Claude (Anthropic).
- * Proporciona métodos para identificar botellas y extraer datos de facturas a partir de imágenes.
- */
 @Service
 public class ClaudeVisionService {
 
@@ -113,15 +109,7 @@ public class ClaudeVisionService {
                 .build();
     }
 
-    /**
-     * Identifica una botella de bebida alcohólica a partir de su imagen en base64.
-     *
-     * @param imagenBase64   imagen codificada en base64
-     * @param formatoImagen  formato de la imagen (JPEG, PNG, WEBP)
-     * @return respuesta con resultado y tokens consumidos
-     * @throws ServicioNoDisponibleException si Claude no responde o retorna JSON inválido
-     */
-    public RespuestaClaudeDto<ResultadoBotellaDto> identificarBotella(String imagenBase64, String formatoImagen) {
+public RespuestaClaudeDto<ResultadoBotellaDto> identificarBotella(String imagenBase64, String formatoImagen) {
         RespuestaClaudeDto<String> respuesta = llamarClaudeConImagen(imagenBase64, formatoImagen, PROMPT_BOTELLA, "identificar_producto");
         try {
             ResultadoBotellaDto resultado = objectMapper.readValue(respuesta.getResultado(), ResultadoBotellaDto.class);
@@ -138,15 +126,7 @@ public class ClaudeVisionService {
         }
     }
 
-    /**
-     * Extrae los datos de una factura a partir de su imagen en base64.
-     *
-     * @param imagenBase64   imagen codificada en base64
-     * @param formatoImagen  formato de la imagen (JPEG, PNG, WEBP)
-     * @return respuesta con resultado y tokens consumidos
-     * @throws ServicioNoDisponibleException si Claude no responde o retorna JSON inválido
-     */
-    public RespuestaClaudeDto<ResultadoFacturaDto> extraerFactura(String imagenBase64, String formatoImagen) {
+public RespuestaClaudeDto<ResultadoFacturaDto> extraerFactura(String imagenBase64, String formatoImagen) {
         RespuestaClaudeDto<String> respuesta = llamarClaudeConImagen(imagenBase64, formatoImagen, PROMPT_FACTURA, "extraer_factura");
         try {
             ResultadoFacturaDto resultado = objectMapper.readValue(respuesta.getResultado(), ResultadoFacturaDto.class);
@@ -163,15 +143,7 @@ public class ClaudeVisionService {
         }
     }
 
-    /**
-     * Identifica un producto genérico (bebida, snack, alimento, etc.) a partir de su imagen.
-     *
-     * @param imagenBase64   imagen codificada en base64
-     * @param formatoImagen  formato de la imagen (JPEG, PNG, WEBP)
-     * @return respuesta con resultado y tokens consumidos
-     * @throws ServicioNoDisponibleException si Claude no responde o retorna JSON inválido
-     */
-    public RespuestaClaudeDto<ResultadoProductoDto> identificarProductoGenerico(String imagenBase64, String formatoImagen) {
+public RespuestaClaudeDto<ResultadoProductoDto> identificarProductoGenerico(String imagenBase64, String formatoImagen) {
         RespuestaClaudeDto<String> respuesta = llamarClaudeConImagen(imagenBase64, formatoImagen, PROMPT_PRODUCTO, "identificar_producto_generico");
         try {
             ResultadoProductoDto resultado = objectMapper.readValue(respuesta.getResultado(), ResultadoProductoDto.class);
@@ -188,24 +160,7 @@ public class ClaudeVisionService {
         }
     }
 
-    /**
-     * Realiza la llamada HTTP a la API de Claude con una imagen y un prompt.
-     * Usa Tool Calling para garantizar respuestas JSON estructuradas.
-     * 
-     * OPTIMIZACIONES APLICADAS:
-     * 1. Detecta y convierte PDFs a imágenes JPEG (Claude no acepta PDFs directamente)
-     * 2. Redimensiona imagen a 1024px máximo antes de enviarla (reduce 80-90% tokens de imagen)
-     * 3. Convierte a JPEG calidad 85% (reduce peso sin perder legibilidad)
-     * 4. Usa prompt caching para system prompts repetidos (reduce 90% costo del prompt)
-     * 5. Ajusta maxTokens según configuración (solo lo necesario para la respuesta JSON)
-     *
-     * @param imagenBase64  imagen en base64 (o PDF en base64)
-     * @param formatoImagen formato de la imagen original
-     * @param prompt        instrucción de texto para Claude
-     * @param toolName      nombre de la herramienta a usar para estructurar la respuesta
-     * @return respuesta con el JSON y los tokens consumidos
-     */
-    private RespuestaClaudeDto<String> llamarClaudeConImagen(String imagenBase64, String formatoImagen, String prompt, String toolName) {
+private RespuestaClaudeDto<String> llamarClaudeConImagen(String imagenBase64, String formatoImagen, String prompt, String toolName) {
         String imagenProcesada = imagenBase64;
         if (pdfConverter.esPdf(imagenBase64)) {
             try {
@@ -296,14 +251,7 @@ public class ClaudeVisionService {
         }
     }
 
-    /**
-     * Crea un system prompt que incluye la descripción del schema de la tool.
-     * Esto permite que el prompt completo sea cacheado por Anthropic.
-     * 
-     * @param toolSchema schema de la herramienta
-     * @return system prompt con instrucciones y schema
-     */
-    private String crearSystemPromptConSchema(Map<String, Object> toolSchema) {
+private String crearSystemPromptConSchema(Map<String, Object> toolSchema) {
         return """
                 Eres un asistente especializado en análisis de imágenes.
                 Tu tarea es identificar productos y extraer información estructurada.
@@ -317,14 +265,7 @@ public class ClaudeVisionService {
                 """;
     }
 
-    /**
-     * Crea el schema de la herramienta (tool) para forzar respuestas JSON estructuradas.
-     * Compatible con Haiku y todos los modelos de Claude.
-     * 
-     * @param toolName nombre de la herramienta (identificar_producto, identificar_producto_generico, extraer_factura)
-     * @return schema de la herramienta configurado según el tipo
-     */
-    private Map<String, Object> crearToolSchema(String toolName) {
+private Map<String, Object> crearToolSchema(String toolName) {
         if ("identificar_producto_generico".equals(toolName)) {
             return crearToolSchemaProductoGenerico();
         } else if ("extraer_factura".equals(toolName)) {
@@ -334,10 +275,7 @@ public class ClaudeVisionService {
         }
     }
 
-    /**
-     * Schema para identificación de botellas (bebidas alcohólicas específicamente).
-     */
-    private Map<String, Object> crearToolSchemaBotella() {
+private Map<String, Object> crearToolSchemaBotella() {
         Map<String, Object> properties = Map.of(
                 "nombre", Map.of(
                         "type", "string", 
@@ -378,10 +316,7 @@ public class ClaudeVisionService {
         );
     }
 
-    /**
-     * Schema genérico para identificación de cualquier producto (bebidas, snacks, alimentos, etc.).
-     */
-    private Map<String, Object> crearToolSchemaProductoGenerico() {
+private Map<String, Object> crearToolSchemaProductoGenerico() {
         Map<String, Object> properties = Map.of(
                 "nombre", Map.of(
                         "type", "string", 
@@ -422,10 +357,7 @@ public class ClaudeVisionService {
         );
     }
 
-    /**
-     * Schema para extracción de datos de facturas.
-     */
-    private Map<String, Object> crearToolSchemaFactura() {
+private Map<String, Object> crearToolSchemaFactura() {
         Map<String, Object> productoProperties = Map.of(
                 "nombre", Map.of(
                         "type", "string",
@@ -508,14 +440,7 @@ public class ClaudeVisionService {
         );
     }
 
-    /**
-     * Extrae el texto y tokens del primer bloque de contenido de la respuesta de Claude.
-     * Maneja respuestas con tool_use (tool calling) y captura usage information.
-     *
-     * @param respuestaRaw JSON completo devuelto por la API de Claude
-     * @return respuesta con el texto/JSON y los tokens consumidos
-     */
-    private RespuestaClaudeDto<String> extraerTextoYTokensDeRespuesta(String respuestaRaw) {
+private RespuestaClaudeDto<String> extraerTextoYTokensDeRespuesta(String respuestaRaw) {
         try {
             JsonNode raiz = objectMapper.readTree(respuestaRaw);
             JsonNode contenido = raiz.path("content");
@@ -568,13 +493,7 @@ public class ClaudeVisionService {
         }
     }
 
-    /**
-     * Convierte el formato de imagen del request al media type esperado por Claude.
-     *
-     * @param formato JPEG, PNG, WEBP o GIF (insensible a mayúsculas)
-     * @return media type correspondiente (p.ej. "image/jpeg")
-     */
-    private String resolverMediaType(String formato) {
+private String resolverMediaType(String formato) {
         if (formato == null) {
             return "image/jpeg";
         }

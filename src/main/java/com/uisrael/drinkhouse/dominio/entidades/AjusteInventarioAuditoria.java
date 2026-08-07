@@ -3,10 +3,6 @@ package com.uisrael.drinkhouse.dominio.entidades;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-/**
- * Entidad de dominio para el registro de auditoría de ajustes de inventario.
- * Mantiene un registro completo de cada movimiento con detalles de autorización y justificación.
- */
 public class AjusteInventarioAuditoria {
 
 	private Long ajusteId;

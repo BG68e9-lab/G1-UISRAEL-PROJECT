@@ -14,10 +14,6 @@ import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.ProductoEntity;
 import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IIdentificacionIaJpaMapper;
 import com.uisrael.drinkhouse.infraestructura.repositorio.IIdentificacionIaJpaRepositorio;
 
-/**
- * Adaptador de repositorio para IdentificacionIa.
- * Implementa el puerto de salida IIdentificacionIaRepositorio usando Spring Data JPA.
- */
 public class IdentificacionIaRepositorioImpl implements IIdentificacionIaRepositorio {
 
     private final IIdentificacionIaJpaRepositorio jpaRepositorio;
@@ -29,10 +25,7 @@ public class IdentificacionIaRepositorioImpl implements IIdentificacionIaReposit
         this.mapper = mapper;
     }
 
-    /**
-     * Persiste una identificación IA asignando las relaciones con producto y negocio.
-     */
-    @Override
+@Override
     public IdentificacionIa guardar(IdentificacionIa identificacion) {
         IdentificacionIaEntity entidad = mapper.aEntidad(identificacion);
 
@@ -52,19 +45,12 @@ public class IdentificacionIaRepositorioImpl implements IIdentificacionIaReposit
         return mapper.aDominio(guardado);
     }
 
-    /**
-     * Busca una identificación IA por su ID.
-     */
-    @Override
+@Override
     public Optional<IdentificacionIa> buscarPorId(Long id) {
         return jpaRepositorio.findById(id).map(mapper::aDominio);
     }
 
-    /**
-     * Busca identificaciones IA con filtros opcionales de productoId y rango de fechas.
-     * Delega a la query JPQL con filtros nulables.
-     */
-    @Override
+@Override
     public List<IdentificacionIa> buscarConFiltros(Long productoId, OffsetDateTime desde, OffsetDateTime hasta) {
         return jpaRepositorio.buscarConFiltros(productoId, desde, hasta)
                 .stream()

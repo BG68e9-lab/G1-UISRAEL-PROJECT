@@ -48,7 +48,12 @@ import com.uisrael.drinkhouse.aplicacion.casosuso.impl.TipoMovimientoUseCaseImpl
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.TipoProductoUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.casosuso.impl.UsuarioUseCaseImpl;
 import com.uisrael.drinkhouse.aplicacion.servicios.StockValidator;
+import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IAjusteInventarioAuditoriaUseCase;
+import com.uisrael.drinkhouse.aplicacion.casosuso.impl.AjusteInventarioAuditoriaUseCaseImpl;
 import com.uisrael.drinkhouse.dominio.repositorios.IAjusteInventarioAuditoriaRepositorio;
+import com.uisrael.drinkhouse.infraestructura.persistencia.adaptadores.AjusteInventarioAuditoriaRepositorioImpl;
+import com.uisrael.drinkhouse.infraestructura.persistencia.mapeadores.IAjusteInventarioAuditoriaJpaMapper;
+import com.uisrael.drinkhouse.infraestructura.repositorio.IAjusteInventarioAuditoriaJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.servicios.EmailService;
 import com.uisrael.drinkhouse.dominio.repositorios.IAlertaRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ICategoriaRepositorio;
@@ -149,6 +154,19 @@ public class DrinkHouseConfig {
 	@Bean
 	IAlertaUseCase alertaUseCase(IAlertaRepositorio repoUseCase) {
 	    return new AlertaUseCaseImpl(repoUseCase);
+	}
+
+	@Bean
+	IAjusteInventarioAuditoriaRepositorio ajusteInventarioAuditoriaRepositorio(
+			IAjusteInventarioAuditoriaJpaRepositorio jpaRepositorio, 
+			IAjusteInventarioAuditoriaJpaMapper mapper) {
+		return new AjusteInventarioAuditoriaRepositorioImpl(jpaRepositorio, mapper);
+	}
+
+	@Bean
+	IAjusteInventarioAuditoriaUseCase ajusteInventarioAuditoriaUseCase(
+			IAjusteInventarioAuditoriaRepositorio repoUseCase) {
+		return new AjusteInventarioAuditoriaUseCaseImpl(repoUseCase);
 	}
 
 	@Bean
@@ -401,5 +419,26 @@ public class DrinkHouseConfig {
 	@Bean
 	RestTemplate restTemplate() {
 		return new RestTemplate();
+	}
+
+	@Bean
+	com.uisrael.drinkhouse.aplicacion.servicios.HistorialPrecioProductoService historialPrecioProductoService(
+			com.uisrael.drinkhouse.infraestructura.persistencia.jpa.HistorialPrecioProductoJpaRepository repository,
+			com.uisrael.drinkhouse.presentacion.mapeadores.HistorialPrecioProductoMapper mapper) {
+		return new com.uisrael.drinkhouse.aplicacion.servicios.HistorialPrecioProductoService(repository, mapper);
+	}
+
+	@Bean
+	com.uisrael.drinkhouse.aplicacion.servicios.HistorialIvaProductoService historialIvaProductoService(
+			com.uisrael.drinkhouse.infraestructura.persistencia.jpa.HistorialIvaProductoJpaRepository repository,
+			com.uisrael.drinkhouse.presentacion.mapeadores.HistorialIvaProductoMapper mapper) {
+		return new com.uisrael.drinkhouse.aplicacion.servicios.HistorialIvaProductoService(repository, mapper);
+	}
+
+	@Bean
+	com.uisrael.drinkhouse.aplicacion.servicios.HistorialIceProductoService historialIceProductoService(
+			com.uisrael.drinkhouse.infraestructura.persistencia.jpa.HistorialIceProductoJpaRepository repository,
+			com.uisrael.drinkhouse.presentacion.mapeadores.HistorialIceProductoMapper mapper) {
+		return new com.uisrael.drinkhouse.aplicacion.servicios.HistorialIceProductoService(repository, mapper);
 	}
 }

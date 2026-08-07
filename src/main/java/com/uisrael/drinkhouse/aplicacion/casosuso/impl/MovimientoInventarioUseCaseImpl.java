@@ -7,8 +7,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IAlertaUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ICodigoAccesoUseCase;
@@ -34,10 +32,6 @@ import com.uisrael.drinkhouse.dominio.repositorios.IProductoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ITipoMovimientoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IVentaRepositorio;
 
-/**
- * Implementación del caso de uso de movimientos de inventario.
- * Gestiona entradas, salidas y ajustes de stock con trazabilidad completa.
- */
 public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUseCase {
 
 	private static final Logger logger = LoggerFactory.getLogger(MovimientoInventarioUseCaseImpl.class);
@@ -82,23 +76,7 @@ public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUse
 		this.ventaRepositorio = ventaRepositorio;
 	}
 
-	/**
-	 * Creates an inventory movement with secondary authentication and complete audit trail.
-	 * Implements retry logic for optimistic locking failures.
-	 * 
-	 * @param movimiento Movement details including stock validation fields
-	 * @param usuarioAutorizado Username from secondary authentication
-	 * @param usuarioEjecutor Primary session username
-	 * @param justificacion Reason for the movement (10-500 chars)
-	 * @param direccionIp Client IP address
-	 * @param sessionId Session identifier
-	 * @return Created movement with generated ID
-	 * @throws StockValidationException if stock calculations are invalid
-	 * @throws ReglaNegocioException if secondary auth fails
-	 * @throws ConcurrentModificationException if product was modified concurrently
-	 */
 	@Override
-	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public MovimientoInventario crearMovimientoConAuditoria(
 			MovimientoInventario movimiento,
 			String usuarioAutorizado,
@@ -159,12 +137,8 @@ public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUse
 			"Conflicto de concurrencia: el stock del producto fue modificado por otra operación. Intente nuevamente"
 		);
 	}
-	
-	/**
-	 * Internal method that performs the actual movement creation.
-	 * Separated to enable retry logic.
-	 */
-	private MovimientoInventario crearMovimientoConAuditoriaInternal(
+
+private MovimientoInventario crearMovimientoConAuditoriaInternal(
 			MovimientoInventario movimiento,
 			String usuarioAutorizado,
 			String usuarioEjecutor,
@@ -319,12 +293,7 @@ public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUse
 		return movimientoGuardado;
 	}
 
-	/**
-	 * Registra un movimiento de inventario ejecutando la lógica de negocio
-	 * correspondiente al tipo (ENTRADA, SALIDA, AJUSTE) dentro de una transacción.
-	 */
-	@Override
-	@Transactional
+@Override
 	public MovimientoInventario registrar(Long productoId, Long loteId,
 			Long tipoMovimientoId, MovimientoInventario movimiento) {
 
@@ -406,10 +375,7 @@ public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUse
 		return guardado;
 	}
 
-	/**
-	 * Crea automáticamente una nota de venta cuando el movimiento es de tipo VENTA.
-	 */
-	private void crearNotaVenta(MovimientoInventario movimiento, Producto producto) {
+private void crearNotaVenta(MovimientoInventario movimiento, Producto producto) {
 		try {
 			NotaVenta nota = new NotaVenta();
 			
@@ -474,60 +440,40 @@ public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUse
 		}
 	}
 
-	/**
-	 * Consulta movimientos de un producto aplicando filtros opcionales.
-	 */
-	@Override
+@Override
 	public List<MovimientoInventario> buscarPorProductoConFiltros(Long productoId,
 			String tipo, OffsetDateTime desde, OffsetDateTime hasta) {
 		return repositorio.buscarPorProductoConFiltros(productoId, tipo, desde, hasta);
 	}
 
-	/**
-	 * Lista todos los movimientos del sistema.
-	 */
-	@Override
+@Override
 	public List<MovimientoInventario> listarTodos() {
 		return repositorio.listarTodos();
 	}
 
-	/**
-	 * Busca movimientos por tipo de movimiento.
-	 */
-	@Override
+@Override
 	public List<MovimientoInventario> buscarPorTipo(String codigoTipo) {
 		return repositorio.buscarPorTipo(codigoTipo);
 	}
 
-	/**
-	 * Busca movimientos por lote.
-	 */
-	@Override
+@Override
 	public List<MovimientoInventario> buscarPorLote(Long loteId) {
 		return repositorio.buscarPorLote(loteId);
 	}
 
-	/**
-	 * Busca un movimiento por su ID.
-	 */
-	@Override
+@Override
 	public MovimientoInventario buscarPorId(Long id) {
 		return repositorio.buscarPorId(id)
 				.orElseThrow(() -> new RecursoNoEncontradoException(
 						"Movimiento de inventario no encontrado con id: " + id));
 	}
 
-	/** ENTRADA: incrementa el stock actual del producto. */
-	private void aplicarEntrada(Producto producto, BigDecimal cantidad) {
+private void aplicarEntrada(Producto producto, BigDecimal cantidad) {
 		int nuevoStock = producto.getStockActual() + cantidad.intValue();
 		producto.setStockActual(nuevoStock);
 	}
 
-	/**
-	 * SALIDA: verifica disponibilidad en el lote y decrementa tanto el lote
-	 * como el stock del producto.
-	 */
-	private void aplicarSalida(Producto producto, LoteProducto lote, BigDecimal cantidad) {
+private void aplicarSalida(Producto producto, LoteProducto lote, BigDecimal cantidad) {
 		if (lote.getCantidadDisponible().compareTo(cantidad) < 0) {
 			throw new ReglaNegocioException(
 					"Cantidad insuficiente en el lote. Disponible: "
@@ -540,17 +486,12 @@ public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUse
 		producto.setStockActual(nuevoStock);
 	}
 
-	/**
-	 * AJUSTE: actualiza el stock del producto sumando la cantidad
-	 * (puede ser negativa para disminución).
-	 */
-	private void aplicarAjuste(Producto producto, BigDecimal cantidad) {
+private void aplicarAjuste(Producto producto, BigDecimal cantidad) {
 		int nuevoStock = producto.getStockActual() + cantidad.intValue();
 		producto.setStockActual(nuevoStock);
 	}
 
-	/** Carga el lote o lanza excepción 404 si no existe. */
-	private LoteProducto cargarLote(Long loteId) {
+private LoteProducto cargarLote(Long loteId) {
 		if (loteId == null) {
 			throw new ReglaNegocioException(
 					"El loteId es requerido para movimientos de tipo SALIDA");
@@ -560,11 +501,6 @@ public class MovimientoInventarioUseCaseImpl implements IMovimientoInventarioUse
 						"Lote no encontrado con id: " + loteId));
 	}
 	
-	/**
-	 * Validates that tipo_movimiento is one of the allowed enumeration values.
-	 * @param codigo Tipo movimiento code to validate
-	 * @return true if valid, false otherwise
-	 */
 	private boolean isValidTipoMovimiento(String codigo) {
 		if (codigo == null) {
 			return false;

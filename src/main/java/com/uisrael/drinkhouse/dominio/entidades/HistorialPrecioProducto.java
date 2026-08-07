@@ -3,10 +3,6 @@ package com.uisrael.drinkhouse.dominio.entidades;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-/**
- * Entidad de dominio que representa un registro histórico de cambio de precios de un producto.
- * Captura el estado anterior y nuevo de costo, margen y precio de venta.
- */
 public class HistorialPrecioProducto {
 
 	private Long historialPrecioId;

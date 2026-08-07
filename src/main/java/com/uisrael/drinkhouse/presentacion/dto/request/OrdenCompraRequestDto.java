@@ -5,9 +5,6 @@ import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-/**
- * DTO de entrada para crear o actualizar una Orden de Compra.
- */
 public class OrdenCompraRequestDto {
 
     @NotNull(message = "El proveedorId es obligatorio")
@@ -15,12 +12,7 @@ public class OrdenCompraRequestDto {
 
     private Integer negocioId;
 
-    /**
-     * Lista de detalles de la orden de compra.
-     * Puede estar vacía para órdenes en estado BORRADOR creadas desde IA,
-     * donde los productos serán agregados manualmente después.
-     */
-    @Valid
+@Valid
     private List<DetalleOrdenCompraRequestDto> detalles;
 
     public OrdenCompraRequestDto() {}

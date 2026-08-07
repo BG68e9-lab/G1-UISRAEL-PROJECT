@@ -29,13 +29,7 @@ public interface IProductoJpaRepositorio extends JpaRepository<ProductoEntity, L
 		   "LEFT JOIN FETCH p.fkTipoProductoEntity")
 	List<ProductoEntity> findAllWithRelations();
 
-	/**
-	 * Locks product row for update to prevent concurrent modifications.
-	 * Uses SELECT FOR UPDATE to acquire pessimistic write lock.
-	 * 
-	 * @param productoId Product identifier
-	 * @return Optional containing the locked product entity, or empty if not found
-	 */
+	
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("SELECT p FROM ProductoEntity p WHERE p.productoId = :productoId")
 	Optional<ProductoEntity> findByIdForUpdate(@Param("productoId") Long productoId);

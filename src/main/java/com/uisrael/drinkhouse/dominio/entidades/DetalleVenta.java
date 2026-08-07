@@ -2,10 +2,6 @@ package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.math.BigDecimal;
 
-/**
- * Entidad de dominio para los detalles (líneas) de una venta.
- * Cada detalle representa un producto vendido con cantidad y precio.
- */
 public class DetalleVenta {
 
 	private Long detalleVentaId;

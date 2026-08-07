@@ -20,22 +20,14 @@ public interface ISecuenciaCodigoJpaMapper {
 	@Mapping(target = "version", ignore = true)
 	SecuenciaCodigoEntity toEntity(SecuenciaCodigo domain);
 
-	/**
-	 * Crea una referencia a NegocioEntity solo con el ID.
-	 * JPA la usará para el JOIN sin cargar toda la entidad.
-	 */
-	default NegocioEntity createNegocioEntity(Integer negocioId) {
+default NegocioEntity createNegocioEntity(Integer negocioId) {
 		if (negocioId == null) return null;
 		NegocioEntity entity = new NegocioEntity();
 		entity.setNegocioId(negocioId);
 		return entity;
 	}
 
-	/**
-	 * Crea una referencia a TipoMovimientoEntity solo con el ID.
-	 * JPA la usará para el JOIN sin cargar toda la entidad.
-	 */
-	default TipoMovimientoEntity createTipoMovimientoEntity(Integer tipoMovimientoId) {
+default TipoMovimientoEntity createTipoMovimientoEntity(Integer tipoMovimientoId) {
 		if (tipoMovimientoId == null) return null;
 		TipoMovimientoEntity entity = new TipoMovimientoEntity();
 		entity.setTipoMovimientoId(tipoMovimientoId);

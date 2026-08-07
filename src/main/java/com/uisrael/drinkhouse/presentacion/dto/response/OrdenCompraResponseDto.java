@@ -4,9 +4,6 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-/**
- * DTO de respuesta para una Orden de Compra.
- */
 public class OrdenCompraResponseDto {
 
     private Long ordenCompraId;

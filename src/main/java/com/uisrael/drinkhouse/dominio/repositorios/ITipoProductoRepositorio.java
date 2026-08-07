@@ -5,10 +5,6 @@ import java.util.Optional;
 
 import com.uisrael.drinkhouse.dominio.entidades.TipoProducto;
 
-/**
- * Puerto de salida para el repositorio de TipoProducto.
- * Define las operaciones de persistencia para tipos de producto.
- */
 public interface ITipoProductoRepositorio {
 
 	TipoProducto guardar(TipoProducto tipoProducto);

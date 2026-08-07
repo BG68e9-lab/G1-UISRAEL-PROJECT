@@ -9,9 +9,6 @@ import com.uisrael.drinkhouse.dominio.repositorios.IVentaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.IVentaJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.VentaEntity;
 
-/**
- * Adaptador que implementa el puerto de salida IVentaRepositorio usando JPA.
- */
 @Component
 public class VentaRepositorioImpl implements IVentaRepositorio {
 

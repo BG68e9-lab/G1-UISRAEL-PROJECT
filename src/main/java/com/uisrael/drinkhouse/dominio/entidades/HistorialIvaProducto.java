@@ -4,10 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
-/**
- * Entidad de dominio que representa un registro histórico de cambio de tarifa IVA de un producto.
- * Captura cambios normativos, reclasificaciones y correcciones.
- */
 public class HistorialIvaProducto {
 
 	private Long historialIvaId;

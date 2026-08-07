@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IIdentificacionIaUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IOrdenCompraUseCase;
@@ -40,10 +41,6 @@ import com.uisrael.drinkhouse.presentacion.mapeadores.IIdentificacionIaDtoMapper
 
 import jakarta.validation.Valid;
 
-/**
- * Controlador REST para el módulo de Identificación de Productos mediante IA.
- * Base de URL: /api/v1/ia
- */
 @RestController
 @RequestMapping("/api/v1/ia")
 public class IdentificacionIaController {
@@ -76,19 +73,8 @@ public class IdentificacionIaController {
         this.ordenCompraUseCase = ordenCompraUseCase;
     }
 
-    /**
-     * Identifica un producto mediante IA a partir de una imagen en base64.
-     * El campo {@code tipoIdentificacion} del request determina el tipo de análisis:
-     * - "PRODUCTO": identificación genérica (bebidas, snacks, alimentos, etc.)
-     * - "BOTELLA": identificación específica para bebidas
-     * - "FACTURA": extracción de datos de facturas
-     *
-     * POST /api/v1/ia/identificar
-     * Código de respuesta: 201 Created
-     * Errores posibles: 400 (formato/tipo inválido), 404 (producto/negocio no existe),
-     *                   429 (cuota agotada), 503 (Claude no disponible)
-     */
-    @PostMapping("/identificar")
+@PostMapping("/identificar")
+	@Transactional
     public ResponseEntity<IdentificacionIaResponseDto> identificarProducto(
             @Valid @RequestBody IdentificacionIaRequestDto solicitud) {
 
@@ -106,14 +92,7 @@ public class IdentificacionIaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
     }
 
-    /**
-     * Consulta el historial de identificaciones IA con filtros opcionales.
-     *
-     * GET /api/v1/ia/historial
-     * Parámetros opcionales: productoId, desde, hasta
-     * Código de respuesta: 200 OK
-     */
-    @GetMapping("/historial")
+@GetMapping("/historial")
     public ResponseEntity<List<IdentificacionIaResponseDto>> consultarHistorial(
             @RequestParam(required = false) Long productoId,
             @RequestParam(required = false) OffsetDateTime desde,
@@ -126,17 +105,7 @@ public class IdentificacionIaController {
         return ResponseEntity.ok(respuesta);
     }
 
-    /**
-     * Enriquece el DTO de respuesta con el resultado estructurado de Claude
-     * (ResultadoProductoDto, ResultadoBotellaDto o ResultadoFacturaDto) y el tipo de identificación.
-     * También valida productos contra bases de datos externas (MCP) para productos genéricos y botellas.
-     * Se llama a Claude nuevamente para obtener el objeto estructurado completo,
-     * ya que el caso de uso solo persiste los campos básicos en la entidad de dominio.
-     *
-     * @param respuesta DTO de respuesta a enriquecer
-     * @param solicitud solicitud original del cliente
-     */
-    private void enricherConResultadoClaude(
+private void enricherConResultadoClaude(
             IdentificacionIaResponseDto respuesta,
             IdentificacionIaRequestDto solicitud) {
 
@@ -195,14 +164,8 @@ public class IdentificacionIaController {
             }
         }
     }
-    
-    /**
-     * Valida si los productos extraídos de la factura ya existen en BD.
-     * Actualiza cada ProductoFacturaDto con productoId y productoExiste.
-     * 
-     * @param resultadoFactura resultado de extracción de factura con productos
-     */
-    private void validarProductosExistentes(ResultadoFacturaDto resultadoFactura) {
+
+private void validarProductosExistentes(ResultadoFacturaDto resultadoFactura) {
         List<Producto> productosExistentes = productoUseCase.listarProductos();
         
         for (ResultadoFacturaDto.ProductoFacturaDto productoFactura : resultadoFactura.getProductos()) {
@@ -220,16 +183,8 @@ public class IdentificacionIaController {
             }
         }
     }
-    
-    /**
-     * Crea un proveedor automáticamente si no existe en la base de datos.
-     * Usa el servicio de FacturaIAService para procesar los datos extraídos.
-     * 
-     * @param resultadoFactura datos extraídos de la factura por IA
-     * @param negocioId ID del negocio
-     * @return el proveedor existente o recién creado
-     */
-    private Proveedor crearProveedorSiNoExiste(ResultadoFacturaDto resultadoFactura, Integer negocioId) {
+
+private Proveedor crearProveedorSiNoExiste(ResultadoFacturaDto resultadoFactura, Integer negocioId) {
         FacturaIAService.ProveedorIADto proveedorIA = new FacturaIAService.ProveedorIADto();
         proveedorIA.setRuc(resultadoFactura.getRucProveedor());
         proveedorIA.setRazonSocial(resultadoFactura.getRazonSocialProveedor());
@@ -239,23 +194,9 @@ public class IdentificacionIaController {
         
         return facturaIAService.procesarProveedorDeFactura(proveedorIA, negocioId);
     }
-    
-    /**
-     * Procesa una factura con IA y crea automáticamente:
-     * - El proveedor (si no existe)
-     * - La orden de compra en estado BORRADOR
-     * 
-     * POST /api/v1/ia/crear-orden-desde-factura
-     * 
-     * NOTA: Este endpoint NO crea los detalles de productos automáticamente,
-     * ya que requiere mapear los productos de la factura con los productos del sistema.
-     * La orden se crea sin detalles y el frontend debe permitir agregar los productos manualmente.
-     * 
-     * Código de respuesta: 201 Created
-     * Errores posibles: 400 (datos inválidos), 404 (negocio no existe),
-     *                   429 (cuota agotada), 503 (Claude no disponible)
-     */
-    @PostMapping("/crear-orden-desde-factura")
+
+@PostMapping("/crear-orden-desde-factura")
+	@Transactional
     public ResponseEntity<OrdenCompraAutoResponseDto> crearOrdenDesdeFactura(
             @Valid @RequestBody IdentificacionIaRequestDto solicitud) {
         
@@ -315,18 +256,8 @@ public class IdentificacionIaController {
         
         return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
     }
-    
-    /**
-     * Procesa los productos extraídos de la factura:
-     * - Busca si ya existen por nombre (fuzzy match)
-     * - Si existe: usa el producto existente
-     * - Si NO existe: crea nuevo producto automáticamente
-     * 
-     * @param productosFactura lista de productos detectados por la IA
-     * @param negocioId ID del negocio
-     * @return lista de detalles de orden de compra listos para guardar
-     */
-    private List<DetalleOrdenCompra> procesarProductosDeFactura(
+
+private List<DetalleOrdenCompra> procesarProductosDeFactura(
             List<ResultadoFacturaDto.ProductoFacturaDto> productosFactura,
             Long negocioId) {
         
@@ -375,12 +306,8 @@ public class IdentificacionIaController {
         
         return detalles;
     }
-    
-    /**
-     * Busca un producto existente por nombre usando fuzzy matching.
-     * Compara nombres ignorando mayúsculas, tildes y espacios extra.
-     */
-    private Producto buscarProductoPorNombre(String nombreBuscado, List<Producto> productosExistentes) {
+
+private Producto buscarProductoPorNombre(String nombreBuscado, List<Producto> productosExistentes) {
         if (nombreBuscado == null || nombreBuscado.isBlank()) {
             return null;
         }
@@ -402,11 +329,8 @@ public class IdentificacionIaController {
         
         return null;
     }
-    
-    /**
-     * Normaliza texto para comparación: quita tildes, convierte a minúsculas, elimina espacios extra.
-     */
-    private String normalizarTexto(String texto) {
+
+private String normalizarTexto(String texto) {
         if (texto == null) {
             return "";
         }
@@ -417,11 +341,8 @@ public class IdentificacionIaController {
             .replaceAll("\\s+", " ")
             .trim();
     }
-    
-    /**
-     * Crea un producto nuevo automáticamente basado en datos de la factura.
-     */
-    private Long crearProductoAutomatico(ResultadoFacturaDto.ProductoFacturaDto productoFactura, Long negocioId) {
+
+private Long crearProductoAutomatico(ResultadoFacturaDto.ProductoFacturaDto productoFactura, Long negocioId) {
         Producto nuevoProducto = new Producto();
         nuevoProducto.setNegocioId(negocioId.intValue());
         nuevoProducto.setNombre(productoFactura.getNombre());
@@ -449,18 +370,12 @@ public class IdentificacionIaController {
         Producto productoCreado = productoUseCase.crearProducto(nuevoProducto);
         return productoCreado.getProductoId();
     }
-    
-    /**
-     * Determina el tipo de producto basado en el tipo extraído de la factura.
-     */
-    private Long determinarTipoProducto(ResultadoFacturaDto.ProductoFacturaDto productoFactura) {
+
+private Long determinarTipoProducto(ResultadoFacturaDto.ProductoFacturaDto productoFactura) {
         return null;
     }
-    
-    /**
-     * Mapea la OrdenCompra de dominio a OrdenCompraResponseDto.
-     */
-    private OrdenCompraResponseDto mapearOrdenCompraResponse(OrdenCompra orden, Proveedor proveedor) {
+
+private OrdenCompraResponseDto mapearOrdenCompraResponse(OrdenCompra orden, Proveedor proveedor) {
         OrdenCompraResponseDto response = new OrdenCompraResponseDto();
         response.setOrdenCompraId(orden.getOrdenCompraId());
         response.setCodigoReferencia(orden.getCodigoReferencia());
@@ -472,11 +387,8 @@ public class IdentificacionIaController {
         response.setDetalles(new ArrayList<>());
         return response;
     }
-    
-    /**
-     * Construye un mensaje informativo para el frontend.
-     */
-    private String construirMensajeInformativo(boolean proveedorNuevo, ResultadoFacturaDto factura, int productosCreados) {
+
+private String construirMensajeInformativo(boolean proveedorNuevo, ResultadoFacturaDto factura, int productosCreados) {
         StringBuilder mensaje = new StringBuilder();
         
         if (proveedorNuevo) {

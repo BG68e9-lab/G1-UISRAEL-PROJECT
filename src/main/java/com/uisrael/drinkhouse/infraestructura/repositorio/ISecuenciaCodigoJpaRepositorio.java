@@ -15,11 +15,9 @@ public interface ISecuenciaCodigoJpaRepositorio extends JpaRepository<SecuenciaC
 
 	List<SecuenciaCodigoEntity> findByNegocio_NegocioId(Integer negocioId);
 
-	/** Compatibilidad con tests legacy — busca por código de tipo de movimiento */
-	Optional<SecuenciaCodigoEntity> findByTipoMovimiento_Codigo(String codigo);
+Optional<SecuenciaCodigoEntity> findByTipoMovimiento_Codigo(String codigo);
 
-	/** Alias para compatibilidad con tests legacy */
-	default Optional<SecuenciaCodigoEntity> findByTipo(String tipo) {
+default Optional<SecuenciaCodigoEntity> findByTipo(String tipo) {
 		return findByTipoMovimiento_Codigo(tipo);
 	}
 }

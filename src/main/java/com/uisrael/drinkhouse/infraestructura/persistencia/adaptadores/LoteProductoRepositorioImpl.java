@@ -17,10 +17,6 @@ import com.uisrael.drinkhouse.infraestructura.repositorio.ILoteProductoJpaReposi
 
 import jakarta.persistence.EntityManager;
 
-/**
- * Adaptador de repositorio para LoteProducto.
- * Implementa el puerto de salida ILoteProductoRepositorio usando Spring Data JPA.
- */
 public class LoteProductoRepositorioImpl implements ILoteProductoRepositorio {
 
 	private final ILoteProductoJpaRepositorio jpaRepositorio;
@@ -35,10 +31,7 @@ public class LoteProductoRepositorioImpl implements ILoteProductoRepositorio {
 		this.entityManager = entityManager;
 	}
 
-	/**
-	 * Guarda un lote sin asignar producto (uso interno o cuando ya viene con FK).
-	 */
-	@Override
+@Override
 	public LoteProducto guardar(LoteProducto loteProducto) {
 		LoteProductoEntity entidad = mapper.aEntidad(loteProducto);
 		if (loteProducto.getLoteId() != null) {
@@ -50,10 +43,7 @@ public class LoteProductoRepositorioImpl implements ILoteProductoRepositorio {
 		return mapper.aDominio(guardado);
 	}
 
-	/**
-	 * Guarda el lote asociándolo al producto mediante su ID JPA.
-	 */
-	@Override
+@Override
 	public LoteProducto guardarConProductoId(LoteProducto loteProducto, Long productoId) {
 		LoteProductoEntity entidad = mapper.aEntidad(loteProducto);
 		ProductoEntity productoRef = entityManager.getReference(ProductoEntity.class, productoId);
@@ -62,53 +52,35 @@ public class LoteProductoRepositorioImpl implements ILoteProductoRepositorio {
 		return mapper.aDominio(guardado);
 	}
 
-	/**
-	 * Busca un lote por su identificador.
-	 */
-	@Override
+@Override
 	public Optional<LoteProducto> buscarPorId(Long id) {
 		return jpaRepositorio.findById(id).map(mapper::aDominio);
 	}
 
-	/**
-	 * Retorna todos los lotes de un producto ordenados por fechaIngreso ascendente (FIFO).
-	 */
-	@Override
+@Override
 	public List<LoteProducto> buscarPorProductoOrdenadoPorFechaIngreso(Long productoId) {
 		return jpaRepositorio
 				.findByFkProductoEntityProductoIdOrderByFechaIngresoAsc(productoId)
 				.stream().map(mapper::aDominio).toList();
 	}
 
-	/**
-	 * Retorna lotes cuya fechaVencimiento sea <= limite y cantidadDisponible > 0.
-	 */
-	@Override
+@Override
 	public List<LoteProducto> buscarProximosAVencer(LocalDate limite) {
 		return jpaRepositorio.findProximosAVencer(limite)
 				.stream().map(mapper::aDominio).toList();
 	}
 
-	/**
-	 * Lista todos los lotes sin filtros.
-	 */
-	@Override
+@Override
 	public List<LoteProducto> listarTodos() {
 		return jpaRepositorio.findAll().stream().map(mapper::aDominio).toList();
 	}
 
-	/**
-	 * Lista todos los lotes con paginación.
-	 */
-	@Override
+@Override
 	public Page<LoteProducto> listarPaginado(Pageable pageable) {
 		return jpaRepositorio.findAllWithProductoPaginado(pageable).map(mapper::aDominio);
 	}
 
-	/**
-	 * Elimina un lote por su identificador.
-	 */
-	@Override
+@Override
 	public void eliminar(Long id) {
 		jpaRepositorio.deleteById(id);
 	}

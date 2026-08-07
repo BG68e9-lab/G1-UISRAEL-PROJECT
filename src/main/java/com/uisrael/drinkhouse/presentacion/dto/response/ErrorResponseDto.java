@@ -5,10 +5,6 @@ import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
-/**
- * DTO de respuesta uniforme para todos los errores de la API.
- * Estructura: {timestamp, status, error, message}
- */
 @Getter
 @Builder
 public class ErrorResponseDto {

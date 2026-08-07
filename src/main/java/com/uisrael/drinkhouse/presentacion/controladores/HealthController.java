@@ -7,9 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
-/**
- * Controlador simple para verificar que el backend esté funcionando.
- */
 @RestController
 @RequestMapping("/api/v1")
 public class HealthController {
@@ -33,9 +30,6 @@ public class HealthController {
     }
 }
 
-/**
- * Controlador para la ruta raíz del servidor.
- */
 @RestController
 class RootController {
     

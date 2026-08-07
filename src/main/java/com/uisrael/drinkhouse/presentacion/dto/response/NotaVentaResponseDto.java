@@ -4,10 +4,6 @@ import java.time.OffsetDateTime;
 
 import lombok.Data;
 
-/**
- * DTO de respuesta para notas de venta simplificadas.
- * Usado para visualización en el frontend.
- */
 @Data
 public class NotaVentaResponseDto {
 

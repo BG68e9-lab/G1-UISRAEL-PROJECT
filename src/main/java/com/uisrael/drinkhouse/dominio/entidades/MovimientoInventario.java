@@ -3,10 +3,6 @@ package com.uisrael.drinkhouse.dominio.entidades;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-/**
- * Entidad de dominio para el registro de movimientos de inventario.
- * Representa entradas, salidas y ajustes de stock.
- */
 public class MovimientoInventario {
 
 	private Long movimientoId;

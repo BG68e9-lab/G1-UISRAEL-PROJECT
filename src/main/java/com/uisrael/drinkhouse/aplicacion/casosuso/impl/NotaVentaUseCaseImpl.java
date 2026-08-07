@@ -7,9 +7,6 @@ import com.uisrael.drinkhouse.aplicacion.excepciones.RecursoNoEncontradoExceptio
 import com.uisrael.drinkhouse.dominio.entidades.NotaVenta;
 import com.uisrael.drinkhouse.dominio.repositorios.INotaVentaRepositorio;
 
-/**
- * Implementación del caso de uso para consultas de notas de venta.
- */
 public class NotaVentaUseCaseImpl implements INotaVentaUseCase {
 
 	private final INotaVentaRepositorio repositorio;

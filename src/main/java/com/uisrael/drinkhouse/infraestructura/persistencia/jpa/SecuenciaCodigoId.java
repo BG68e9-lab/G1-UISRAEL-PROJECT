@@ -3,9 +3,6 @@ package com.uisrael.drinkhouse.infraestructura.persistencia.jpa;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * Clase de clave primaria compuesta para SecuenciaCodigoEntity.
- */
 public class SecuenciaCodigoId implements Serializable {
 
     private NegocioEntity negocio;
@@ -34,10 +31,7 @@ public class SecuenciaCodigoId implements Serializable {
         this.tipoMovimiento = tipoMovimiento;
     }
 
-    /**
-     * Comparación basada en los IDs.
-     */
-    @Override
+@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof SecuenciaCodigoId)) return false;
@@ -52,10 +46,7 @@ public class SecuenciaCodigoId implements Serializable {
                Objects.equals(thisTipoId, thatTipoId);
     }
 
-    /**
-     * Hash basado en los IDs.
-     */
-    @Override
+@Override
     public int hashCode() {
         Integer negocioId = (negocio != null) ? negocio.getNegocioId() : null;
         Integer tipoId = (tipoMovimiento != null) ? tipoMovimiento.getTipoMovimientoId() : null;

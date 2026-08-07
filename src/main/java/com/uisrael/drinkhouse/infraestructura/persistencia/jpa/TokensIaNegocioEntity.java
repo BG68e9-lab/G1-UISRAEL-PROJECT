@@ -15,9 +15,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Entidad JPA que define el token de IA activo para un negocio.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

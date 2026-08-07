@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IIdentificacionIaUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.ConsumoIaMensual;
 import com.uisrael.drinkhouse.dominio.entidades.IdentificacionIa;
@@ -24,11 +21,6 @@ import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoBotellaDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoFacturaDto;
 import com.uisrael.drinkhouse.presentacion.dto.response.ResultadoProductoDto;
 
-/**
- * Implementación del caso de uso de identificación mediante IA.
- * Delega el análisis de imágenes a Claude Vision (Anthropic) y
- * registra el consumo de tokens por negocio/mes.
- */
 public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 
 	private static final String NOMBRE_MODELO = "claude-3-5-sonnet-20241022";
@@ -53,7 +45,6 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 	}
 
 	@Override
-	@Transactional
 	public IdentificacionIa identificarProducto(String imagenBase64, String formatoImagen,
 			Long productoId, Integer negocioId, String tipoIdentificacion) {
 
@@ -112,10 +103,7 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 		return identificacionRepositorio.buscarConFiltros(productoId, desde, hasta);
 	}
 
-	/**
-	 * Clase interna para envolver la identificación con sus tokens consumidos.
-	 */
-	private static class RespuestaClaudeConIdentificacion {
+private static class RespuestaClaudeConIdentificacion {
 		private final IdentificacionIa identificacion;
 		private final Long tokensInput;
 		private final Long tokensOutput;
@@ -139,17 +127,7 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 		}
 	}
 
-	/**
-	 * Delega el análisis a Claude y construye la entidad de dominio con el resultado.
-	 *
-	 * @param imagenBase64       imagen en base64
-	 * @param formatoImagen      formato de la imagen
-	 * @param tipoIdentificacion PRODUCTO, BOTELLA o FACTURA
-	 * @param productoId         ID del producto
-	 * @param negocioId          ID del negocio
-	 * @return entidad de dominio con tokens consumidos
-	 */
-	private RespuestaClaudeConIdentificacion procesarConClaude(String imagenBase64, String formatoImagen,
+private RespuestaClaudeConIdentificacion procesarConClaude(String imagenBase64, String formatoImagen,
 			String tipoIdentificacion, Long productoId, Integer negocioId) {
 
 		IdentificacionIa.IdentificacionIaBuilder constructor = IdentificacionIa.builder()
@@ -198,13 +176,7 @@ public class IdentificacionIaUseCaseImpl implements IIdentificacionIaUseCase {
 		return new RespuestaClaudeConIdentificacion(identificacion, tokensInput, tokensOutput);
 	}
 
-	/**
-	 * Verifica si el formato de imagen es soportado por la API de Claude.
-	 *
-	 * @param formato nombre del formato (JPEG, PNG, WEBP)
-	 * @return true si el formato es válido
-	 */
-	private boolean esFormatoSoportado(String formato) {
+private boolean esFormatoSoportado(String formato) {
 		String f = formato.toUpperCase();
 		return "JPEG".equals(f) || "PNG".equals(f) || "WEBP".equals(f);
 	}

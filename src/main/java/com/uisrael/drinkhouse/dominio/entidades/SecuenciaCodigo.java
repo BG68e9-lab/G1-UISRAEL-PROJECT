@@ -1,9 +1,5 @@
 package com.uisrael.drinkhouse.dominio.entidades;
 
-/**
- * Entidad de dominio para la generación de secuencias de código únicas.
- * Clave compuesta por negocioId + tipoMovimientoId.
- */
 public class SecuenciaCodigo {
 
 	private Integer negocioId;

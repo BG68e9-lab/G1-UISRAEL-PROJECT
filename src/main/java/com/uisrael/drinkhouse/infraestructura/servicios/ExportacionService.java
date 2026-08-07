@@ -23,21 +23,13 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.uisrael.drinkhouse.presentacion.dto.response.MovimientoInventarioResponseDto;
 
-/**
- * Servicio para exportar datos a diferentes formatos (PDF, Excel).
- */
 @Service
 public class ExportacionService {
 
     private static final Logger logger = LoggerFactory.getLogger(ExportacionService.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    /**
-     * Exporta una lista de movimientos de inventario a formato Excel (XLSX).
-     *
-     * @param movimientos lista de movimientos a exportar
-     * @return array de bytes del archivo Excel generado
-     */
+    
     public byte[] exportarMovimientosAExcel(List<MovimientoInventarioResponseDto> movimientos) {
         logger.info("Exportando {} movimientos a Excel", movimientos.size());
 
@@ -89,12 +81,7 @@ public class ExportacionService {
         }
     }
 
-    /**
-     * Exporta una lista de movimientos de inventario a formato PDF.
-     *
-     * @param movimientos lista de movimientos a exportar
-     * @return array de bytes del archivo PDF generado
-     */
+    
     public byte[] exportarMovimientosAPdf(List<MovimientoInventarioResponseDto> movimientos) {
         logger.info("Exportando {} movimientos a PDF", movimientos.size());
 

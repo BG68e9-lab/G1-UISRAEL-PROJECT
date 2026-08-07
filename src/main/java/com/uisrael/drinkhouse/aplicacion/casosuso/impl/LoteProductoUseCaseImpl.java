@@ -21,10 +21,6 @@ import com.uisrael.drinkhouse.dominio.repositorios.ILoteProductoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IProductoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ITipoMovimientoRepositorio;
 
-/**
- * Implementación del caso de uso de Lotes de Producto.
- * Gestiona la creación y consulta de lotes con generación de códigos únicos.
- */
 public class LoteProductoUseCaseImpl implements ILoteProductoUseCase {
 
 	private final ILoteProductoRepositorio repositorio;
@@ -43,17 +39,7 @@ public class LoteProductoUseCaseImpl implements ILoteProductoUseCase {
 		this.tipoMovimientoRepositorio = tipoMovimientoRepositorio;
 	}
 
-	/**
-	 * Crea un nuevo lote de producto.
-	 * Reglas de negocio:
-	 * - cantidadInicial debe ser mayor a 0; si no, lanza ReglaNegocioException (400)
-	 * - productoId debe existir; si no, lanza RecursoNoEncontradoException (404)
-	 * - Asigna cantidadDisponible = cantidadInicial
-	 * - Asigna fechaIngreso = ahora
-	 * - Genera codigoEntrada = "LOTE-" + número secuencial de 8 dígitos
-	 */
-	@Override
-	@Transactional
+@Override
 	public LoteProducto crearLote(LoteProducto lote, Long productoId) {
 		if (lote.getCantidadInicial() == null
 				|| lote.getCantidadInicial().compareTo(BigDecimal.ZERO) <= 0) {
@@ -78,42 +64,25 @@ public class LoteProductoUseCaseImpl implements ILoteProductoUseCase {
 		return repositorio.guardarConProductoId(lote, productoId);
 	}
 
-	/**
-	 * Retorna todos los lotes de un producto ordenados por fechaIngreso ASC (FIFO).
-	 * (Requisito 5.2)
-	 */
-	@Override
+@Override
 	public List<LoteProducto> buscarPorProducto(Long productoId) {
 		return repositorio.buscarPorProductoOrdenadoPorFechaIngreso(productoId);
 	}
 
-	/**
-	 * Busca un lote por su identificador.
-	 * (Requisito 5.3)
-	 */
-	@Override
+@Override
 	public LoteProducto buscarPorId(Long id) {
 		return repositorio.buscarPorId(id)
 				.orElseThrow(() -> new RecursoNoEncontradoException(
 						"Lote de producto no encontrado con id: " + id));
 	}
 
-	/**
-	 * Retorna los lotes cuya fechaVencimiento <= hoy+N días y cantidadDisponible > 0.
-	 * (Requisito 5.4)
-	 *
-	 * @param dias número de días desde hoy
-	 */
-	@Override
+@Override
 	public List<LoteProducto> buscarProximosAVencer(int dias) {
 		LocalDate limite = LocalDate.now().plusDays(dias);
 		return repositorio.buscarProximosAVencer(limite);
 	}
 
-	/**
-	 * Lista todos los lotes con paginación.
-	 */
-	@Override
+@Override
 	public Page<LoteProducto> listarPaginado(Pageable pageable) {
 		return repositorio.listarPaginado(pageable);
 	}

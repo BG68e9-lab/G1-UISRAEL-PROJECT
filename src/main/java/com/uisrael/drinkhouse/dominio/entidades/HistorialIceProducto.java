@@ -4,10 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
-/**
- * Entidad de dominio que representa un registro histórico de cambio de ICE (Impuesto a Consumos Especiales) de un producto.
- * Captura cambios en aplicabilidad, tarifas porcentuales, tarifas específicas y clasificación fiscal.
- */
 public class HistorialIceProducto {
 
 	private Long historialIceId;

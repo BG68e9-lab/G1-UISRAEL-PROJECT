@@ -21,16 +21,6 @@ import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IAjusteInventarioAudit
 import com.uisrael.drinkhouse.presentacion.dto.response.AjusteAuditoriaResponseDto;
 import com.uisrael.drinkhouse.presentacion.mapeadores.IAjusteAuditoriaDtoMapper;
 
-/**
- * Controlador REST para consultar registros de auditoría de ajustes de inventario.
- * 
- * Expone endpoints para recuperar información de auditoría asociada a movimientos
- * de inventario, incluyendo detalles de autorización, cambios en cantidades, y
- * metadatos de la operación.
- * 
- * Nota: Requiere rol ADMIN o BODEGUERO para acceder a los registros de auditoría
- * (autorización será implementada cuando Spring Security esté configurado).
- */
 @RestController
 @RequestMapping("/api/v1/ajustes-auditoria")
 @Tag(name = "Auditoría de Inventario", description = "Endpoints para consultar registros de auditoría de movimientos de inventario con trazabilidad completa")
@@ -41,27 +31,14 @@ public class AjusteInventarioAuditoriaController {
 	private final IAjusteInventarioAuditoriaUseCase auditUseCase;
 	private final IAjusteAuditoriaDtoMapper mapper;
 
-	/**
-	 * Constructor con inyección de dependencias.
-	 * 
-	 * @param auditUseCase caso de uso para operaciones de auditoría
-	 * @param mapper       mapper para convertir entre dominio y DTO
-	 */
-	public AjusteInventarioAuditoriaController(
+public AjusteInventarioAuditoriaController(
 			IAjusteInventarioAuditoriaUseCase auditUseCase,
 			IAjusteAuditoriaDtoMapper mapper) {
 		this.auditUseCase = auditUseCase;
 		this.mapper = mapper;
 	}
 
-	/**
-	 * Busca el registro de auditoría asociado a un movimiento de inventario.
-	 * 
-	 * @param movimientoId ID del movimiento de inventario
-	 * @return ResponseEntity con HTTP 200 y el registro de auditoría completo
-	 * @throws RecursoNoEncontradoException si no se encuentra el registro (HTTP 404)
-	 */
-	@Operation(
+@Operation(
 		summary = "Consultar auditoría por ID de movimiento",
 		description = "Recupera el registro de auditoría completo asociado a un movimiento de inventario específico. "
 			+ "El registro incluye detalles de autorización (usuario autorizado y ejecutor), justificación, "

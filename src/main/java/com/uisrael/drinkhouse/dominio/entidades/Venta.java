@@ -3,10 +3,6 @@ package com.uisrael.drinkhouse.dominio.entidades;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-/**
- * Entidad de dominio para ventas realizadas.
- * Cada venta registra el cliente, fecha, total y estado.
- */
 public class Venta {
 
 	private Long ventaId;

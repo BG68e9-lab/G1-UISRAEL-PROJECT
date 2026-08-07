@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IOrdenCompraUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.DetalleOrdenCompra;
@@ -29,10 +30,6 @@ import com.uisrael.drinkhouse.presentacion.mapeadores.IOrdenCompraDtoMapper;
 
 import jakarta.validation.Valid;
 
-/**
- * Controlador REST para el módulo de Órdenes de Compra.
- * Base URL: /api/v1/ordenes-compra
- */
 @RestController
 @RequestMapping("/api/v1/ordenes-compra")
 public class OrdenCompraController {
@@ -56,14 +53,8 @@ public class OrdenCompraController {
         this.productoJpaRepositorio = productoJpaRepositorio;
     }
 
-    /**
-     * POST /api/v1/ordenes-compra
-     * Crea una nueva orden de compra en estado BORRADOR.
-     *
-     * @param requestDto datos de la orden y sus detalles
-     * @return la orden creada, HTTP 201
-     */
-    @PostMapping
+@PostMapping
+	@Transactional
     public ResponseEntity<OrdenCompraResponseDto> crearOrden(
             @Valid @RequestBody OrdenCompraRequestDto requestDto) {
 
@@ -78,15 +69,8 @@ public class OrdenCompraController {
                 .body(construirResponseConDetalles(creada));
     }
 
-    /**
-     * PUT /api/v1/ordenes-compra/{id}
-     * Actualiza una orden en estado BORRADOR.
-     *
-     * @param id         ID de la orden a actualizar
-     * @param requestDto nuevos datos de la orden
-     * @return la orden actualizada, HTTP 200
-     */
-    @PutMapping("/{id}")
+@PutMapping("/{id}")
+	@Transactional
     public ResponseEntity<OrdenCompraResponseDto> actualizarOrden(
             @PathVariable Long id,
             @Valid @RequestBody OrdenCompraRequestDto requestDto) {
@@ -101,68 +85,32 @@ public class OrdenCompraController {
         return ResponseEntity.ok(construirResponseConDetalles(actualizada));
     }
 
-    /**
-     * PATCH /api/v1/ordenes-compra/{id}/enviar
-     * Envía la orden cambiando su estado a ENVIADA.
-     *
-     * @param id ID de la orden
-     * @return la orden con estado ENVIADA, HTTP 200
-     */
-    @PatchMapping("/{id}/enviar")
+@PatchMapping("/{id}/enviar")
     public ResponseEntity<OrdenCompraResponseDto> enviarOrden(@PathVariable Long id) {
         OrdenCompra enviada = ordenCompraUseCase.enviarOrden(id);
         return ResponseEntity.ok(construirResponseConDetalles(enviada));
     }
 
-    /**
-     * PATCH /api/v1/ordenes-compra/{id}/recibir
-     * Recibe la orden generando lotes e incrementando stock.
-     *
-     * @param id ID de la orden
-     * @return la orden con estado RECIBIDA, HTTP 200
-     */
-    @PatchMapping("/{id}/recibir")
+@PatchMapping("/{id}/recibir")
+    @Transactional
     public ResponseEntity<OrdenCompraResponseDto> recibirOrden(@PathVariable Long id) {
         OrdenCompra recibida = ordenCompraUseCase.recibirOrden(id);
         return ResponseEntity.ok(construirResponseConDetalles(recibida));
     }
 
-    /**
-     * PATCH /api/v1/ordenes-compra/{id}/anular
-     * Anula la orden (solo en estado BORRADOR o ENVIADA).
-     *
-     * @param id ID de la orden
-     * @return la orden con estado ANULADA, HTTP 200
-     */
-    @PatchMapping("/{id}/anular")
+@PatchMapping("/{id}/anular")
     public ResponseEntity<OrdenCompraResponseDto> anularOrden(@PathVariable Long id) {
         OrdenCompra anulada = ordenCompraUseCase.anularOrden(id);
         return ResponseEntity.ok(construirResponseConDetalles(anulada));
     }
 
-    /**
-     * GET /api/v1/ordenes-compra/{id}
-     * Busca una orden por su ID.
-     *
-     * @param id ID de la orden
-     * @return la orden encontrada, HTTP 200
-     */
-    @GetMapping("/{id}")
+@GetMapping("/{id}")
     public ResponseEntity<OrdenCompraResponseDto> buscarPorId(@PathVariable Long id) {
         OrdenCompra orden = ordenCompraUseCase.buscarPorId(id);
         return ResponseEntity.ok(construirResponseConDetalles(orden));
     }
 
-    /**
-     * GET /api/v1/ordenes-compra
-     * Lista órdenes con filtros opcionales de estado y rango de fechas.
-     *
-     * @param estado código del estado (opcional)
-     * @param desde  fecha de inicio del rango ISO-8601 (opcional)
-     * @param hasta  fecha de fin del rango ISO-8601 (opcional)
-     * @return lista de órdenes, HTTP 200
-     */
-    @GetMapping
+@GetMapping
     public ResponseEntity<List<OrdenCompraResponseDto>> listarConFiltros(
             @RequestParam(required = false) String estado,
             @RequestParam(required = false)
@@ -179,10 +127,7 @@ public class OrdenCompraController {
         return ResponseEntity.ok(lista);
     }
 
-    /**
-     * Construye el DTO de respuesta incluyendo los detalles de la orden.
-     */
-    private OrdenCompraResponseDto construirResponseConDetalles(OrdenCompra orden) {
+private OrdenCompraResponseDto construirResponseConDetalles(OrdenCompra orden) {
         OrdenCompraResponseDto dto = mapper.toResponseDto(orden);
 
         List<DetalleOrdenCompraResponseDto> detallesDto = detalleRepositorio

@@ -17,10 +17,6 @@ import com.uisrael.drinkhouse.infraestructura.repositorio.IMovimientoInventarioJ
 import com.uisrael.drinkhouse.infraestructura.repositorio.IProductoJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.repositorio.ITipoMovimientoJpaRepositorio;
 
-/**
- * Adaptador que implementa el puerto de salida IMovimientoInventarioRepositorio
- * usando Spring Data JPA. Resuelve las referencias FK antes de persistir.
- */
 public class MovimientoInventarioRepositorioImpl implements IMovimientoInventarioRepositorio {
 
 	private final IMovimientoInventarioJpaRepositorio jpaRepositorio;
@@ -42,11 +38,7 @@ public class MovimientoInventarioRepositorioImpl implements IMovimientoInventari
 		this.tipoMovimientoJpaRepositorio = tipoMovimientoJpaRepositorio;
 	}
 
-	/**
-	 * Persiste un movimiento de inventario resolviendo las referencias FK
-	 * mediante proxies JPA (getReferenceById) para evitar N consultas innecesarias.
-	 */
-	@Override
+@Override
 	public MovimientoInventario guardar(MovimientoInventario movimiento) {
 		MovimientoInventarioEntity entity = mapper.toEntity(movimiento);
 
@@ -72,48 +64,32 @@ public class MovimientoInventarioRepositorioImpl implements IMovimientoInventari
 		return mapper.toDomain(guardado);
 	}
 
-	/**
-	 * Consulta movimientos de un producto aplicando filtros opcionales de tipo
-	 * de movimiento y rango de fechas, ordenados por creadoEn descendente.
-	 */
-	@Override
+@Override
 	public List<MovimientoInventario> buscarPorProductoConFiltros(Long productoId, String tipo,
 			OffsetDateTime desde, OffsetDateTime hasta) {
 		return jpaRepositorio.buscarConFiltros(productoId, tipo, desde, hasta)
 				.stream().map(mapper::toDomain).toList();
 	}
 
-	/**
-	 * Lista todos los movimientos ordenados por fecha descendente.
-	 */
-	@Override
+@Override
 	public List<MovimientoInventario> listarTodos() {
 		return jpaRepositorio.findAllOrderByCreadoEnDesc()
 				.stream().map(mapper::toDomain).toList();
 	}
 
-	/**
-	 * Busca movimientos por tipo de movimiento.
-	 */
-	@Override
+@Override
 	public List<MovimientoInventario> buscarPorTipo(String codigoTipo) {
 		return jpaRepositorio.findByTipoMovimiento(codigoTipo)
 				.stream().map(mapper::toDomain).toList();
 	}
 
-	/**
-	 * Busca movimientos por lote.
-	 */
-	@Override
+@Override
 	public List<MovimientoInventario> buscarPorLote(Long loteId) {
 		return jpaRepositorio.findByLote(loteId)
 				.stream().map(mapper::toDomain).toList();
 	}
 
-	/**
-	 * Busca un movimiento por su ID.
-	 */
-	@Override
+@Override
 	public java.util.Optional<MovimientoInventario> buscarPorId(Long id) {
 		return jpaRepositorio.findById(id).map(mapper::toDomain);
 	}

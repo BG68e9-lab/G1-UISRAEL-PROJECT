@@ -7,9 +7,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-/**
- * Configuración CORS para permitir peticiones desde el frontend.
- */
 @Configuration
 public class CorsConfig {
 

@@ -12,12 +12,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-/**
- * JPA Entity for ajustes_inventario_auditoria table.
- * Stores complete audit trail for inventory movements with secondary authentication.
- * 
- * @see com.uisrael.drinkhouse.dominio.entidades.AjusteInventarioAuditoria
- */
 @Data
 @Entity
 @Table(name = "ajustes_inventario_auditoria")
@@ -70,11 +64,7 @@ public class AjusteInventarioAuditoriaEntity {
 	@Column(name = "venta_id")
 	private Long ventaId;
 
-	/**
-	 * Sets fecha_hora to current timestamp before persisting.
-	 * Ensures every audit record has an accurate creation timestamp.
-	 */
-	@PrePersist
+@PrePersist
 	protected void onCreate() {
 		this.fechaHora = OffsetDateTime.now();
 	}

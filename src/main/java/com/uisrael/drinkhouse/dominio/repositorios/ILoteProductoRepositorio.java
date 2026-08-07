@@ -13,10 +13,7 @@ public interface ILoteProductoRepositorio {
 
 	LoteProducto guardar(LoteProducto loteProducto);
 
-	/**
-	 * Guarda el lote asociándolo al producto mediante su ID JPA.
-	 */
-	LoteProducto guardarConProductoId(LoteProducto loteProducto, Long productoId);
+LoteProducto guardarConProductoId(LoteProducto loteProducto, Long productoId);
 
 	Optional<LoteProducto> buscarPorId(Long id);
 
@@ -26,10 +23,7 @@ public interface ILoteProductoRepositorio {
 
 	List<LoteProducto> listarTodos();
 
-	/**
-	 * Lista todos los lotes con paginación.
-	 */
-	Page<LoteProducto> listarPaginado(Pageable pageable);
+Page<LoteProducto> listarPaginado(Pageable pageable);
 
 	void eliminar(Long id);
 }

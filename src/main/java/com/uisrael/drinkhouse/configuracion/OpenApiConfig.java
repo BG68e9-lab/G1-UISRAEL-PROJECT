@@ -13,12 +13,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
-/**
- * Configuración de OpenAPI/Swagger para la documentación de la API REST.
- * 
- * Proporciona documentación interactiva para todos los endpoints del sistema DrinkHouse,
- * incluyendo movimientos de inventario con autenticación secundaria y auditoría.
- */
 @Configuration
 public class OpenApiConfig {
 

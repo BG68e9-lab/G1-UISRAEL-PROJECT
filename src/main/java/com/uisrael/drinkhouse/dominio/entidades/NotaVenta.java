@@ -2,10 +2,6 @@ package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.time.OffsetDateTime;
 
-/**
- * Entidad de dominio para notas de venta simplificadas.
- * Registro rápido de ventas sin complejidad de inventario.
- */
 public class NotaVenta {
 
 	private Long notaId;

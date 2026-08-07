@@ -4,9 +4,6 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ILogAuditoriaUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IMovimientoInventarioUseCase;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IOrdenCompraUseCase;
@@ -26,10 +23,6 @@ import com.uisrael.drinkhouse.dominio.repositorios.IOrdenCompraRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.IProductoRepositorio;
 import com.uisrael.drinkhouse.dominio.repositorios.ITipoMovimientoRepositorio;
 
-/**
- * Implementación del caso de uso de Órdenes de Compra.
- * Gestiona el ciclo de vida completo: BORRADOR → ENVIADA → RECIBIDA / ANULADA.
- */
 public class OrdenCompraUseCaseImpl implements IOrdenCompraUseCase {
 
     private final IOrdenCompraRepositorio ordenCompraRepositorio;
@@ -63,22 +56,14 @@ public class OrdenCompraUseCaseImpl implements IOrdenCompraUseCase {
         this.movimientoInventarioUseCase = movimientoInventarioUseCase;
     }
 
-    /**
-     * Resuelve el negocioId: usa el del request si viene, sino toma el negocio activo.
-     */
-    private Integer resolverNegocioId(Integer negocioId) {
+private Integer resolverNegocioId(Integer negocioId) {
         if (negocioId != null) return negocioId;
         return negocioRepositorio.buscarActivo()
                 .orElseThrow(() -> new RecursoNoEncontradoException("No hay ningún negocio activo configurado"))
                 .getNegocioId();
     }
 
-    /**
-     * Crea una nueva orden de compra en estado BORRADOR con sus detalles.
-     * Verifica que todos los productos existan, calcula el total y genera el código.
-     */
-    @Override
-    @Transactional
+@Override
     public OrdenCompra crearOrden(OrdenCompra orden, List<DetalleOrdenCompra> detalles) {
         Long proveedorId = orden.getProveedorId();
         
@@ -119,12 +104,7 @@ public class OrdenCompraUseCaseImpl implements IOrdenCompraUseCase {
         return ordenGuardada;
     }
 
-    /**
-     * Actualiza una orden existente en estado BORRADOR.
-     * Elimina los detalles existentes y guarda los nuevos; recalcula el total.
-     */
-    @Override
-    @Transactional
+@Override
     public OrdenCompra actualizarOrden(Long id, OrdenCompra orden, List<DetalleOrdenCompra> detalles) {
         OrdenCompra existente = ordenCompraRepositorio.buscarPorId(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
@@ -162,11 +142,7 @@ public class OrdenCompraUseCaseImpl implements IOrdenCompraUseCase {
         return actualizada;
     }
 
-    /**
-     * Envía la orden cambiando su estado a ENVIADA (solo si está en BORRADOR).
-     */
-    @Override
-    @Transactional
+@Override
     public OrdenCompra enviarOrden(Long id) {
         OrdenCompra orden = ordenCompraRepositorio.buscarPorId(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
@@ -185,12 +161,7 @@ public class OrdenCompraUseCaseImpl implements IOrdenCompraUseCase {
         return guardada;
     }
 
-    /**
-     * Recibe la orden (solo si está en ENVIADA), genera lotes por cada detalle
-     * e incrementa el stock del producto correspondiente.
-     */
-    @Override
-    @Transactional
+@Override
     public OrdenCompra recibirOrden(Long id) {
         System.out.println("=== RECIBIRORDEN LLAMADO PARA ORDEN ID: " + id + " ===");
         OrdenCompra orden = ordenCompraRepositorio.buscarPorId(id)
@@ -256,11 +227,7 @@ public class OrdenCompraUseCaseImpl implements IOrdenCompraUseCase {
         return guardada;
     }
 
-    /**
-     * Anula la orden (solo si está en BORRADOR o ENVIADA).
-     */
-    @Override
-    @Transactional
+@Override
     public OrdenCompra anularOrden(Long id) {
         OrdenCompra orden = ordenCompraRepositorio.buscarPorId(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
@@ -280,20 +247,14 @@ public class OrdenCompraUseCaseImpl implements IOrdenCompraUseCase {
         return guardada;
     }
 
-    /**
-     * Busca una orden de compra por su ID.
-     */
-    @Override
+@Override
     public OrdenCompra buscarPorId(Long id) {
         return ordenCompraRepositorio.buscarPorId(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "Orden de compra no encontrada con id: " + id));
     }
 
-    /**
-     * Lista órdenes de compra con filtros opcionales de estado y rango de fechas.
-     */
-    @Override
+@Override
     public List<OrdenCompra> listarConFiltros(String estado, OffsetDateTime desde, OffsetDateTime hasta) {
         return ordenCompraRepositorio.buscarConFiltros(estado, desde, hasta);
     }

@@ -15,10 +15,6 @@ import com.uisrael.drinkhouse.presentacion.mapeadores.INotaVentaDtoMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-/**
- * Controlador REST para consulta de notas de venta.
- * Solo operaciones de lectura (visualización).
- */
 @RestController
 @RequestMapping("/api/v1/notas-venta")
 @Tag(name = "Notas de Venta", description = "Endpoints para consultar notas de venta simplificadas")
@@ -32,11 +28,7 @@ public class NotaVentaController {
 		this.mapper = mapper;
 	}
 
-	/**
-	 * Lista todas las notas de venta ordenadas por fecha descendente.
-	 * GET /api/v1/notas-venta
-	 */
-	@GetMapping
+@GetMapping
 	@Operation(summary = "Listar todas las notas de venta", 
 			description = "Obtiene todas las notas de venta ordenadas por fecha de creación (más recientes primero)")
 	public ResponseEntity<List<NotaVentaResponseDto>> listarTodas() {
@@ -47,11 +39,7 @@ public class NotaVentaController {
 		return ResponseEntity.ok(lista);
 	}
 
-	/**
-	 * Busca una nota de venta específica por ID.
-	 * GET /api/v1/notas-venta/{id}
-	 */
-	@GetMapping("/{id}")
+@GetMapping("/{id}")
 	@Operation(summary = "Obtener nota de venta por ID", 
 			description = "Obtiene una nota de venta específica usando su ID")
 	public ResponseEntity<NotaVentaResponseDto> buscarPorId(@PathVariable Long id) {

@@ -11,9 +11,6 @@ import com.uisrael.drinkhouse.dominio.repositorios.INotaVentaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.INotaVentaJpaRepositorio;
 import com.uisrael.drinkhouse.infraestructura.persistencia.jpa.NotaVentaEntity;
 
-/**
- * Adaptador que implementa el puerto de salida INotaVentaRepositorio usando JPA.
- */
 @Component
 public class NotaVentaRepositorioImpl implements INotaVentaRepositorio {
 

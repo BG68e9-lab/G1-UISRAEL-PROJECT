@@ -8,8 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface INotaVentaJpaRepositorio extends JpaRepository<NotaVentaEntity, Long> {
 
-	/**
-	 * Lista todas las notas ordenadas por fecha de creación descendente.
-	 */
-	List<NotaVentaEntity> findAllByOrderByCreadoEnDesc();
+List<NotaVentaEntity> findAllByOrderByCreadoEnDesc();
 }

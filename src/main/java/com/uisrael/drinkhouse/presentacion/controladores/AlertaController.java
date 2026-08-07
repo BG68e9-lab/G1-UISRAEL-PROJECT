@@ -26,8 +26,7 @@ public class AlertaController {
 		this.mapper = mapper;
 	}
 
-	/** GET /api/v1/alertas?tipoAlerta=...&atendida=... */
-	@GetMapping
+@GetMapping
 	public ResponseEntity<List<AlertaResponseDto>> listar(
 			@RequestParam(required = false) String tipoAlerta,
 			@RequestParam(required = false) Boolean atendida) {
@@ -36,14 +35,12 @@ public class AlertaController {
 		return ResponseEntity.ok(lista);
 	}
 
-	/** PATCH /api/v1/alertas/{id}/atender */
-	@PatchMapping("/{id}/atender")
+@PatchMapping("/{id}/atender")
 	public ResponseEntity<AlertaResponseDto> marcarComoAtendida(@PathVariable Long id) {
 		return ResponseEntity.ok(mapper.toResponseDto(alertaUseCase.marcarComoAtendida(id)));
 	}
 
-	/** GET /api/v1/alertas/no-atendidas/conteo */
-	@GetMapping("/no-atendidas/conteo")
+@GetMapping("/no-atendidas/conteo")
 	public ResponseEntity<Long> contarNoAtendidas() {
 		return ResponseEntity.ok(alertaUseCase.contarNoAtendidas());
 	}

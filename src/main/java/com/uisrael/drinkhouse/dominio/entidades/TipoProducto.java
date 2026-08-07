@@ -2,13 +2,6 @@ package com.uisrael.drinkhouse.dominio.entidades;
 
 import java.time.OffsetDateTime;
 
-/**
- * Entidad de dominio que representa un tipo de producto.
- * Cada tipo está asociado a una categoría específica, estableciendo
- * una relación jerárquica: Categoría -> Tipo -> Producto
- * 
- * Ejemplo: Categoría "Bebida Alcohólica" -> Tipos: "Whisky", "Cerveza", "Ron"
- */
 public class TipoProducto {
 
 	private Long tipoProductoId;

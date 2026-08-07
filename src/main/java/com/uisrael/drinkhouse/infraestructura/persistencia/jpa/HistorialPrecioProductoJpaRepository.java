@@ -13,35 +13,17 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HistorialPrecioProductoJpaRepository extends JpaRepository<HistorialPrecioProductoEntity, Long> {
 
-	/**
-	 * Busca todo el historial de precios de un producto ordenado por fecha descendente
-	 */
-	List<HistorialPrecioProductoEntity> findByProductoIdOrderByFechaCambioDesc(Long productoId);
-	
-	/**
-	 * Busca historial de precios de un producto con paginación
-	 */
-	Page<HistorialPrecioProductoEntity> findByProductoIdOrderByFechaCambioDesc(Long productoId, Pageable pageable);
-	
-	/**
-	 * Busca el último cambio de precio de un producto
-	 */
-	HistorialPrecioProductoEntity findTopByProductoIdOrderByFechaCambioDesc(Long productoId);
-	
-	/**
-	 * Busca historial de precios por origen del cambio
-	 */
-	List<HistorialPrecioProductoEntity> findByOrigenCambio(String origenCambio);
-	
-	/**
-	 * Busca historial de precios por factura relacionada
-	 */
-	List<HistorialPrecioProductoEntity> findByFacturaRelacionada(String facturaRelacionada);
-	
-	/**
-	 * Busca historial de precios en un rango de fechas
-	 */
-	@Query("SELECT h FROM HistorialPrecioProductoEntity h WHERE h.productoId = :productoId " +
+List<HistorialPrecioProductoEntity> findByProductoIdOrderByFechaCambioDesc(Long productoId);
+
+Page<HistorialPrecioProductoEntity> findByProductoIdOrderByFechaCambioDesc(Long productoId, Pageable pageable);
+
+HistorialPrecioProductoEntity findTopByProductoIdOrderByFechaCambioDesc(Long productoId);
+
+List<HistorialPrecioProductoEntity> findByOrigenCambio(String origenCambio);
+
+List<HistorialPrecioProductoEntity> findByFacturaRelacionada(String facturaRelacionada);
+
+@Query("SELECT h FROM HistorialPrecioProductoEntity h WHERE h.productoId = :productoId " +
 	       "AND h.fechaCambio BETWEEN :fechaInicio AND :fechaFin " +
 	       "ORDER BY h.fechaCambio DESC")
 	List<HistorialPrecioProductoEntity> findByProductoIdAndFechaCambioBetween(
@@ -49,11 +31,8 @@ public interface HistorialPrecioProductoJpaRepository extends JpaRepository<Hist
 		@Param("fechaInicio") OffsetDateTime fechaInicio,
 		@Param("fechaFin") OffsetDateTime fechaFin
 	);
-	
-	/**
-	 * Busca el precio vigente en una fecha específica (último cambio antes o igual a esa fecha)
-	 */
-	@Query("SELECT h FROM HistorialPrecioProductoEntity h WHERE h.productoId = :productoId " +
+
+@Query("SELECT h FROM HistorialPrecioProductoEntity h WHERE h.productoId = :productoId " +
 	       "AND h.fechaCambio <= :fecha " +
 	       "ORDER BY h.fechaCambio DESC")
 	List<HistorialPrecioProductoEntity> findPrecioEnFecha(
@@ -61,14 +40,8 @@ public interface HistorialPrecioProductoJpaRepository extends JpaRepository<Hist
 		@Param("fecha") OffsetDateTime fecha,
 		Pageable pageable
 	);
-	
-	/**
-	 * Cuenta cambios de precio de un producto
-	 */
-	long countByProductoId(Long productoId);
-	
-	/**
-	 * Busca historial por usuario modificador
-	 */
-	List<HistorialPrecioProductoEntity> findByUsuarioModificadorOrderByFechaCambioDesc(String usuarioModificador);
+
+long countByProductoId(Long productoId);
+
+List<HistorialPrecioProductoEntity> findByUsuarioModificadorOrderByFechaCambioDesc(String usuarioModificador);
 }

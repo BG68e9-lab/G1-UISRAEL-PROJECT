@@ -2,20 +2,12 @@ package com.uisrael.drinkhouse.aplicacion.casosuso.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IAjusteInventarioAuditoriaUseCase;
 import com.uisrael.drinkhouse.aplicacion.excepciones.RecursoNoEncontradoException;
 import com.uisrael.drinkhouse.dominio.entidades.AjusteInventarioAuditoria;
 import com.uisrael.drinkhouse.dominio.repositorios.IAjusteInventarioAuditoriaRepositorio;
 
-/**
- * Implementación del caso de uso para la gestión de auditoría de ajustes de inventario.
- * Proporciona acceso de solo lectura a los registros de auditoría.
- */
-@Service
-@Transactional(readOnly = true)
 public class AjusteInventarioAuditoriaUseCaseImpl implements IAjusteInventarioAuditoriaUseCase {
 
 	private static final Logger logger = LoggerFactory.getLogger(AjusteInventarioAuditoriaUseCaseImpl.class);

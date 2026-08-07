@@ -3,7 +3,6 @@ package com.uisrael.drinkhouse.aplicacion.casosuso.impl;
 import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ISecuenciaCodigoUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.SecuenciaCodigo;
@@ -21,7 +20,6 @@ public class SecuenciaCodigoUseCaseImpl implements ISecuenciaCodigoUseCase {
 	}
 
 	@Override
-	@Transactional
 	public Long siguiente(Integer negocioId, Integer tipoMovimientoId) {
 		int intentos = 0;
 		while (intentos < 3) {
@@ -45,19 +43,16 @@ public class SecuenciaCodigoUseCaseImpl implements ISecuenciaCodigoUseCase {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
 	public List<SecuenciaCodigo> listarTodas() {
 		return repositorio.listarTodas();
 	}
 
 	@Override
-	@Transactional(readOnly = true)
 	public List<SecuenciaCodigo> listarPorNegocio(Integer negocioId) {
 		return repositorio.listarPorNegocio(negocioId);
 	}
 
 	@Override
-	@Transactional(readOnly = true)
 	public SecuenciaCodigo buscar(Integer negocioId, Integer tipoMovimientoId) {
 		return repositorio.buscarPorNegocioYTipo(negocioId, tipoMovimientoId)
 				.orElseThrow(() -> new RecursoNoEncontradoException(
@@ -66,7 +61,6 @@ public class SecuenciaCodigoUseCaseImpl implements ISecuenciaCodigoUseCase {
 	}
 
 	@Override
-	@Transactional
 	public SecuenciaCodigo crear(SecuenciaCodigo secuencia) {
 		if (repositorio.buscarPorNegocioYTipo(
 				secuencia.getNegocioId(), 
@@ -84,7 +78,6 @@ public class SecuenciaCodigoUseCaseImpl implements ISecuenciaCodigoUseCase {
 	}
 
 	@Override
-	@Transactional
 	public SecuenciaCodigo actualizar(Integer negocioId, Integer tipoMovimientoId, Long nuevoNumero) {
 		SecuenciaCodigo secuencia = buscar(negocioId, tipoMovimientoId);
 		secuencia.setUltimoNumero(nuevoNumero);
@@ -92,20 +85,17 @@ public class SecuenciaCodigoUseCaseImpl implements ISecuenciaCodigoUseCase {
 	}
 
 	@Override
-	@Transactional
 	public void eliminar(Integer negocioId, Integer tipoMovimientoId) {
 		SecuenciaCodigo secuencia = buscar(negocioId, tipoMovimientoId);
 		repositorio.eliminar(secuencia);
 	}
 
 	@Override
-	@Transactional
 	public SecuenciaCodigo reiniciar(Integer negocioId, Integer tipoMovimientoId, Long valorInicial) {
 		return actualizar(negocioId, tipoMovimientoId, valorInicial != null ? valorInicial : 0L);
 	}
 
 	@Override
-	@Transactional
 	public int inicializarSecuenciasParaTodosLosNegocios() {
 		List<SecuenciaCodigo> secuenciasExistentes = repositorio.listarTodas();
 		int contadorCreadas = 0;

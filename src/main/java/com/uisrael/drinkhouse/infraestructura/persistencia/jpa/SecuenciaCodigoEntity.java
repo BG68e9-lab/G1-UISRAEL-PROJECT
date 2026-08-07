@@ -10,10 +10,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.Data;
 
-/**
- * Entidad JPA para la generación de secuencias de código únicas por negocio y tipo de movimiento.
- * Clave primaria compuesta: (negocioId, tipoMovimientoId).
- */
 @Data
 @Entity
 @Table(name = "secuencias_codigo")

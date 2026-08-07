@@ -9,11 +9,6 @@ import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.ILogAuditoriaUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.LogAuditoria;
 import com.uisrael.drinkhouse.dominio.repositorios.ILogAuditoriaRepositorio;
 
-/**
- * Implementación del caso de uso de auditoría de logs.
- * Registra las acciones realizadas sobre las entidades del sistema.
- * Se instancia desde DrinkHouseConfig.
- */
 public class LogAuditoriaUseCaseImpl implements ILogAuditoriaUseCase {
 
 	private final ILogAuditoriaRepositorio repositorio;

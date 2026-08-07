@@ -8,16 +8,6 @@ import java.util.List;
 import com.uisrael.drinkhouse.aplicacion.casosuso.entrada.IProveedorUseCase;
 import com.uisrael.drinkhouse.dominio.entidades.Proveedor;
 
-/**
- * Servicio especializado para procesar datos extraídos de facturas por IA
- * e integrarlos con el sistema de órdenes de compra.
- * 
- * Responsabilidades:
- * - Validar datos extraídos por IA
- * - Crear automáticamente proveedores si no existen
- * - Convertir fechas de formato ISO a LocalDate
- * - Mapear productos de factura a productos del sistema
- */
 public class FacturaIAService {
 
 	private final IProveedorUseCase proveedorUseCase;
@@ -28,14 +18,6 @@ public class FacturaIAService {
 		this.proveedorUseCase = proveedorUseCase;
 	}
 
-	/**
-	 * Procesa los datos del proveedor extraídos por IA.
-	 * Si el proveedor no existe (por RUC), lo crea automáticamente.
-	 * 
-	 * @param datosProveedor Datos extraídos del PDF por IA
-	 * @param negocioId ID del negocio asociado
-	 * @return El proveedor existente o recién creado
-	 */
 	public Proveedor procesarProveedorDeFactura(ProveedorIADto datosProveedor, Integer negocioId) {
 		validarDatosProveedorIA(datosProveedor);
 		
@@ -50,12 +32,6 @@ public class FacturaIAService {
 		return proveedorUseCase.buscarOCrearPorRuc(proveedor);
 	}
 	
-	/**
-	 * Convierte una fecha en formato ISO (yyyy-MM-dd) a LocalDate.
-	 * 
-	 * @param fechaISO Fecha en formato "2026-07-28"
-	 * @return LocalDate parseada
-	 */
 	public LocalDate convertirFechaISO(String fechaISO) {
 		if (fechaISO == null || fechaISO.trim().isEmpty()) {
 			throw new IllegalArgumentException("La fecha no puede estar vacía");
@@ -63,9 +39,6 @@ public class FacturaIAService {
 		return LocalDate.parse(fechaISO, ISO_DATE_FORMATTER);
 	}
 	
-	/**
-	 * Valida que los datos mínimos del proveedor estén presentes.
-	 */
 	private void validarDatosProveedorIA(ProveedorIADto datos) {
 		List<String> errores = new ArrayList<>();
 		
@@ -87,11 +60,8 @@ public class FacturaIAService {
 			throw new IllegalArgumentException("Datos de proveedor inválidos: " + String.join(", ", errores));
 		}
 	}
-	
-	/**
-	 * DTO que representa los datos del proveedor extraídos por IA.
-	 */
-	public static class ProveedorIADto {
+
+public static class ProveedorIADto {
 		private String razonSocial;
 		private String ruc;
 		private String direccionMatriz;
@@ -125,11 +95,8 @@ public class FacturaIAService {
 		public String getEmail() { return email; }
 		public void setEmail(String email) { this.email = email; }
 	}
-	
-	/**
-	 * DTO que representa los datos del documento extraídos por IA.
-	 */
-	public static class DocumentoIADto {
+
+public static class DocumentoIADto {
 		private String numeroFactura;
 		private String claveAcceso;
 		private String fechaEmision;
@@ -155,11 +122,8 @@ public class FacturaIAService {
 		public String getTipoEmision() { return tipoEmision; }
 		public void setTipoEmision(String tipoEmision) { this.tipoEmision = tipoEmision; }
 	}
-	
-	/**
-	 * DTO que representa un producto/detalle extraído por IA.
-	 */
-	public static class ProductoIADto {
+
+public static class ProductoIADto {
 		private String codigoPrincipal;
 		private String codigoAuxiliar;
 		private String descripcion;
@@ -189,11 +153,8 @@ public class FacturaIAService {
 		public Double getPrecioTotal() { return precioTotal; }
 		public void setPrecioTotal(Double precioTotal) { this.precioTotal = precioTotal; }
 	}
-	
-	/**
-	 * DTO que representa los totales extraídos por IA.
-	 */
-	public static class TotalesIADto {
+
+public static class TotalesIADto {
 		private Double subtotal15;
 		private Double subtotal0;
 		private Double subtotalNoObjetoIva;
@@ -239,11 +200,8 @@ public class FacturaIAService {
 		public Double getValorTotal() { return valorTotal; }
 		public void setValorTotal(Double valorTotal) { this.valorTotal = valorTotal; }
 	}
-	
-	/**
-	 * DTO principal que contiene toda la información extraída de la factura.
-	 */
-	public static class FacturaIADto {
+
+public static class FacturaIADto {
 		private ProveedorIADto proveedor;
 		private boolean crearProveedorAutomaticamente;
 		private DocumentoIADto documento;

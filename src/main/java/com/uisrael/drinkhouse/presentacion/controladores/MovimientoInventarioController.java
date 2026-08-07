@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.uisrael.drinkhouse.aplicacion.excepciones.ReglaNegocioException;
 
@@ -43,10 +44,6 @@ import com.uisrael.drinkhouse.presentacion.mapeadores.IMovimientoInventarioDtoMa
 
 import jakarta.validation.Valid;
 
-/**
- * Controlador REST para el módulo de movimientos de inventario.
- * Base URL: /api/v1/movimientos
- */
 @RestController
 @RequestMapping("/api/v1/movimientos")
 @Tag(name = "Movimientos de Inventario", description = "Endpoints para gestionar movimientos de inventario (entradas, salidas, ajustes) con auditoría y validación de stock")
@@ -67,14 +64,8 @@ public class MovimientoInventarioController {
 		this.exportacionService = exportacionService;
 	}
 
-	/**
-	 * POST /api/v1/movimientos
-	 * Registra un nuevo movimiento de inventario (ENTRADA, SALIDA o AJUSTE).
-	 *
-	 * @param requestDto datos del movimiento a registrar
-	 * @return el movimiento creado con código generado, HTTP 201
-	 */
-	@PostMapping
+@PostMapping
+	@Transactional
 	public ResponseEntity<MovimientoInventarioResponseDto> registrar(
 			@Valid @RequestBody MovimientoInventarioRequestDto requestDto) {
 
@@ -100,16 +91,7 @@ public class MovimientoInventarioController {
 				.body(mapper.toResponseDto(guardado));
 	}
 
-	/**
-	 * POST /api/v1/movimientos/con-auditoria
-	 * Crea un movimiento de inventario con autenticación secundaria y trazabilidad completa.
-	 *
-	 * @param requestDto Datos del movimiento incluyendo campos de validación de stock
-	 * @param secondaryAuthToken Token de autenticación secundaria
-	 * @param request Request HTTP para extraer dirección IP y session ID
-	 * @return Movimiento creado con HTTP 201
-	 */
-	@Operation(
+@Operation(
 		summary = "Crear movimiento de inventario con auditoría",
 		description = "Registra un movimiento de inventario (ENTRADA, SALIDA, AJUSTE) con autenticación secundaria y trazabilidad completa. "
 			+ "La operación valida el cálculo de stock (cantidad_anterior + ajuste = cantidad_posterior), actualiza el inventario y "
@@ -287,6 +269,7 @@ public class MovimientoInventarioController {
 		)
 	})
 	@PostMapping("/con-auditoria")
+	@Transactional
 	public ResponseEntity<MovimientoInventarioResponseDto> crearMovimientoConAuditoria(
 			@Parameter(
 				description = "Datos completos del movimiento de inventario con campos de validación de stock y auditoría",
@@ -364,13 +347,7 @@ public class MovimientoInventarioController {
 				.body(mapper.toResponseDto(guardado));
 	}
 
-	/**
-	 * Extrae la dirección IP del cliente desde la solicitud HTTP.
-	 *
-	 * @param request Solicitud HTTP servlet
-	 * @return Dirección IP del cliente
-	 */
-	private String extractIpAddress(HttpServletRequest request) {
+private String extractIpAddress(HttpServletRequest request) {
 		String ipAddress = request.getHeader("X-Forwarded-For");
 		if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
 			ipAddress = request.getHeader("Proxy-Client-IP");
@@ -393,13 +370,7 @@ public class MovimientoInventarioController {
 		return ipAddress;
 	}
 
-	/**
-	 * GET /api/v1/movimientos
-	 * Lista todos los movimientos del sistema ordenados por fecha descendente.
-	 *
-	 * @return lista de todos los movimientos, HTTP 200
-	 */
-	@GetMapping
+@GetMapping
 	public ResponseEntity<List<MovimientoInventarioResponseDto>> listarTodos() {
 		List<MovimientoInventarioResponseDto> lista = movimientoUseCase.listarTodos()
 				.stream()
@@ -408,27 +379,13 @@ public class MovimientoInventarioController {
 		return ResponseEntity.ok(lista);
 	}
 
-	/**
-	 * GET /api/v1/movimientos/{id}
-	 * Busca un movimiento por su ID.
-	 *
-	 * @param id ID del movimiento
-	 * @return movimiento encontrado, HTTP 200
-	 */
-	@GetMapping("/{id}")
+@GetMapping("/{id}")
 	public ResponseEntity<MovimientoInventarioResponseDto> buscarPorId(@PathVariable Long id) {
 		MovimientoInventario movimiento = movimientoUseCase.buscarPorId(id);
 		return ResponseEntity.ok(mapper.toResponseDto(movimiento));
 	}
 
-	/**
-	 * GET /api/v1/movimientos/tipo/{tipo}
-	 * Lista movimientos por tipo (ENTRADA, SALIDA, AJUSTE).
-	 *
-	 * @param tipo código del tipo de movimiento
-	 * @return lista de movimientos del tipo especificado, HTTP 200
-	 */
-	@GetMapping("/tipo/{tipo}")
+@GetMapping("/tipo/{tipo}")
 	public ResponseEntity<List<MovimientoInventarioResponseDto>> listarPorTipo(
 			@PathVariable String tipo) {
 		List<MovimientoInventarioResponseDto> lista = movimientoUseCase.buscarPorTipo(tipo)
@@ -438,14 +395,7 @@ public class MovimientoInventarioController {
 		return ResponseEntity.ok(lista);
 	}
 
-	/**
-	 * GET /api/v1/movimientos/lote/{loteId}
-	 * Lista movimientos asociados a un lote específico.
-	 *
-	 * @param loteId ID del lote
-	 * @return lista de movimientos del lote, HTTP 200
-	 */
-	@GetMapping("/lote/{loteId}")
+@GetMapping("/lote/{loteId}")
 	public ResponseEntity<List<MovimientoInventarioResponseDto>> listarPorLote(
 			@PathVariable Long loteId) {
 		List<MovimientoInventarioResponseDto> lista = movimientoUseCase.buscarPorLote(loteId)
@@ -455,17 +405,7 @@ public class MovimientoInventarioController {
 		return ResponseEntity.ok(lista);
 	}
 
-	/**
-	 * GET /api/v1/movimientos/producto/{productoId}
-	 * Lista los movimientos de un producto con filtros opcionales de tipo y rango de fechas.
-	 *
-	 * @param productoId ID del producto
-	 * @param tipo       código del tipo de movimiento (opcional)
-	 * @param desde      fecha/hora de inicio del rango ISO-8601 (opcional)
-	 * @param hasta      fecha/hora de fin del rango ISO-8601 (opcional)
-	 * @return lista de movimientos ordenada por fecha descendente, HTTP 200
-	 */
-	@GetMapping("/producto/{productoId}")
+@GetMapping("/producto/{productoId}")
 	public ResponseEntity<List<MovimientoInventarioResponseDto>> listarPorProducto(
 			@PathVariable Long productoId,
 			@RequestParam(required = false) String tipo,
@@ -483,16 +423,7 @@ public class MovimientoInventarioController {
 		return ResponseEntity.ok(lista);
 	}
 
-	/**
-	 * GET /api/v1/movimientos/export/excel
-	 * Exporta el historial de movimientos a formato Excel (XLSX).
-	 *
-	 * @param tipo       código del tipo de movimiento (opcional)
-	 * @param desde      fecha/hora de inicio del rango ISO-8601 (opcional)
-	 * @param hasta      fecha/hora de fin del rango ISO-8601 (opcional)
-	 * @return archivo Excel con los movimientos, HTTP 200
-	 */
-	@GetMapping("/export/excel")
+@GetMapping("/export/excel")
 	public ResponseEntity<byte[]> exportarAExcel(
 			@RequestParam(required = false) String tipo,
 			@RequestParam(required = false)
@@ -516,16 +447,7 @@ public class MovimientoInventarioController {
 				.body(excelBytes);
 	}
 
-	/**
-	 * GET /api/v1/movimientos/export/pdf
-	 * Exporta el historial de movimientos a formato PDF.
-	 *
-	 * @param tipo       código del tipo de movimiento (opcional)
-	 * @param desde      fecha/hora de inicio del rango ISO-8601 (opcional)
-	 * @param hasta      fecha/hora de fin del rango ISO-8601 (opcional)
-	 * @return archivo PDF con los movimientos, HTTP 200
-	 */
-	@GetMapping("/export/pdf")
+@GetMapping("/export/pdf")
 	public ResponseEntity<byte[]> exportarAPdf(
 			@RequestParam(required = false) String tipo,
 			@RequestParam(required = false)

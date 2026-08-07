@@ -22,20 +22,14 @@ public interface ITipoProductoJpaMapper {
 	@Mapping(target = "actualizadoEn", ignore = true)
 	TipoProductoEntity toEntity(TipoProducto tipoProductoDomain);
 
-	/**
-	 * Crea una referencia a CategoriaEntity con solo el ID para evitar null en FK.
-	 */
-	default CategoriaEntity createCategoriaEntity(Long categoriaId) {
+default CategoriaEntity createCategoriaEntity(Long categoriaId) {
 		if (categoriaId == null) return null;
 		CategoriaEntity entity = new CategoriaEntity();
 		entity.setCategoriaId(categoriaId);
 		return entity;
 	}
 
-	/**
-	 * Crea una referencia a NegocioEntity con solo el ID para evitar null en FK.
-	 */
-	default NegocioEntity createNegocioEntity(Integer negocioId) {
+default NegocioEntity createNegocioEntity(Integer negocioId) {
 		if (negocioId == null) return null;
 		NegocioEntity entity = new NegocioEntity();
 		entity.setNegocioId(negocioId);

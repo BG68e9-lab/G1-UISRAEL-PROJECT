@@ -19,10 +19,7 @@ public interface IUsuarioJpaMapper {
 	@Mapping(target = "logsAuditoria", ignore = true)
 	UsuarioEntity toEntity(Usuario usuarioDomain);
 
-	/**
-	 * Crea una referencia a NegocioEntity con solo el ID para evitar null en FK.
-	 */
-	default com.uisrael.drinkhouse.infraestructura.persistencia.jpa.NegocioEntity createNegocioEntity(Integer negocioId) {
+default com.uisrael.drinkhouse.infraestructura.persistencia.jpa.NegocioEntity createNegocioEntity(Integer negocioId) {
 		if (negocioId == null) return null;
 		com.uisrael.drinkhouse.infraestructura.persistencia.jpa.NegocioEntity entity = 
 			new com.uisrael.drinkhouse.infraestructura.persistencia.jpa.NegocioEntity();
@@ -30,10 +27,7 @@ public interface IUsuarioJpaMapper {
 		return entity;
 	}
 
-	/**
-	 * Crea una referencia a RolEntity con solo el ID para evitar null en FK.
-	 */
-	default com.uisrael.drinkhouse.infraestructura.persistencia.jpa.RolEntity createRolEntity(Integer rolId) {
+default com.uisrael.drinkhouse.infraestructura.persistencia.jpa.RolEntity createRolEntity(Integer rolId) {
 		if (rolId == null) return null;
 		com.uisrael.drinkhouse.infraestructura.persistencia.jpa.RolEntity entity = 
 			new com.uisrael.drinkhouse.infraestructura.persistencia.jpa.RolEntity();

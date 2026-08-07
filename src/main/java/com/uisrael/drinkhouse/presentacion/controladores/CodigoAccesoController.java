@@ -40,11 +40,7 @@ public class CodigoAccesoController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	/**
-	 * Endpoint para que un usuario genere su propio código de acceso.
-	 * El código se enviará al correo registrado del usuario.
-	 */
-	@PostMapping("/generar-para-mi")
+@PostMapping("/generar-para-mi")
 	public ResponseEntity<Map<String, String>> generarParaMi(
 			@RequestParam String tipoCodigo,
 			@RequestParam UUID usuarioId) {

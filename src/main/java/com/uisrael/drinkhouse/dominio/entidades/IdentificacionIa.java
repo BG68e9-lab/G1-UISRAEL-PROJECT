@@ -8,9 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Entidad de dominio que representa el resultado de una identificación de producto mediante IA.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

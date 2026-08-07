@@ -8,10 +8,6 @@ import com.uisrael.drinkhouse.presentacion.dto.response.ValidacionProductoExtern
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Servicio para validar productos contra bases de datos externas
- * como OpenFoodFacts, UPCDatabase, etc.
- */
 @Service
 @Slf4j
 public class ValidacionProductoExternoService {
@@ -22,17 +18,7 @@ public class ValidacionProductoExternoService {
         this.restTemplate = restTemplate;
     }
 
-    /**
-     * Valida un producto identificado por IA contra datos de mercado externos.
-     * Compara nombre, marca, tipo y descripción con bases de datos públicas.
-     *
-     * @param nombre Nombre del producto identificado por IA
-     * @param marca Marca del producto identificado por IA
-     * @param tipo Tipo/categoría del producto identificado por IA
-     * @param descripcion Descripción del producto identificado por IA
-     * @return ValidacionProductoExternoDto con el resultado de la validación
-     */
-    public ValidacionProductoExternoDto validarProducto(
+public ValidacionProductoExternoDto validarProducto(
             String nombre, String marca, String tipo, String descripcion) {
 
         log.info("Iniciando validación externa para producto: {} - {}", marca, nombre);
@@ -56,15 +42,7 @@ public class ValidacionProductoExternoService {
                 .build();
     }
 
-    /**
-     * Valida el producto contra OpenFoodFacts API
-     * https://world.openfoodfacts.org/api/v0/product/{barcode}.json
-     *
-     * @param nombre Nombre del producto
-     * @param marca Marca del producto
-     * @return ValidacionProductoExternoDto si se encuentra, null si no
-     */
-    private ValidacionProductoExternoDto validarConOpenFoodFacts(String nombre, String marca) {
+private ValidacionProductoExternoDto validarConOpenFoodFacts(String nombre, String marca) {
         try {
             String query = String.format("%s %s", marca != null ? marca : "", nombre != null ? nombre : "").trim();
             
@@ -97,14 +75,7 @@ public class ValidacionProductoExternoService {
         }
     }
 
-    /**
-     * Método de utilidad para verificar si un producto debe ser validado
-     * Algunos productos genéricos no necesitan validación externa
-     *
-     * @param tipo Tipo de producto
-     * @return true si requiere validación, false si no
-     */
-    public boolean requiereValidacionExterna(String tipo) {
+public boolean requiereValidacionExterna(String tipo) {
         return tipo != null && (
                 tipo.toLowerCase().contains("bebida") ||
                 tipo.toLowerCase().contains("alcohol") ||
